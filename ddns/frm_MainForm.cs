@@ -29,6 +29,7 @@ namespace ddns
 		enum e_Config_Header
 		{
 			get_IP_URL,			// 检查公网 IP 的 URL
+			Specific_IP,		// 指定 IP 地址
 			interval,			// 更新的时间间隔（秒）
 			auto_update,		// 是否自动更新
 			save_Key_Secret,	// 保存 Key/Secret 到配置文件中
@@ -36,6 +37,7 @@ namespace ddns
 			Secret,
 			Show_Key,
 			Show_Secret,
+			Update_Force,		// 强制更新
 
 			domain,				// 域名
 		};
@@ -136,7 +138,7 @@ namespace ddns
 		/*==============================================================
 		 * 更新 A/AAAA 记录
 		 *==============================================================*/
-		async void update_records()
+		async void update_records(bool force)
 		{
 			if(DateTime.Now < m_next_get_ip_time)
 				return;
@@ -156,35 +158,40 @@ namespace ddns
 
 			m_getting_ip = true;
 
-			if(comboBox_Settings_Get_IP_URL.Text.Length == 0)
-			{
-				add_log("「检查公网IP的URL」为空，无法获取", Color.Red);
-
-				exit_func();
-				return;
-			}
-
-			add_log("正在获取当前公网 IP 地址……");
-
 			string ip = "";
 
-			WebClient wc = new WebClient();
-
-			try
+			if(checkBox_Settings_Specific_IP.Checked)
+				ip = textBox_Settings_Last_IP.Text.Trim();
+			else
 			{
-				ip = await wc.DownloadStringTaskAsync(comboBox_Settings_Get_IP_URL.Text);
-				ip = ip.Replace("\n", "").Trim();
+				if(comboBox_Settings_Get_IP_URL.Text.Length == 0)
+				{
+					add_log("「检查公网IP的URL」为空，无法获取", Color.Red);
 
-				textBox_Settings_Last_IP.Text = ip;
+					exit_func();
+					return;
+				}
 
-				add_log($"当前的公网 IP：{ip}");
-			}
-			catch(Exception ex)
-			{
-				add_log(ex.Message, Color.Red);
+				add_log("正在获取当前公网 IP 地址……");
 
-				exit_func();
-				return;
+				WebClient wc = new WebClient();
+
+				try
+				{
+					ip = await wc.DownloadStringTaskAsync(comboBox_Settings_Get_IP_URL.Text);
+					ip = ip.Replace("\n", "").Trim();
+
+					textBox_Settings_Last_IP.Text = ip;
+
+					add_log($"当前的公网 IP：{ip}");
+				}
+				catch(Exception ex)
+				{
+					add_log(ex.Message, Color.Red);
+
+					exit_func();
+					return;
+				}
 			}
 
 			if(ip.Length == 0)
@@ -224,10 +231,13 @@ namespace ddns
 				string domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
 				string ttl_str	= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
 
-				if(LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text == ip)
+				if(!force)
 				{
-					add_log($"{name}.{domain} 的「{record_type} 记录」已经是最新 IP，无需更新");
-					continue;
+					if(LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text == ip)
+					{
+						add_log($"{name}.{domain} 的「{record_type} 记录」已经是最新 IP，无需更新");
+						continue;
+					}
 				}
 
 				StringBuilder sb_json = new StringBuilder();
@@ -317,6 +327,16 @@ namespace ddns
 					continue;
 				}
 
+				if(w1.ToLower() == e_Config_Header.Specific_IP.ToString().ToLower())
+				{
+					bool val;
+
+					if(bool.TryParse(w2, out val))
+						checkBox_Settings_Specific_IP.Checked = val;
+
+					continue;
+				}
+
 				if(w1.ToLower() == e_Config_Header.interval.ToString().ToLower())
 				{
 					int interval;
@@ -379,6 +399,16 @@ namespace ddns
 					continue;
 				}
 
+				if(w1.ToLower() == e_Config_Header.Update_Force.ToString().ToLower())
+				{
+					bool val;
+
+					if(bool.TryParse(w2, out val))
+						checkBox_Settings_Update_Force.Checked = val;
+
+					continue;
+				}
+
 				if(w1.ToLower() == e_Config_Header.domain.ToString().ToLower())
 				{
 					string[] vals = w2.Split(',');
@@ -417,6 +447,10 @@ namespace ddns
 			sb.AppendLine($"{e_Config_Header.get_IP_URL}: {comboBox_Settings_Get_IP_URL.Text.Trim()}");
 			sb.AppendLine();
 
+			sb.AppendLine("// 指定 IP 地址");
+			sb.AppendLine($"{e_Config_Header.Specific_IP}: {checkBox_Settings_Specific_IP.Checked}");
+			sb.AppendLine();
+
 			sb.AppendLine("// 更新的时间间隔（秒）");
 			sb.AppendLine($"{e_Config_Header.interval}: {numericUpDown_Settings_Interval.Value}");
 			sb.AppendLine();
@@ -446,6 +480,10 @@ namespace ddns
 
 			sb.AppendLine("// 显示 Secret");
 			sb.AppendLine($"{e_Config_Header.Show_Secret}: {checkBox_Settings_Show_Secret.Checked}");
+			sb.AppendLine();
+
+			sb.AppendLine("// 强制更新");
+			sb.AppendLine($"{e_Config_Header.Update_Force}: {checkBox_Settings_Update_Force.Checked}");
 			sb.AppendLine();
 
 			sb.AppendLine("// 域名列表");
@@ -505,7 +543,7 @@ namespace ddns
 		 *==============================================================*/
 		private void timer_Update_Tick(object sender, EventArgs e)
 		{
-			update_records();
+			update_records(checkBox_Settings_Update_Force.Checked);
 		}
 
 		/*==============================================================
@@ -576,12 +614,12 @@ namespace ddns
 		}
 
 		/*==============================================================
-		 * 立即更新
+		 * 指定 IP 地址
 		 *==============================================================*/
-		private void button_Settings_Update_Click(object sender, EventArgs e)
+		private void checkBox_Settings_Specific_IP_CheckedChanged(object sender, EventArgs e)
 		{
-			m_next_get_ip_time = DateTime.Now;
-			update_records();
+			textBox_Settings_Last_IP.ReadOnly = !checkBox_Settings_Specific_IP.Checked;
+			m_dirty_config = true;
 		}
 
 		/*==============================================================
@@ -643,6 +681,23 @@ namespace ddns
 		 * 保存 Key/Secret 到配置文件中
 		 *==============================================================*/
 		private void checkBox_Settings_Save_Key_and_Secret_CheckedChanged(object sender, EventArgs e)
+		{
+			m_dirty_config = true;
+		}
+
+		/*==============================================================
+		 * 立即更新
+		 *==============================================================*/
+		private void button_Settings_Update_Click(object sender, EventArgs e)
+		{
+			m_next_get_ip_time = DateTime.Now;
+			update_records(checkBox_Settings_Update_Force.Checked);
+		}
+
+		/*==============================================================
+		 * 强制更新
+		 *==============================================================*/
+		private void checkBox_Settings_Update_Force_CheckedChanged(object sender, EventArgs e)
 		{
 			m_dirty_config = true;
 		}
