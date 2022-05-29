@@ -66,8 +66,12 @@ namespace ddns
 
 		// 下次可以获取 IP 的时间
 		DateTime						m_next_get_ip_time		= DateTime.Now;
-		// 是否正在更新 IP
-		bool							m_getting_ip			= false;
+
+		bool							m_is_updating			= false;	// 是否正在更新 IP
+		int								m_updating_count		= 0;		// 正在更新的数量
+		int								m_failed_count			= 0;		// 更新失败的数量
+		int								m_succeed_count			= 0;		// 更新成功的数量
+		string							m_record_type			= "A";		// 当前的 IP 类型
 
 		/*==============================================================
 		 * 检查是否包含指定域名
@@ -135,77 +139,122 @@ namespace ddns
 			this.WindowState = FormWindowState.Normal;
 		}
 
+
 		/*==============================================================
-		 * 更新 A/AAAA 记录
+		 * 设置下次更新的时间
 		 *==============================================================*/
-		async void update_records(bool force)
+		void set_next_update_time()
+		{
+			m_next_get_ip_time	= DateTime.Now.AddSeconds((int)numericUpDown_Settings_Interval.Value);
+			add_log($"下次更新时间：{m_next_get_ip_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
+		}
+
+
+		/*==============================================================
+		 * 锁定控件
+		 *==============================================================*/
+		void lock_controls(bool enabled)
+		{
+			comboBox_Settings_Get_IP_URL.Enabled	= enabled;
+			textBox_Settings_Last_IP.ReadOnly		= !enabled || !checkBox_Settings_Specific_IP.Checked;
+			checkBox_Settings_Specific_IP.Enabled	= enabled;
+			numericUpDown_Settings_Interval.Enabled	= enabled;
+			checkBox_Settings_AutoUpdate.Enabled	= enabled;
+			textBox_Settings_Key.ReadOnly			= !enabled;
+			textBox_Settings_Secret.ReadOnly		= !enabled;
+
+			button_Settings_Update.Enabled			= enabled;
+			checkBox_Settings_Update_Force.Enabled	= enabled;
+
+			listView_Records.ContextMenuStrip		= enabled ? contextMenuStrip_Records : null;
+
+			m_is_updating							= !enabled;
+		}
+
+
+		/*==============================================================
+		 * 开始更新 A/AAAA 记录
+		 *==============================================================*/
+		void start_update_records()
 		{
 			if(DateTime.Now < m_next_get_ip_time)
 				return;
 
-			if(m_getting_ip)
+			if(m_is_updating)
 				return;
 
-			int interval = (int)numericUpDown_Settings_Interval.Value;
-
-			void exit_func()
-			{
-				m_next_get_ip_time	= DateTime.Now.AddSeconds(interval);
-				m_getting_ip		= false;
-
-				add_log($"下次更新时间：{m_next_get_ip_time.ToString("G").Replace("/", ".")}", Color.FromArgb(0, 162, 232));
-			}
-
-			m_getting_ip = true;
-
-			string ip = "";
+			lock_controls(false);
+			m_is_updating = true;
 
 			if(checkBox_Settings_Specific_IP.Checked)
-				ip = textBox_Settings_Last_IP.Text.Trim();
+			{
+				string ip = textBox_Settings_Last_IP.Text.Trim();
+				update_records(ip);
+			}
 			else
 			{
 				if(comboBox_Settings_Get_IP_URL.Text.Length == 0)
 				{
 					add_log("「检查公网IP的URL」为空，无法获取", Color.Red);
 
-					exit_func();
+					set_next_update_time();
+					lock_controls(true);
 					return;
 				}
 
 				add_log("正在获取当前公网 IP 地址……");
 
 				WebClient wc = new WebClient();
+				wc.DownloadStringCompleted += WC_DownloadStringCompleted;
 
-				try
-				{
-					ip = await wc.DownloadStringTaskAsync(comboBox_Settings_Get_IP_URL.Text);
-					ip = ip.Replace("\n", "").Trim();
-
-					textBox_Settings_Last_IP.Text = ip;
-
-					add_log($"当前的公网 IP：{ip}");
-				}
-				catch(Exception ex)
-				{
-					add_log(ex.Message, Color.Red);
-
-					exit_func();
-					return;
-				}
+				wc.DownloadStringAsync(new Uri(comboBox_Settings_Get_IP_URL.Text));
 			}
+		}
 
-			if(ip.Length == 0)
+
+		/*==============================================================
+		 * 获取公网 IP 完成
+		 *==============================================================*/
+		private void WC_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+		{
+			if(e.Error != null)
 			{
-				exit_func();
+				add_log(e.Error.Message, Color.Red);
+
+				set_next_update_time();
+				lock_controls(true);
 				return;
 			}
 
+			string ip = e.Result.Replace("\n", "").Trim();
+			if(ip.Length == 0)
+			{
+				add_log("获取 IP 失败（可能是网站提供的数据有问题）", Color.Red);
+
+				set_next_update_time();
+				lock_controls(true);
+				return;
+			}
+
+			textBox_Settings_Last_IP.Text = ip;
+			add_log($"当前的公网 IP：{ip}");
+
+			update_records(ip);
+		}
+
+
+		/*==============================================================
+		 * 更新 IP 记录
+		 *==============================================================*/
+		void update_records(string ip)
+		{
 			IPAddress address;
 			if(!IPAddress.TryParse(ip, out address))
 			{
 				add_log($"无效的 IP：{ip}", Color.Red);
 
-				exit_func();
+				set_next_update_time();
+				lock_controls(true);
 				return;
 			}
 
@@ -214,19 +263,23 @@ namespace ddns
 			{
 				add_log($"无效的 IPv4 或 IPv6：{ip}", Color.Red);
 
-				exit_func();
+				set_next_update_time();
+				lock_controls(true);
 				return;
 			}
 
-			string record_type	= (address.AddressFamily == AddressFamily.InterNetwork) ? "A" : "AAAA";
-			string Key			= textBox_Settings_Key.Text;
-			string Secret		= textBox_Settings_Secret.Text;
+			m_record_type			= (address.AddressFamily == AddressFamily.InterNetwork) ? "A" : "AAAA";
+			string		Key			= textBox_Settings_Key.Text;
+			string		Secret		= textBox_Settings_Secret.Text;
 
-			int count			= 0;
-			int failed_count	= 0;
+			bool		force		= checkBox_Settings_Update_Force.Checked;
 
-			foreach(ListViewItem LVI in listView_Records.Items)
+			List<int>	idx_list	= new List<int>();
+
+			for(int i=0; i<listView_Records.Items.Count; ++i)
 			{
+				ListViewItem LVI = listView_Records.Items[i];
+
 				string name		= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
 				string domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
 				string ttl_str	= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
@@ -235,65 +288,155 @@ namespace ddns
 				{
 					if(LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text == ip)
 					{
-						add_log($"{name}.{domain} 的「{record_type} 记录」已经是最新 IP，无需更新");
+						add_log($"{name}.{domain} 的「{m_record_type} 记录」已经是最新 IP，无需更新");
 						continue;
 					}
 				}
 
-				StringBuilder sb_json = new StringBuilder();
+				idx_list.Add(i);
+			}	// for
 
-				sb_json.Append("[\n");
-				sb_json.Append("	{\n");
-				sb_json.Append($"		\"name\":\"{name}\",\n");
-				sb_json.Append($"		\"type\":\"{record_type}\",\n");
-				sb_json.Append($"		\"data\":\"{ip}\"");
+			m_updating_count	= idx_list.Count;
+			m_failed_count		= 0;
+			m_succeed_count		= 0;
 
-				if(ttl_str.Length > 0)
+			if(m_updating_count == 0)
+			{
+				set_next_update_time();
+				lock_controls(true);
+				return;
+			}
+
+			foreach(int i in idx_list)
+			{
+				Thread th = new Thread(TH_update_record);
+				th.Start(i);
+			}	// for
+		}
+
+
+		/*==============================================================
+		 * 更新 A/AAAA 记录的线程
+		 *==============================================================*/
+		async void TH_update_record(object param)
+		{
+			int idx = (int)param;
+
+			ListViewItem LVI	= null;
+
+			string		name	= "";
+			string		domain	= "";
+			string		ttl_str	= "";
+
+			string		ip		= "";
+			string		Key		= "";
+			string		Secret	= "";
+
+			this.Invoke(
+				new Action(() =>
 				{
-					sb_json.Append(",\n");
-					sb_json.Append($"	\"ttl\":{ttl_str}\n");
-				}
+					LVI		= listView_Records.Items[idx];
 
-				sb_json.Append("	}\n");
-				sb_json.Append("]");
+					name	= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
+					domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
+					ttl_str	= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
 
-				string			url	= $"https://api.godaddy.com/v1/domains/{domain}/records/{record_type}/{name}";
-				StringContent	sc	= new StringContent(sb_json.ToString(), Encoding.UTF8, "application/json");
+					ip		= textBox_Settings_Last_IP.Text;
+					Key		= textBox_Settings_Key.Text;
+					Secret	= textBox_Settings_Secret.Text;
+				})
+			);
 
-				add_log($"正在更新 {name}.{domain} 的「{record_type} 记录」……");
+			StringBuilder sb_json = new StringBuilder();
 
-				HttpClient client = new HttpClient();
+			sb_json.Append("[\n");
+			sb_json.Append("	{\n");
+			sb_json.Append($"		\"name\":\"{name}\",\n");
+			sb_json.Append($"		\"type\":\"{m_record_type}\",\n");
+			sb_json.Append($"		\"data\":\"{ip}\"");
 
-				client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-				client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"sso-key {Key}:{Secret}");
+			if(ttl_str.Length > 0)
+			{
+				sb_json.Append(",\n");
+				sb_json.Append($"	\"ttl\":{ttl_str}\n");
+			}
 
+			sb_json.Append("	}\n");
+			sb_json.Append("]");
+
+			string			url	= $"https://api.godaddy.com/v1/domains/{domain}/records/{m_record_type}/{name}";
+			StringContent	sc	= new StringContent(sb_json.ToString(), Encoding.UTF8, "application/json");
+
+			this.Invoke(new Action(() => { add_log($"正在更新 {name}.{domain} 的「{m_record_type} 记录」……"); }));
+
+			HttpClient client = new HttpClient();
+
+			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+			client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"sso-key {Key}:{Secret}");
+
+			try
+			{
 				HttpResponseMessage response = await client.PutAsync(url, sc);
 
 				if(!response.IsSuccessStatusCode)
 				{
-					LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
-					LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
+					Interlocked.Increment(ref m_failed_count);
 
-					add_log($"更新 {name}.{domain} 的「{record_type} 记录」失败（StatusCode = {response.StatusCode}，ReasonPhrase = {response.ReasonPhrase}）",
-							Color.Red);
+					this.Invoke(
+						new Action(() =>
+						{
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
 
-					++failed_count;
-					continue;
+							add_log($"更新 {name}.{domain} 的「{m_record_type} 记录」失败（StatusCode = {response.StatusCode}，ReasonPhrase = {response.ReasonPhrase}）",
+									Color.Red);
+						})
+					);
 				}
+				else
+				{
+					Interlocked.Increment(ref m_succeed_count);
 
-				LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "成功";
-				LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Green;
+					this.Invoke(
+						new Action(() =>
+						{
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "成功";
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Green;
+							LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text				= ip;
 
-				LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text				= ip;
+							add_log($"更新 {name}.{domain} 的「{m_record_type} 记录」成功", Color.Green);
+						})
+					);
+				}
+			}
+			catch(Exception ex)
+			{
+				this.Invoke(
+					new Action(() =>
+					{
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
 
-				add_log($"更新 {name}.{domain} 的「{record_type} 记录」成功", Color.Green);
+						add_log(ex.Message, Color.Red);
+					})
+				);
+			}
 
-				++count;
-			}	// for
+			if(Interlocked.Decrement(ref m_updating_count) == 0)
+			{
+				this.Invoke(
+					new Action(() =>
+					{
+						add_log($"成功：{m_succeed_count} 条记录，失败：{m_failed_count} 条记录",
+								(m_failed_count == 0) ? Color.DarkOrange : Color.Red);
 
-			add_log($"成功：{count} 条记录，失败：{failed_count} 条记录", (failed_count == 0) ? Color.DarkOrange : Color.Red);
-			exit_func();
+						set_next_update_time();
+						lock_controls(true);
+					})
+				);
+			}
 		}
+
 
 		#region 读写配置文件
 		/*==============================================================
@@ -543,23 +686,31 @@ namespace ddns
 		 *==============================================================*/
 		private void timer_Update_Tick(object sender, EventArgs e)
 		{
-			update_records(checkBox_Settings_Update_Force.Checked);
+			start_update_records();
 		}
 
 		/*==============================================================
-		 * 打开网站
+		 * godaddy API 网址
 		 *==============================================================*/
-		private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		private void linkLabel_godaddy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			try
-			{
-				LinkLabel ll = (LinkLabel)sender;
+			Process.Start(linkLabel_godaddy.Text);
+		}
 
-				Process.Start(ll.Text);
-			}
-			catch(Exception)
-			{
-			}
+		/*==============================================================
+		 * github
+		 *==============================================================*/
+		private void linkLabel_Github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start("https://github.com/foxofice/ddns_godaddy");
+		}
+
+		/*==============================================================
+		 * 官网
+		 *==============================================================*/
+		private void linkLabel_WebSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start("https://www.AcgDev.com");
 		}
 		#endregion
 
@@ -691,7 +842,7 @@ namespace ddns
 		private void button_Settings_Update_Click(object sender, EventArgs e)
 		{
 			m_next_get_ip_time = DateTime.Now;
-			update_records(checkBox_Settings_Update_Force.Checked);
+			start_update_records();
 		}
 
 		/*==============================================================
@@ -856,6 +1007,9 @@ namespace ddns
 			foreach(ListViewItem LVI in listView_Logs.Items)
 				LVI.Selected = true;
 		}
+
+
+
 		#endregion
-	};
+	}
 }	// namespace ddns
