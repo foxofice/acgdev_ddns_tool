@@ -41,18 +41,15 @@
 			this.ToolStripMenuItem_Records_Add = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Records_Edit = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Records_Delete = new System.Windows.Forms.ToolStripMenuItem();
-			this.groupBox_Settings = new System.Windows.Forms.GroupBox();
 			this.checkBox_Settings_Update_Force = new System.Windows.Forms.CheckBox();
 			this.checkBox_Settings_AutoUpdate = new System.Windows.Forms.CheckBox();
 			this.checkBox_Settings_Show_Secret = new System.Windows.Forms.CheckBox();
-			this.checkBox_Settings_Specific_IP = new System.Windows.Forms.CheckBox();
 			this.checkBox_Settings_Show_Key = new System.Windows.Forms.CheckBox();
 			this.comboBox_Settings_Get_IP_URL = new System.Windows.Forms.ComboBox();
 			this.checkBox_Settings_Save_Key_and_Secret = new System.Windows.Forms.CheckBox();
-			this.numericUpDown_Settings_Interval = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDown_Settings_AutoUpdate_Interval = new System.Windows.Forms.NumericUpDown();
 			this.label_Settings_Secret = new System.Windows.Forms.Label();
 			this.label_Settings_Key = new System.Windows.Forms.Label();
-			this.label_Settings_Interval = new System.Windows.Forms.Label();
 			this.textBox_Settings_Last_IP = new System.Windows.Forms.TextBox();
 			this.textBox_Settings_Secret = new System.Windows.Forms.TextBox();
 			this.textBox_Settings_Key = new System.Windows.Forms.TextBox();
@@ -76,20 +73,44 @@
 			this.linkLabel_Github = new System.Windows.Forms.LinkLabel();
 			this.timer_Update = new System.Windows.Forms.Timer(this.components);
 			this.linkLabel_WebSite = new System.Windows.Forms.LinkLabel();
+			this.groupBox_Server = new System.Windows.Forms.GroupBox();
+			this.checkBox_Server_Show_Pwd = new System.Windows.Forms.CheckBox();
+			this.label_Server_User = new System.Windows.Forms.Label();
+			this.label_Server_Ping = new System.Windows.Forms.Label();
+			this.label_Server_Pwd = new System.Windows.Forms.Label();
+			this.label_Server_Addr = new System.Windows.Forms.Label();
+			this.textBox_Server_User = new System.Windows.Forms.TextBox();
+			this.textBox_Server_Ping = new System.Windows.Forms.TextBox();
+			this.textBox_Server_Pwd = new System.Windows.Forms.TextBox();
+			this.textBox_Server_Addr = new System.Windows.Forms.TextBox();
+			this.timer_Ping = new System.Windows.Forms.Timer(this.components);
+			this.groupBox_Type = new System.Windows.Forms.GroupBox();
+			this.radioButton_Server = new System.Windows.Forms.RadioButton();
+			this.radioButton_Local = new System.Windows.Forms.RadioButton();
+			this.groupBox_IP = new System.Windows.Forms.GroupBox();
+			this.radioButton_Specific_IP = new System.Windows.Forms.RadioButton();
+			this.radioButton_Server_Accept_IP = new System.Windows.Forms.RadioButton();
+			this.radioButton_Get_IP_From_URL = new System.Windows.Forms.RadioButton();
+			this.groupBox_Security = new System.Windows.Forms.GroupBox();
+			this.checkBox_Server_Ping = new System.Windows.Forms.CheckBox();
 			this.groupBox_Records.SuspendLayout();
 			this.contextMenuStrip_Records.SuspendLayout();
-			this.groupBox_Settings.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Settings_Interval)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Settings_AutoUpdate_Interval)).BeginInit();
 			this.contextMenuStrip_Logs.SuspendLayout();
 			this.contextMenuStrip_NotifyIcon.SuspendLayout();
+			this.groupBox_Server.SuspendLayout();
+			this.groupBox_Type.SuspendLayout();
+			this.groupBox_IP.SuspendLayout();
+			this.groupBox_Security.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button_Settings_Update
 			// 
-			this.button_Settings_Update.Location = new System.Drawing.Point(119, 176);
+			this.button_Settings_Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.button_Settings_Update.Location = new System.Drawing.Point(378, 572);
 			this.button_Settings_Update.Name = "button_Settings_Update";
 			this.button_Settings_Update.Size = new System.Drawing.Size(75, 23);
-			this.button_Settings_Update.TabIndex = 17;
+			this.button_Settings_Update.TabIndex = 63;
 			this.button_Settings_Update.Text = "立即更新";
 			this.button_Settings_Update.UseVisualStyleBackColor = true;
 			this.button_Settings_Update.Click += new System.EventHandler(this.button_Settings_Update_Click);
@@ -99,10 +120,10 @@
 			this.groupBox_Records.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
 			this.groupBox_Records.Controls.Add(this.listView_Records);
-			this.groupBox_Records.Location = new System.Drawing.Point(12, 223);
+			this.groupBox_Records.Location = new System.Drawing.Point(12, 397);
 			this.groupBox_Records.Name = "groupBox_Records";
-			this.groupBox_Records.Size = new System.Drawing.Size(441, 124);
-			this.groupBox_Records.TabIndex = 19;
+			this.groupBox_Records.Size = new System.Drawing.Size(441, 169);
+			this.groupBox_Records.TabIndex = 50;
 			this.groupBox_Records.TabStop = false;
 			this.groupBox_Records.Text = "要更新的域名列表（右键菜单设置）";
 			// 
@@ -123,8 +144,8 @@
 			this.listView_Records.HideSelection = false;
 			this.listView_Records.Location = new System.Drawing.Point(6, 20);
 			this.listView_Records.Name = "listView_Records";
-			this.listView_Records.Size = new System.Drawing.Size(429, 98);
-			this.listView_Records.TabIndex = 20;
+			this.listView_Records.Size = new System.Drawing.Size(429, 143);
+			this.listView_Records.TabIndex = 51;
 			this.listView_Records.UseCompatibleStateImageBehavior = false;
 			this.listView_Records.View = System.Windows.Forms.View.Details;
 			this.listView_Records.SelectedIndexChanged += new System.EventHandler(this.listView_Records_SelectedIndexChanged);
@@ -189,85 +210,50 @@
 			this.ToolStripMenuItem_Records_Delete.Text = "删除";
 			this.ToolStripMenuItem_Records_Delete.Click += new System.EventHandler(this.ToolStripMenuItem_Records_Delete_Click);
 			// 
-			// groupBox_Settings
-			// 
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_Update_Force);
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_AutoUpdate);
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_Show_Secret);
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_Specific_IP);
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_Show_Key);
-			this.groupBox_Settings.Controls.Add(this.comboBox_Settings_Get_IP_URL);
-			this.groupBox_Settings.Controls.Add(this.checkBox_Settings_Save_Key_and_Secret);
-			this.groupBox_Settings.Controls.Add(this.numericUpDown_Settings_Interval);
-			this.groupBox_Settings.Controls.Add(this.label_Settings_Secret);
-			this.groupBox_Settings.Controls.Add(this.button_Settings_Update);
-			this.groupBox_Settings.Controls.Add(this.label_Settings_Key);
-			this.groupBox_Settings.Controls.Add(this.label_Settings_Interval);
-			this.groupBox_Settings.Controls.Add(this.textBox_Settings_Last_IP);
-			this.groupBox_Settings.Controls.Add(this.textBox_Settings_Secret);
-			this.groupBox_Settings.Controls.Add(this.textBox_Settings_Key);
-			this.groupBox_Settings.Controls.Add(this.label_Settings_Last_IP);
-			this.groupBox_Settings.Controls.Add(this.label_Settings_Get_IP_URL);
-			this.groupBox_Settings.Location = new System.Drawing.Point(12, 12);
-			this.groupBox_Settings.Name = "groupBox_Settings";
-			this.groupBox_Settings.Size = new System.Drawing.Size(441, 205);
-			this.groupBox_Settings.TabIndex = 1;
-			this.groupBox_Settings.TabStop = false;
-			this.groupBox_Settings.Text = "设置";
-			// 
 			// checkBox_Settings_Update_Force
 			// 
+			this.checkBox_Settings_Update_Force.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkBox_Settings_Update_Force.AutoSize = true;
-			this.checkBox_Settings_Update_Force.Location = new System.Drawing.Point(200, 180);
+			this.checkBox_Settings_Update_Force.Location = new System.Drawing.Point(300, 576);
 			this.checkBox_Settings_Update_Force.Name = "checkBox_Settings_Update_Force";
 			this.checkBox_Settings_Update_Force.Size = new System.Drawing.Size(72, 16);
-			this.checkBox_Settings_Update_Force.TabIndex = 18;
+			this.checkBox_Settings_Update_Force.TabIndex = 62;
 			this.checkBox_Settings_Update_Force.Text = "强制更新";
 			this.checkBox_Settings_Update_Force.UseVisualStyleBackColor = true;
 			this.checkBox_Settings_Update_Force.CheckedChanged += new System.EventHandler(this.checkBox_Settings_Update_Force_CheckedChanged);
 			// 
 			// checkBox_Settings_AutoUpdate
 			// 
+			this.checkBox_Settings_AutoUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.checkBox_Settings_AutoUpdate.AutoSize = true;
 			this.checkBox_Settings_AutoUpdate.Checked = true;
 			this.checkBox_Settings_AutoUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox_Settings_AutoUpdate.Location = new System.Drawing.Point(191, 74);
+			this.checkBox_Settings_AutoUpdate.Location = new System.Drawing.Point(12, 576);
 			this.checkBox_Settings_AutoUpdate.Name = "checkBox_Settings_AutoUpdate";
-			this.checkBox_Settings_AutoUpdate.Size = new System.Drawing.Size(72, 16);
-			this.checkBox_Settings_AutoUpdate.TabIndex = 9;
-			this.checkBox_Settings_AutoUpdate.Text = "自动更新";
+			this.checkBox_Settings_AutoUpdate.Size = new System.Drawing.Size(168, 16);
+			this.checkBox_Settings_AutoUpdate.TabIndex = 60;
+			this.checkBox_Settings_AutoUpdate.Text = "自动更新时间间隔（秒）：";
 			this.checkBox_Settings_AutoUpdate.UseVisualStyleBackColor = true;
 			this.checkBox_Settings_AutoUpdate.CheckedChanged += new System.EventHandler(this.checkBox_Settings_AutoUpdate_CheckedChanged);
 			// 
 			// checkBox_Settings_Show_Secret
 			// 
 			this.checkBox_Settings_Show_Secret.AutoSize = true;
-			this.checkBox_Settings_Show_Secret.Location = new System.Drawing.Point(351, 129);
+			this.checkBox_Settings_Show_Secret.Location = new System.Drawing.Point(387, 49);
 			this.checkBox_Settings_Show_Secret.Name = "checkBox_Settings_Show_Secret";
 			this.checkBox_Settings_Show_Secret.Size = new System.Drawing.Size(48, 16);
-			this.checkBox_Settings_Show_Secret.TabIndex = 15;
+			this.checkBox_Settings_Show_Secret.TabIndex = 46;
 			this.checkBox_Settings_Show_Secret.Text = "显示";
 			this.checkBox_Settings_Show_Secret.UseVisualStyleBackColor = true;
 			this.checkBox_Settings_Show_Secret.CheckedChanged += new System.EventHandler(this.checkBox_Settings_Show_Secret_CheckedChanged);
 			// 
-			// checkBox_Settings_Specific_IP
-			// 
-			this.checkBox_Settings_Specific_IP.AutoSize = true;
-			this.checkBox_Settings_Specific_IP.Location = new System.Drawing.Point(351, 49);
-			this.checkBox_Settings_Specific_IP.Name = "checkBox_Settings_Specific_IP";
-			this.checkBox_Settings_Specific_IP.Size = new System.Drawing.Size(84, 16);
-			this.checkBox_Settings_Specific_IP.TabIndex = 6;
-			this.checkBox_Settings_Specific_IP.Text = "指定IP地址";
-			this.checkBox_Settings_Specific_IP.UseVisualStyleBackColor = true;
-			this.checkBox_Settings_Specific_IP.CheckedChanged += new System.EventHandler(this.checkBox_Settings_Specific_IP_CheckedChanged);
-			// 
 			// checkBox_Settings_Show_Key
 			// 
 			this.checkBox_Settings_Show_Key.AutoSize = true;
-			this.checkBox_Settings_Show_Key.Location = new System.Drawing.Point(351, 102);
+			this.checkBox_Settings_Show_Key.Location = new System.Drawing.Point(387, 22);
 			this.checkBox_Settings_Show_Key.Name = "checkBox_Settings_Show_Key";
 			this.checkBox_Settings_Show_Key.Size = new System.Drawing.Size(48, 16);
-			this.checkBox_Settings_Show_Key.TabIndex = 12;
+			this.checkBox_Settings_Show_Key.TabIndex = 43;
 			this.checkBox_Settings_Show_Key.Text = "显示";
 			this.checkBox_Settings_Show_Key.UseVisualStyleBackColor = true;
 			this.checkBox_Settings_Show_Key.CheckedChanged += new System.EventHandler(this.checkBox_Settings_Show_Key_CheckedChanged);
@@ -284,111 +270,104 @@
             "https://ip.qaros.com",
             "https://ident.me",
             "https://api.ipify.org/"});
-			this.comboBox_Settings_Get_IP_URL.Location = new System.Drawing.Point(119, 20);
+			this.comboBox_Settings_Get_IP_URL.Location = new System.Drawing.Point(119, 42);
 			this.comboBox_Settings_Get_IP_URL.Name = "comboBox_Settings_Get_IP_URL";
 			this.comboBox_Settings_Get_IP_URL.Size = new System.Drawing.Size(316, 20);
-			this.comboBox_Settings_Get_IP_URL.TabIndex = 3;
+			this.comboBox_Settings_Get_IP_URL.TabIndex = 35;
 			this.comboBox_Settings_Get_IP_URL.TextChanged += new System.EventHandler(this.comboBox_Settings_Get_IP_URL_TextChanged);
 			// 
 			// checkBox_Settings_Save_Key_and_Secret
 			// 
 			this.checkBox_Settings_Save_Key_and_Secret.AutoSize = true;
-			this.checkBox_Settings_Save_Key_and_Secret.Location = new System.Drawing.Point(119, 154);
+			this.checkBox_Settings_Save_Key_and_Secret.Location = new System.Drawing.Point(6, 74);
 			this.checkBox_Settings_Save_Key_and_Secret.Name = "checkBox_Settings_Save_Key_and_Secret";
 			this.checkBox_Settings_Save_Key_and_Secret.Size = new System.Drawing.Size(192, 16);
-			this.checkBox_Settings_Save_Key_and_Secret.TabIndex = 16;
+			this.checkBox_Settings_Save_Key_and_Secret.TabIndex = 47;
 			this.checkBox_Settings_Save_Key_and_Secret.Text = "保存 Key/Secret 到配置文件中";
 			this.checkBox_Settings_Save_Key_and_Secret.UseVisualStyleBackColor = true;
 			this.checkBox_Settings_Save_Key_and_Secret.CheckedChanged += new System.EventHandler(this.checkBox_Settings_Save_Key_and_Secret_CheckedChanged);
 			// 
-			// numericUpDown_Settings_Interval
+			// numericUpDown_Settings_AutoUpdate_Interval
 			// 
-			this.numericUpDown_Settings_Interval.Location = new System.Drawing.Point(119, 73);
-			this.numericUpDown_Settings_Interval.Maximum = new decimal(new int[] {
+			this.numericUpDown_Settings_AutoUpdate_Interval.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.numericUpDown_Settings_AutoUpdate_Interval.Location = new System.Drawing.Point(186, 575);
+			this.numericUpDown_Settings_AutoUpdate_Interval.Maximum = new decimal(new int[] {
             1000000,
             0,
             0,
             0});
-			this.numericUpDown_Settings_Interval.Name = "numericUpDown_Settings_Interval";
-			this.numericUpDown_Settings_Interval.Size = new System.Drawing.Size(66, 21);
-			this.numericUpDown_Settings_Interval.TabIndex = 8;
-			this.numericUpDown_Settings_Interval.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.numericUpDown_Settings_Interval.Value = new decimal(new int[] {
+			this.numericUpDown_Settings_AutoUpdate_Interval.Name = "numericUpDown_Settings_AutoUpdate_Interval";
+			this.numericUpDown_Settings_AutoUpdate_Interval.Size = new System.Drawing.Size(66, 21);
+			this.numericUpDown_Settings_AutoUpdate_Interval.TabIndex = 61;
+			this.numericUpDown_Settings_AutoUpdate_Interval.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			this.numericUpDown_Settings_AutoUpdate_Interval.Value = new decimal(new int[] {
             600,
             0,
             0,
             0});
-			this.numericUpDown_Settings_Interval.ValueChanged += new System.EventHandler(this.numericUpDown_Settings_Interval_ValueChanged);
+			this.numericUpDown_Settings_AutoUpdate_Interval.ValueChanged += new System.EventHandler(this.numericUpDown_Settings_AutoUpdate_Interval_ValueChanged);
 			// 
 			// label_Settings_Secret
 			// 
 			this.label_Settings_Secret.AutoSize = true;
-			this.label_Settings_Secret.Location = new System.Drawing.Point(60, 131);
+			this.label_Settings_Secret.Location = new System.Drawing.Point(6, 50);
 			this.label_Settings_Secret.Name = "label_Settings_Secret";
 			this.label_Settings_Secret.Size = new System.Drawing.Size(53, 12);
-			this.label_Settings_Secret.TabIndex = 13;
+			this.label_Settings_Secret.TabIndex = 44;
 			this.label_Settings_Secret.Text = "Secret：";
 			// 
 			// label_Settings_Key
 			// 
 			this.label_Settings_Key.AutoSize = true;
-			this.label_Settings_Key.Location = new System.Drawing.Point(78, 104);
+			this.label_Settings_Key.Location = new System.Drawing.Point(6, 23);
 			this.label_Settings_Key.Name = "label_Settings_Key";
 			this.label_Settings_Key.Size = new System.Drawing.Size(35, 12);
-			this.label_Settings_Key.TabIndex = 10;
+			this.label_Settings_Key.TabIndex = 41;
 			this.label_Settings_Key.Text = "Key：";
-			// 
-			// label_Settings_Interval
-			// 
-			this.label_Settings_Interval.AutoSize = true;
-			this.label_Settings_Interval.Location = new System.Drawing.Point(12, 76);
-			this.label_Settings_Interval.Name = "label_Settings_Interval";
-			this.label_Settings_Interval.Size = new System.Drawing.Size(101, 12);
-			this.label_Settings_Interval.TabIndex = 7;
-			this.label_Settings_Interval.Text = "时间间隔（秒）：";
 			// 
 			// textBox_Settings_Last_IP
 			// 
-			this.textBox_Settings_Last_IP.Location = new System.Drawing.Point(119, 46);
+			this.textBox_Settings_Last_IP.Location = new System.Drawing.Point(119, 68);
 			this.textBox_Settings_Last_IP.Name = "textBox_Settings_Last_IP";
 			this.textBox_Settings_Last_IP.ReadOnly = true;
-			this.textBox_Settings_Last_IP.Size = new System.Drawing.Size(226, 21);
-			this.textBox_Settings_Last_IP.TabIndex = 5;
+			this.textBox_Settings_Last_IP.Size = new System.Drawing.Size(316, 21);
+			this.textBox_Settings_Last_IP.TabIndex = 37;
+			this.textBox_Settings_Last_IP.TextChanged += new System.EventHandler(this.textBox_Settings_Last_IP_TextChanged);
 			// 
 			// textBox_Settings_Secret
 			// 
-			this.textBox_Settings_Secret.Location = new System.Drawing.Point(119, 127);
+			this.textBox_Settings_Secret.Location = new System.Drawing.Point(65, 47);
 			this.textBox_Settings_Secret.Name = "textBox_Settings_Secret";
 			this.textBox_Settings_Secret.PasswordChar = '*';
-			this.textBox_Settings_Secret.Size = new System.Drawing.Size(226, 21);
-			this.textBox_Settings_Secret.TabIndex = 14;
+			this.textBox_Settings_Secret.Size = new System.Drawing.Size(316, 21);
+			this.textBox_Settings_Secret.TabIndex = 45;
 			this.textBox_Settings_Secret.TextChanged += new System.EventHandler(this.textBox_Settings_Secret_TextChanged);
 			// 
 			// textBox_Settings_Key
 			// 
-			this.textBox_Settings_Key.Location = new System.Drawing.Point(119, 100);
+			this.textBox_Settings_Key.Location = new System.Drawing.Point(65, 20);
 			this.textBox_Settings_Key.Name = "textBox_Settings_Key";
 			this.textBox_Settings_Key.PasswordChar = '*';
-			this.textBox_Settings_Key.Size = new System.Drawing.Size(226, 21);
-			this.textBox_Settings_Key.TabIndex = 11;
+			this.textBox_Settings_Key.Size = new System.Drawing.Size(316, 21);
+			this.textBox_Settings_Key.TabIndex = 42;
 			this.textBox_Settings_Key.TextChanged += new System.EventHandler(this.textBox_Settings_Key_TextChanged);
 			// 
 			// label_Settings_Last_IP
 			// 
 			this.label_Settings_Last_IP.AutoSize = true;
-			this.label_Settings_Last_IP.Location = new System.Drawing.Point(24, 50);
+			this.label_Settings_Last_IP.Location = new System.Drawing.Point(6, 71);
 			this.label_Settings_Last_IP.Name = "label_Settings_Last_IP";
 			this.label_Settings_Last_IP.Size = new System.Drawing.Size(89, 12);
-			this.label_Settings_Last_IP.TabIndex = 4;
+			this.label_Settings_Last_IP.TabIndex = 36;
 			this.label_Settings_Last_IP.Text = "上次获取的IP：";
 			// 
 			// label_Settings_Get_IP_URL
 			// 
 			this.label_Settings_Get_IP_URL.AutoSize = true;
-			this.label_Settings_Get_IP_URL.Location = new System.Drawing.Point(6, 23);
+			this.label_Settings_Get_IP_URL.Location = new System.Drawing.Point(6, 45);
 			this.label_Settings_Get_IP_URL.Name = "label_Settings_Get_IP_URL";
 			this.label_Settings_Get_IP_URL.Size = new System.Drawing.Size(107, 12);
-			this.label_Settings_Get_IP_URL.TabIndex = 2;
+			this.label_Settings_Get_IP_URL.TabIndex = 34;
 			this.label_Settings_Get_IP_URL.Text = "检查公网IP的URL：";
 			// 
 			// listView_Logs
@@ -405,8 +384,8 @@
 			this.listView_Logs.HideSelection = false;
 			this.listView_Logs.Location = new System.Drawing.Point(459, 12);
 			this.listView_Logs.Name = "listView_Logs";
-			this.listView_Logs.Size = new System.Drawing.Size(513, 335);
-			this.listView_Logs.TabIndex = 21;
+			this.listView_Logs.Size = new System.Drawing.Size(513, 583);
+			this.listView_Logs.TabIndex = 66;
 			this.listView_Logs.UseCompatibleStateImageBehavior = false;
 			this.listView_Logs.View = System.Windows.Forms.View.Details;
 			this.listView_Logs.SelectedIndexChanged += new System.EventHandler(this.listView_Logs_SelectedIndexChanged);
@@ -498,27 +477,27 @@
 			// timer_Save_Config
 			// 
 			this.timer_Save_Config.Enabled = true;
-			this.timer_Save_Config.Interval = 200;
+			this.timer_Save_Config.Interval = 500;
 			this.timer_Save_Config.Tick += new System.EventHandler(this.timer_Save_Config_Tick);
 			// 
 			// label_Tip
 			// 
 			this.label_Tip.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label_Tip.AutoSize = true;
-			this.label_Tip.Location = new System.Drawing.Point(12, 350);
+			this.label_Tip.Location = new System.Drawing.Point(12, 604);
 			this.label_Tip.Name = "label_Tip";
 			this.label_Tip.Size = new System.Drawing.Size(317, 12);
-			this.label_Tip.TabIndex = 22;
+			this.label_Tip.TabIndex = 64;
 			this.label_Tip.Text = "必须先去                                申请 API Key";
 			// 
 			// linkLabel_godaddy
 			// 
 			this.linkLabel_godaddy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.linkLabel_godaddy.AutoSize = true;
-			this.linkLabel_godaddy.Location = new System.Drawing.Point(65, 350);
+			this.linkLabel_godaddy.Location = new System.Drawing.Point(65, 604);
 			this.linkLabel_godaddy.Name = "linkLabel_godaddy";
 			this.linkLabel_godaddy.Size = new System.Drawing.Size(185, 12);
-			this.linkLabel_godaddy.TabIndex = 23;
+			this.linkLabel_godaddy.TabIndex = 65;
 			this.linkLabel_godaddy.TabStop = true;
 			this.linkLabel_godaddy.Text = "https://developer.godaddy.com/";
 			this.linkLabel_godaddy.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_godaddy_LinkClicked);
@@ -527,10 +506,10 @@
 			// 
 			this.linkLabel_Github.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.linkLabel_Github.AutoSize = true;
-			this.linkLabel_Github.Location = new System.Drawing.Point(931, 350);
+			this.linkLabel_Github.Location = new System.Drawing.Point(931, 604);
 			this.linkLabel_Github.Name = "linkLabel_Github";
 			this.linkLabel_Github.Size = new System.Drawing.Size(41, 12);
-			this.linkLabel_Github.TabIndex = 24;
+			this.linkLabel_Github.TabIndex = 68;
 			this.linkLabel_Github.TabStop = true;
 			this.linkLabel_Github.Text = "github";
 			this.linkLabel_Github.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_Github_LinkClicked);
@@ -545,38 +524,277 @@
 			// 
 			this.linkLabel_WebSite.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.linkLabel_WebSite.AutoSize = true;
-			this.linkLabel_WebSite.Location = new System.Drawing.Point(896, 350);
+			this.linkLabel_WebSite.Location = new System.Drawing.Point(896, 604);
 			this.linkLabel_WebSite.Name = "linkLabel_WebSite";
 			this.linkLabel_WebSite.Size = new System.Drawing.Size(29, 12);
-			this.linkLabel_WebSite.TabIndex = 25;
+			this.linkLabel_WebSite.TabIndex = 67;
 			this.linkLabel_WebSite.TabStop = true;
 			this.linkLabel_WebSite.Text = "官网";
 			this.linkLabel_WebSite.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_WebSite_LinkClicked);
+			// 
+			// groupBox_Server
+			// 
+			this.groupBox_Server.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.groupBox_Server.Controls.Add(this.checkBox_Server_Ping);
+			this.groupBox_Server.Controls.Add(this.checkBox_Server_Show_Pwd);
+			this.groupBox_Server.Controls.Add(this.label_Server_User);
+			this.groupBox_Server.Controls.Add(this.label_Server_Ping);
+			this.groupBox_Server.Controls.Add(this.label_Server_Pwd);
+			this.groupBox_Server.Controls.Add(this.label_Server_Addr);
+			this.groupBox_Server.Controls.Add(this.textBox_Server_User);
+			this.groupBox_Server.Controls.Add(this.textBox_Server_Ping);
+			this.groupBox_Server.Controls.Add(this.textBox_Server_Pwd);
+			this.groupBox_Server.Controls.Add(this.textBox_Server_Addr);
+			this.groupBox_Server.Location = new System.Drawing.Point(12, 60);
+			this.groupBox_Server.Name = "groupBox_Server";
+			this.groupBox_Server.Size = new System.Drawing.Size(441, 128);
+			this.groupBox_Server.TabIndex = 10;
+			this.groupBox_Server.TabStop = false;
+			this.groupBox_Server.Text = "Server 设置";
+			// 
+			// checkBox_Server_Show_Pwd
+			// 
+			this.checkBox_Server_Show_Pwd.AutoSize = true;
+			this.checkBox_Server_Show_Pwd.Location = new System.Drawing.Point(387, 76);
+			this.checkBox_Server_Show_Pwd.Name = "checkBox_Server_Show_Pwd";
+			this.checkBox_Server_Show_Pwd.Size = new System.Drawing.Size(48, 16);
+			this.checkBox_Server_Show_Pwd.TabIndex = 17;
+			this.checkBox_Server_Show_Pwd.Text = "显示";
+			this.checkBox_Server_Show_Pwd.UseVisualStyleBackColor = true;
+			this.checkBox_Server_Show_Pwd.CheckedChanged += new System.EventHandler(this.checkBox_Server_Show_Pwd_CheckedChanged);
+			// 
+			// label_Server_User
+			// 
+			this.label_Server_User.AutoSize = true;
+			this.label_Server_User.Location = new System.Drawing.Point(6, 50);
+			this.label_Server_User.Name = "label_Server_User";
+			this.label_Server_User.Size = new System.Drawing.Size(149, 12);
+			this.label_Server_User.TabIndex = 13;
+			this.label_Server_User.Text = "登录到 Server 的用户名：";
+			// 
+			// label_Server_Ping
+			// 
+			this.label_Server_Ping.AutoSize = true;
+			this.label_Server_Ping.Location = new System.Drawing.Point(6, 104);
+			this.label_Server_Ping.Name = "label_Server_Ping";
+			this.label_Server_Ping.Size = new System.Drawing.Size(89, 12);
+			this.label_Server_Ping.TabIndex = 18;
+			this.label_Server_Ping.Text = "Ping 值 (ms)：";
+			// 
+			// label_Server_Pwd
+			// 
+			this.label_Server_Pwd.AutoSize = true;
+			this.label_Server_Pwd.Location = new System.Drawing.Point(6, 77);
+			this.label_Server_Pwd.Name = "label_Server_Pwd";
+			this.label_Server_Pwd.Size = new System.Drawing.Size(137, 12);
+			this.label_Server_Pwd.TabIndex = 15;
+			this.label_Server_Pwd.Text = "登录到 Server 的密码：";
+			// 
+			// label_Server_Addr
+			// 
+			this.label_Server_Addr.AutoSize = true;
+			this.label_Server_Addr.Location = new System.Drawing.Point(6, 23);
+			this.label_Server_Addr.Name = "label_Server_Addr";
+			this.label_Server_Addr.Size = new System.Drawing.Size(113, 12);
+			this.label_Server_Addr.TabIndex = 11;
+			this.label_Server_Addr.Text = "Server 地址/端口：";
+			// 
+			// textBox_Server_User
+			// 
+			this.textBox_Server_User.Location = new System.Drawing.Point(161, 47);
+			this.textBox_Server_User.Name = "textBox_Server_User";
+			this.textBox_Server_User.ReadOnly = true;
+			this.textBox_Server_User.Size = new System.Drawing.Size(220, 21);
+			this.textBox_Server_User.TabIndex = 14;
+			this.textBox_Server_User.TextChanged += new System.EventHandler(this.textBox_Server_User_TextChanged);
+			// 
+			// textBox_Server_Ping
+			// 
+			this.textBox_Server_Ping.Location = new System.Drawing.Point(161, 101);
+			this.textBox_Server_Ping.Name = "textBox_Server_Ping";
+			this.textBox_Server_Ping.ReadOnly = true;
+			this.textBox_Server_Ping.Size = new System.Drawing.Size(89, 21);
+			this.textBox_Server_Ping.TabIndex = 19;
+			// 
+			// textBox_Server_Pwd
+			// 
+			this.textBox_Server_Pwd.Location = new System.Drawing.Point(161, 74);
+			this.textBox_Server_Pwd.Name = "textBox_Server_Pwd";
+			this.textBox_Server_Pwd.PasswordChar = '*';
+			this.textBox_Server_Pwd.ReadOnly = true;
+			this.textBox_Server_Pwd.Size = new System.Drawing.Size(220, 21);
+			this.textBox_Server_Pwd.TabIndex = 16;
+			this.textBox_Server_Pwd.TextChanged += new System.EventHandler(this.textBox_Server_Pwd_TextChanged);
+			// 
+			// textBox_Server_Addr
+			// 
+			this.textBox_Server_Addr.Location = new System.Drawing.Point(161, 20);
+			this.textBox_Server_Addr.Name = "textBox_Server_Addr";
+			this.textBox_Server_Addr.ReadOnly = true;
+			this.textBox_Server_Addr.Size = new System.Drawing.Size(220, 21);
+			this.textBox_Server_Addr.TabIndex = 12;
+			this.textBox_Server_Addr.Text = "127.0.0.1:3333";
+			this.textBox_Server_Addr.TextChanged += new System.EventHandler(this.textBox_Server_Addr_TextChanged);
+			// 
+			// timer_Ping
+			// 
+			this.timer_Ping.Enabled = true;
+			this.timer_Ping.Interval = 1000;
+			this.timer_Ping.Tick += new System.EventHandler(this.timer_Ping_Tick);
+			// 
+			// groupBox_Type
+			// 
+			this.groupBox_Type.Controls.Add(this.radioButton_Server);
+			this.groupBox_Type.Controls.Add(this.radioButton_Local);
+			this.groupBox_Type.Location = new System.Drawing.Point(12, 12);
+			this.groupBox_Type.Name = "groupBox_Type";
+			this.groupBox_Type.Size = new System.Drawing.Size(441, 42);
+			this.groupBox_Type.TabIndex = 0;
+			this.groupBox_Type.TabStop = false;
+			this.groupBox_Type.Text = "更新方式";
+			// 
+			// radioButton_Server
+			// 
+			this.radioButton_Server.AutoSize = true;
+			this.radioButton_Server.Location = new System.Drawing.Point(131, 20);
+			this.radioButton_Server.Name = "radioButton_Server";
+			this.radioButton_Server.Size = new System.Drawing.Size(173, 16);
+			this.radioButton_Server.TabIndex = 2;
+			this.radioButton_Server.Text = "远程更新（连接到 Server）";
+			this.radioButton_Server.UseVisualStyleBackColor = true;
+			this.radioButton_Server.CheckedChanged += new System.EventHandler(this.radioButton_Server_CheckedChanged);
+			// 
+			// radioButton_Local
+			// 
+			this.radioButton_Local.AutoSize = true;
+			this.radioButton_Local.Checked = true;
+			this.radioButton_Local.Location = new System.Drawing.Point(6, 20);
+			this.radioButton_Local.Name = "radioButton_Local";
+			this.radioButton_Local.Size = new System.Drawing.Size(119, 16);
+			this.radioButton_Local.TabIndex = 1;
+			this.radioButton_Local.TabStop = true;
+			this.radioButton_Local.Text = "本地更新（直连）";
+			this.radioButton_Local.UseVisualStyleBackColor = true;
+			this.radioButton_Local.CheckedChanged += new System.EventHandler(this.radioButton_Local_CheckedChanged);
+			// 
+			// groupBox_IP
+			// 
+			this.groupBox_IP.Controls.Add(this.radioButton_Specific_IP);
+			this.groupBox_IP.Controls.Add(this.radioButton_Server_Accept_IP);
+			this.groupBox_IP.Controls.Add(this.radioButton_Get_IP_From_URL);
+			this.groupBox_IP.Controls.Add(this.label_Settings_Get_IP_URL);
+			this.groupBox_IP.Controls.Add(this.comboBox_Settings_Get_IP_URL);
+			this.groupBox_IP.Controls.Add(this.textBox_Settings_Last_IP);
+			this.groupBox_IP.Controls.Add(this.label_Settings_Last_IP);
+			this.groupBox_IP.Location = new System.Drawing.Point(12, 194);
+			this.groupBox_IP.Name = "groupBox_IP";
+			this.groupBox_IP.Size = new System.Drawing.Size(441, 95);
+			this.groupBox_IP.TabIndex = 30;
+			this.groupBox_IP.TabStop = false;
+			this.groupBox_IP.Text = "IP 设置";
+			// 
+			// radioButton_Specific_IP
+			// 
+			this.radioButton_Specific_IP.AutoSize = true;
+			this.radioButton_Specific_IP.Location = new System.Drawing.Point(161, 20);
+			this.radioButton_Specific_IP.Name = "radioButton_Specific_IP";
+			this.radioButton_Specific_IP.Size = new System.Drawing.Size(89, 16);
+			this.radioButton_Specific_IP.TabIndex = 32;
+			this.radioButton_Specific_IP.Text = "手动设置 IP";
+			this.radioButton_Specific_IP.UseVisualStyleBackColor = true;
+			this.radioButton_Specific_IP.CheckedChanged += new System.EventHandler(this.radioButton_Specific_IP_CheckedChanged);
+			// 
+			// radioButton_Server_Accept_IP
+			// 
+			this.radioButton_Server_Accept_IP.AutoSize = true;
+			this.radioButton_Server_Accept_IP.Enabled = false;
+			this.radioButton_Server_Accept_IP.Location = new System.Drawing.Point(256, 20);
+			this.radioButton_Server_Accept_IP.Name = "radioButton_Server_Accept_IP";
+			this.radioButton_Server_Accept_IP.Size = new System.Drawing.Size(179, 16);
+			this.radioButton_Server_Accept_IP.TabIndex = 33;
+			this.radioButton_Server_Accept_IP.Text = "Server 接受连接的客户端 IP";
+			this.radioButton_Server_Accept_IP.UseVisualStyleBackColor = true;
+			this.radioButton_Server_Accept_IP.CheckedChanged += new System.EventHandler(this.radioButton_Server_Accept_IP_CheckedChanged);
+			// 
+			// radioButton_Get_IP_From_URL
+			// 
+			this.radioButton_Get_IP_From_URL.AutoSize = true;
+			this.radioButton_Get_IP_From_URL.Checked = true;
+			this.radioButton_Get_IP_From_URL.Location = new System.Drawing.Point(6, 20);
+			this.radioButton_Get_IP_From_URL.Name = "radioButton_Get_IP_From_URL";
+			this.radioButton_Get_IP_From_URL.Size = new System.Drawing.Size(149, 16);
+			this.radioButton_Get_IP_From_URL.TabIndex = 31;
+			this.radioButton_Get_IP_From_URL.TabStop = true;
+			this.radioButton_Get_IP_From_URL.Text = "通过互联网获取公网 IP";
+			this.radioButton_Get_IP_From_URL.UseVisualStyleBackColor = true;
+			this.radioButton_Get_IP_From_URL.CheckedChanged += new System.EventHandler(this.radioButton_Get_IP_From_URL_CheckedChanged);
+			// 
+			// groupBox_Security
+			// 
+			this.groupBox_Security.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.groupBox_Security.Controls.Add(this.textBox_Settings_Key);
+			this.groupBox_Security.Controls.Add(this.textBox_Settings_Secret);
+			this.groupBox_Security.Controls.Add(this.checkBox_Settings_Show_Secret);
+			this.groupBox_Security.Controls.Add(this.checkBox_Settings_Save_Key_and_Secret);
+			this.groupBox_Security.Controls.Add(this.label_Settings_Key);
+			this.groupBox_Security.Controls.Add(this.label_Settings_Secret);
+			this.groupBox_Security.Controls.Add(this.checkBox_Settings_Show_Key);
+			this.groupBox_Security.Location = new System.Drawing.Point(12, 295);
+			this.groupBox_Security.Name = "groupBox_Security";
+			this.groupBox_Security.Size = new System.Drawing.Size(441, 96);
+			this.groupBox_Security.TabIndex = 40;
+			this.groupBox_Security.TabStop = false;
+			this.groupBox_Security.Text = "安全设置";
+			// 
+			// checkBox_Server_Ping
+			// 
+			this.checkBox_Server_Ping.AutoSize = true;
+			this.checkBox_Server_Ping.Checked = true;
+			this.checkBox_Server_Ping.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBox_Server_Ping.Location = new System.Drawing.Point(256, 103);
+			this.checkBox_Server_Ping.Name = "checkBox_Server_Ping";
+			this.checkBox_Server_Ping.Size = new System.Drawing.Size(120, 16);
+			this.checkBox_Server_Ping.TabIndex = 20;
+			this.checkBox_Server_Ping.Text = "自动 ping 服务器";
+			this.checkBox_Server_Ping.UseVisualStyleBackColor = true;
 			// 
 			// frm_MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(984, 371);
+			this.ClientSize = new System.Drawing.Size(984, 625);
+			this.Controls.Add(this.checkBox_Settings_Update_Force);
+			this.Controls.Add(this.groupBox_Security);
+			this.Controls.Add(this.checkBox_Settings_AutoUpdate);
+			this.Controls.Add(this.button_Settings_Update);
+			this.Controls.Add(this.groupBox_IP);
+			this.Controls.Add(this.numericUpDown_Settings_AutoUpdate_Interval);
+			this.Controls.Add(this.groupBox_Type);
+			this.Controls.Add(this.groupBox_Server);
 			this.Controls.Add(this.linkLabel_WebSite);
 			this.Controls.Add(this.linkLabel_Github);
 			this.Controls.Add(this.linkLabel_godaddy);
 			this.Controls.Add(this.label_Tip);
 			this.Controls.Add(this.listView_Logs);
-			this.Controls.Add(this.groupBox_Settings);
 			this.Controls.Add(this.groupBox_Records);
 			this.Name = "frm_MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "ddns - godaddy v0.03";
+			this.Text = "ddns - godaddy v0.04";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.frm_MainForm_Load);
 			this.groupBox_Records.ResumeLayout(false);
 			this.contextMenuStrip_Records.ResumeLayout(false);
-			this.groupBox_Settings.ResumeLayout(false);
-			this.groupBox_Settings.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Settings_Interval)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Settings_AutoUpdate_Interval)).EndInit();
 			this.contextMenuStrip_Logs.ResumeLayout(false);
 			this.contextMenuStrip_NotifyIcon.ResumeLayout(false);
+			this.groupBox_Server.ResumeLayout(false);
+			this.groupBox_Server.PerformLayout();
+			this.groupBox_Type.ResumeLayout(false);
+			this.groupBox_Type.PerformLayout();
+			this.groupBox_IP.ResumeLayout(false);
+			this.groupBox_IP.PerformLayout();
+			this.groupBox_Security.ResumeLayout(false);
+			this.groupBox_Security.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -590,10 +808,8 @@
 		private System.Windows.Forms.ColumnHeader columnHeader_Records_Name;
 		private System.Windows.Forms.ColumnHeader columnHeader_Records_Domain;
 		private System.Windows.Forms.ColumnHeader columnHeader_Records_TTL;
-		private System.Windows.Forms.GroupBox groupBox_Settings;
 		private System.Windows.Forms.Label label_Settings_Get_IP_URL;
-		private System.Windows.Forms.NumericUpDown numericUpDown_Settings_Interval;
-		private System.Windows.Forms.Label label_Settings_Interval;
+		private System.Windows.Forms.NumericUpDown numericUpDown_Settings_AutoUpdate_Interval;
 		private System.Windows.Forms.TextBox textBox_Settings_Last_IP;
 		private System.Windows.Forms.Label label_Settings_Last_IP;
 		private System.Windows.Forms.Label label_Settings_Key;
@@ -628,9 +844,28 @@
 		private System.Windows.Forms.LinkLabel linkLabel_Github;
 		private System.Windows.Forms.Timer timer_Update;
 		private System.Windows.Forms.CheckBox checkBox_Settings_AutoUpdate;
-		private System.Windows.Forms.CheckBox checkBox_Settings_Specific_IP;
 		private System.Windows.Forms.CheckBox checkBox_Settings_Update_Force;
 		private System.Windows.Forms.LinkLabel linkLabel_WebSite;
+		private System.Windows.Forms.GroupBox groupBox_Server;
+		private System.Windows.Forms.TextBox textBox_Server_Addr;
+		private System.Windows.Forms.Label label_Server_Addr;
+		private System.Windows.Forms.CheckBox checkBox_Server_Show_Pwd;
+		private System.Windows.Forms.Label label_Server_Pwd;
+		private System.Windows.Forms.TextBox textBox_Server_Pwd;
+		private System.Windows.Forms.Label label_Server_User;
+		private System.Windows.Forms.TextBox textBox_Server_User;
+		private System.Windows.Forms.Timer timer_Ping;
+		private System.Windows.Forms.Label label_Server_Ping;
+		private System.Windows.Forms.TextBox textBox_Server_Ping;
+		private System.Windows.Forms.GroupBox groupBox_Type;
+		private System.Windows.Forms.RadioButton radioButton_Server;
+		private System.Windows.Forms.RadioButton radioButton_Local;
+		private System.Windows.Forms.GroupBox groupBox_IP;
+		private System.Windows.Forms.RadioButton radioButton_Get_IP_From_URL;
+		private System.Windows.Forms.RadioButton radioButton_Specific_IP;
+		private System.Windows.Forms.RadioButton radioButton_Server_Accept_IP;
+		private System.Windows.Forms.GroupBox groupBox_Security;
+		private System.Windows.Forms.CheckBox checkBox_Server_Ping;
 	}
 }
 

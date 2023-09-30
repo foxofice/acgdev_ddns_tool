@@ -80,6 +80,7 @@
 			// 
 			// button_OK
 			// 
+			this.button_OK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.button_OK.Location = new System.Drawing.Point(110, 93);
 			this.button_OK.Name = "button_OK";
 			this.button_OK.Size = new System.Drawing.Size(150, 31);

@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace ddns
 {
@@ -25,22 +26,6 @@ namespace ddns
 
 			m_s_Mainform = this;
 		}
-
-		enum e_Config_Header
-		{
-			get_IP_URL,			// 检查公网 IP 的 URL
-			Specific_IP,		// 指定 IP 地址
-			interval,			// 更新的时间间隔（秒）
-			auto_update,		// 是否自动更新
-			save_Key_Secret,	// 保存 Key/Secret 到配置文件中
-			Key,
-			Secret,
-			Show_Key,
-			Show_Secret,
-			Update_Force,		// 强制更新
-
-			domain,				// 域名
-		};
 
 		enum e_Column_DomainList
 		{
@@ -59,74 +44,30 @@ namespace ddns
 
 		internal static frm_MainForm	m_s_Mainform			= null;
 
-		const string					m_k_CONFIG_FILE			= "config.txt";	// 配置文件的文件名
-		bool							m_can_save_concifg		= false;		// 允许保存配置文件
-		bool							m_dirty_config			= false;		// 设置是否已改变
 		bool							m_exiting				= false;		// 是否正在退出
 
-		// 下次可以获取 IP 的时间
-		DateTime						m_next_get_ip_time		= DateTime.Now;
-
-		bool							m_is_updating			= false;	// 是否正在更新 IP
-		int								m_updating_count		= 0;		// 正在更新的数量
-		int								m_failed_count			= 0;		// 更新失败的数量
-		int								m_succeed_count			= 0;		// 更新成功的数量
-		string							m_record_type			= "A";		// 当前的 IP 类型
+		DateTime						m_can_auto_update_time	= DateTime.Now;	// 可以自动更新的时间
+		bool							m_is_updating			= false;		// 是否正在更新 IP
 
 		/*==============================================================
-		 * 检查是否包含指定域名
+		 * 执行委托
 		 *==============================================================*/
-		internal bool contains_domain(string name, string domain)
+		public static void invoke(Action func)
 		{
-			foreach(ListViewItem LVI in listView_Records.Items)
-			{
-				if(	LVI.SubItems[(int)e_Column_DomainList.Name].Text.ToLower() == name.ToLower().Trim() &&
-					LVI.SubItems[(int)e_Column_DomainList.Domain].Text.ToLower() == domain.ToLower().Trim() )
-					return true;
-			}	// for
-
-			return false;
+			if(m_s_Mainform.InvokeRequired)
+				m_s_Mainform.Invoke(func);
+			else
+				func();
 		}
+		//--------------------------------------------------
+		//public static TResult invoke<TResult>(Func<TResult> func)
+		//{
+		//	if(m_s_Mainform.InvokeRequired)
+		//		return (TResult)m_s_Mainform.Invoke(func);
+		//	else
+		//		return func();
+		//}
 
-		/*==============================================================
-		 * 添加日志记录
-		 *==============================================================*/
-		void add_log(string txt, Color c = default)
-		{
-			ListViewItem LVI = new ListViewItem();
-
-			while(LVI.SubItems.Count < listView_Logs.Columns.Count)
-				LVI.SubItems.Add("");
-
-			LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("G").Replace("/", ".");
-			LVI.SubItems[(int)e_Column_Log.Log].Text	= txt;
-
-			LVI.ForeColor = c;
-
-			listView_Logs.Items.Add(LVI);
-
-			LVI.EnsureVisible();
-		}
-
-		/*==============================================================
-		 * 添加新的域名 LVI
-		 *==============================================================*/
-		void add_domain_LVI(string name, string domain, int ttl)
-		{
-			ListViewItem LVI = new ListViewItem();
-
-			while(LVI.SubItems.Count < listView_Records.Columns.Count)
-				LVI.SubItems.Add("");
-
-			LVI.SubItems[(int)e_Column_DomainList.Name].Text	= name;
-			LVI.SubItems[(int)e_Column_DomainList.Domain].Text	= domain;
-			LVI.SubItems[(int)e_Column_DomainList.TTL].Text		= (ttl > 0) ? ttl.ToString() : "";
-
-			listView_Records.Items.Add(LVI);
-
-			LVI.UseItemStyleForSubItems = false;
-			LVI.EnsureVisible();
-		}
 
 		/*==============================================================
 		 * 激活窗口
@@ -141,813 +82,62 @@ namespace ddns
 
 
 		/*==============================================================
-		 * 设置下次更新的时间
-		 *==============================================================*/
-		void set_next_update_time()
-		{
-			m_next_get_ip_time	= DateTime.Now.AddSeconds((int)numericUpDown_Settings_Interval.Value);
-			add_log($"下次更新时间：{m_next_get_ip_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
-		}
-
-
-		/*==============================================================
 		 * 锁定控件
 		 *==============================================================*/
 		void lock_controls(bool enabled)
 		{
-			comboBox_Settings_Get_IP_URL.Enabled	= enabled;
-			textBox_Settings_Last_IP.ReadOnly		= !enabled || !checkBox_Settings_Specific_IP.Checked;
-			checkBox_Settings_Specific_IP.Enabled	= enabled;
-			numericUpDown_Settings_Interval.Enabled	= enabled;
-			checkBox_Settings_AutoUpdate.Enabled	= enabled;
-			textBox_Settings_Key.ReadOnly			= !enabled;
-			textBox_Settings_Secret.ReadOnly		= !enabled;
-
-			button_Settings_Update.Enabled			= enabled;
-			checkBox_Settings_Update_Force.Enabled	= enabled;
-
-			listView_Records.ContextMenuStrip		= enabled ? contextMenuStrip_Records : null;
-
-			m_is_updating							= !enabled;
-		}
-
-
-		/*==============================================================
-		 * 开始更新 A/AAAA 记录
-		 *==============================================================*/
-		void start_update_records()
-		{
-			if(DateTime.Now < m_next_get_ip_time)
-				return;
-
-			if(m_is_updating)
-				return;
-
-			lock_controls(false);
-			m_is_updating = true;
-
-			if(checkBox_Settings_Specific_IP.Checked)
+			invoke(() =>
 			{
-				string ip = textBox_Settings_Last_IP.Text.Trim();
-				update_records(ip);
-			}
-			else
-			{
-				if(comboBox_Settings_Get_IP_URL.Text.Length == 0)
-				{
-					add_log("「检查公网IP的URL」为空，无法获取", Color.Red);
+				radioButton_Local.Enabled							= enabled;
+				radioButton_Server.Enabled							= enabled;
 
-					set_next_update_time();
-					lock_controls(true);
-					return;
-				}
+				textBox_Server_Addr.ReadOnly						= !enabled || !radioButton_Server.Checked;
+				textBox_Server_User.ReadOnly						= !enabled || !radioButton_Server.Checked;
+				textBox_Server_Pwd.ReadOnly							= !enabled || !radioButton_Server.Checked;
 
-				add_log("正在获取当前公网 IP 地址……");
+				radioButton_Get_IP_From_URL.Enabled					= enabled;
+				radioButton_Specific_IP.Enabled						= enabled;
+				radioButton_Server_Accept_IP.Enabled				= enabled;
+				comboBox_Settings_Get_IP_URL.Enabled				= enabled && radioButton_Get_IP_From_URL.Checked;
+				textBox_Settings_Last_IP.ReadOnly					= !enabled || !radioButton_Specific_IP.Checked;
 
-				WebClient wc = new WebClient();
-				wc.DownloadStringCompleted += WC_DownloadStringCompleted;
+				textBox_Settings_Key.ReadOnly						= !enabled;
+				textBox_Settings_Secret.ReadOnly					= !enabled;
 
-				wc.DownloadStringAsync(new Uri(comboBox_Settings_Get_IP_URL.Text));
-			}
+				checkBox_Settings_AutoUpdate.Enabled				= enabled;
+				numericUpDown_Settings_AutoUpdate_Interval.Enabled	= enabled;
+				checkBox_Settings_Update_Force.Enabled				= enabled;
+				button_Settings_Update.Enabled						= enabled;
+
+				listView_Records.ContextMenuStrip					= enabled ? contextMenuStrip_Records : null;
+			});
 		}
-
-
-		/*==============================================================
-		 * 获取公网 IP 完成
-		 *==============================================================*/
-		private void WC_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-		{
-			if(e.Error != null)
-			{
-				add_log(e.Error.Message, Color.Red);
-
-				set_next_update_time();
-				lock_controls(true);
-				return;
-			}
-
-			string ip = e.Result.Replace("\n", "").Trim();
-			if(ip.Length == 0)
-			{
-				add_log("获取 IP 失败（可能是网站提供的数据有问题）", Color.Red);
-
-				set_next_update_time();
-				lock_controls(true);
-				return;
-			}
-
-			textBox_Settings_Last_IP.Text = ip;
-			add_log($"当前的公网 IP：{ip}");
-
-			update_records(ip);
-		}
-
-
-		/*==============================================================
-		 * 更新 IP 记录
-		 *==============================================================*/
-		void update_records(string ip)
-		{
-			IPAddress address;
-			if(!IPAddress.TryParse(ip, out address))
-			{
-				add_log($"无效的 IP：{ip}", Color.Red);
-
-				set_next_update_time();
-				lock_controls(true);
-				return;
-			}
-
-			if(	address.AddressFamily != AddressFamily.InterNetwork &&
-				address.AddressFamily != AddressFamily.InterNetworkV6 )
-			{
-				add_log($"无效的 IPv4 或 IPv6：{ip}", Color.Red);
-
-				set_next_update_time();
-				lock_controls(true);
-				return;
-			}
-
-			m_record_type			= (address.AddressFamily == AddressFamily.InterNetwork) ? "A" : "AAAA";
-			string		Key			= textBox_Settings_Key.Text;
-			string		Secret		= textBox_Settings_Secret.Text;
-
-			bool		force		= checkBox_Settings_Update_Force.Checked;
-
-			List<int>	idx_list	= new List<int>();
-
-			for(int i=0; i<listView_Records.Items.Count; ++i)
-			{
-				ListViewItem LVI = listView_Records.Items[i];
-
-				string name		= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
-				string domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
-				string ttl_str	= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
-
-				if(!force)
-				{
-					if(LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text == ip)
-					{
-						add_log($"{name}.{domain} 的「{m_record_type} 记录」已经是最新 IP，无需更新");
-						continue;
-					}
-				}
-
-				idx_list.Add(i);
-			}	// for
-
-			m_updating_count	= idx_list.Count;
-			m_failed_count		= 0;
-			m_succeed_count		= 0;
-
-			if(m_updating_count == 0)
-			{
-				set_next_update_time();
-				lock_controls(true);
-				return;
-			}
-
-			foreach(int i in idx_list)
-			{
-				Thread th = new Thread(TH_update_record);
-				th.Start(i);
-			}	// for
-		}
-
-
-		/*==============================================================
-		 * 更新 A/AAAA 记录的线程
-		 *==============================================================*/
-		async void TH_update_record(object param)
-		{
-			int idx = (int)param;
-
-			ListViewItem LVI	= null;
-
-			string		name	= "";
-			string		domain	= "";
-			string		ttl_str	= "";
-
-			string		ip		= "";
-			string		Key		= "";
-			string		Secret	= "";
-
-			this.Invoke(
-				new Action(() =>
-				{
-					LVI		= listView_Records.Items[idx];
-
-					name	= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
-					domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
-					ttl_str	= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
-
-					ip		= textBox_Settings_Last_IP.Text;
-					Key		= textBox_Settings_Key.Text;
-					Secret	= textBox_Settings_Secret.Text;
-				})
-			);
-
-			StringBuilder sb_json = new StringBuilder();
-
-			sb_json.Append("[\n");
-			sb_json.Append("	{\n");
-			sb_json.Append($"		\"name\":\"{name}\",\n");
-			sb_json.Append($"		\"type\":\"{m_record_type}\",\n");
-			sb_json.Append($"		\"data\":\"{ip}\"");
-
-			if(ttl_str.Length > 0)
-			{
-				sb_json.Append(",\n");
-				sb_json.Append($"	\"ttl\":{ttl_str}\n");
-			}
-
-			sb_json.Append("	}\n");
-			sb_json.Append("]");
-
-			string			url	= $"https://api.godaddy.com/v1/domains/{domain}/records/{m_record_type}/{name}";
-			StringContent	sc	= new StringContent(sb_json.ToString(), Encoding.UTF8, "application/json");
-
-			this.Invoke(new Action(() => { add_log($"正在更新 {name}.{domain} 的「{m_record_type} 记录」……"); }));
-
-			HttpClient client = new HttpClient();
-
-			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-			client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"sso-key {Key}:{Secret}");
-
-			try
-			{
-				HttpResponseMessage response = await client.PutAsync(url, sc);
-
-				if(!response.IsSuccessStatusCode)
-				{
-					Interlocked.Increment(ref m_failed_count);
-
-					this.Invoke(
-						new Action(() =>
-						{
-							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
-							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
-
-							add_log($"更新 {name}.{domain} 的「{m_record_type} 记录」失败（StatusCode = {response.StatusCode}，ReasonPhrase = {response.ReasonPhrase}）",
-									Color.Red);
-						})
-					);
-				}
-				else
-				{
-					Interlocked.Increment(ref m_succeed_count);
-
-					this.Invoke(
-						new Action(() =>
-						{
-							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "成功";
-							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Green;
-							LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text				= ip;
-
-							add_log($"更新 {name}.{domain} 的「{m_record_type} 记录」成功", Color.Green);
-						})
-					);
-				}
-			}
-			catch(Exception ex)
-			{
-				this.Invoke(
-					new Action(() =>
-					{
-						LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
-						LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
-
-						add_log(ex.Message, Color.Red);
-					})
-				);
-			}
-
-			if(Interlocked.Decrement(ref m_updating_count) == 0)
-			{
-				this.Invoke(
-					new Action(() =>
-					{
-						add_log($"成功：{m_succeed_count} 条记录，失败：{m_failed_count} 条记录",
-								(m_failed_count == 0) ? Color.DarkOrange : Color.Red);
-
-						set_next_update_time();
-						lock_controls(true);
-					})
-				);
-			}
-		}
-
-
-		#region 读写配置文件
-		/*==============================================================
-		 * 读写配置文件
-		 *==============================================================*/
-		void load_config()
-		{
-			if(!File.Exists(m_k_CONFIG_FILE))
-				return;
-
-			string[] lines = File.ReadAllLines(m_k_CONFIG_FILE, Encoding.UTF8);
-
-			foreach(string line in lines)
-			{
-				if(line.Length < 2)
-					continue;
-
-				if(line[0] == '/' && line[1] == '/')
-					continue;
-
-				int idx = line.IndexOf(":");
-				if(idx < 0)
-					continue;
-
-				string w1 = line.Substring(0, idx).Trim();
-				string w2 = line.Substring(idx + 1).Trim();
-
-				if(w1.ToLower() == e_Config_Header.get_IP_URL.ToString().ToLower())
-				{
-					comboBox_Settings_Get_IP_URL.Text = w2.Trim();
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Specific_IP.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_Specific_IP.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.interval.ToString().ToLower())
-				{
-					int interval;
-
-					if(int.TryParse(w2, out interval))
-						numericUpDown_Settings_Interval.Value = interval;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.auto_update.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_AutoUpdate.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.save_Key_Secret.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_Save_Key_and_Secret.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Key.ToString().ToLower())
-				{
-					textBox_Settings_Key.Text = w2.Trim();
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Secret.ToString().ToLower())
-				{
-					textBox_Settings_Secret.Text = w2.Trim();
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Show_Key.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_Show_Key.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Show_Secret.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_Show_Secret.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.Update_Force.ToString().ToLower())
-				{
-					bool val;
-
-					if(bool.TryParse(w2, out val))
-						checkBox_Settings_Update_Force.Checked = val;
-
-					continue;
-				}
-
-				if(w1.ToLower() == e_Config_Header.domain.ToString().ToLower())
-				{
-					string[] vals = w2.Split(',');
-
-					if(vals.Length < 2)
-						continue;
-
-					string	name	= vals[0].Trim();
-					string	domain	= vals[1].Trim();
-					int		ttl		= 0;
-
-					if(vals.Length >= 3)
-					{
-						if(!int.TryParse(vals[2], out ttl))
-							ttl = 0;
-					}
-
-					add_domain_LVI(name, domain, ttl);
-				}
-			}	// for
-
-			add_log($"读取配置文件 {m_k_CONFIG_FILE}", Color.Green);
-		}
-		//--------------------------------------------------
-		void save_config()
-		{
-			if(!m_can_save_concifg)
-				return;
-
-			if(!m_dirty_config)
-				return;
-
-			StringBuilder sb = new StringBuilder();
-
-			sb.AppendLine("// 检查公网 IP 的 URL");
-			sb.AppendLine($"{e_Config_Header.get_IP_URL}: {comboBox_Settings_Get_IP_URL.Text.Trim()}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 指定 IP 地址");
-			sb.AppendLine($"{e_Config_Header.Specific_IP}: {checkBox_Settings_Specific_IP.Checked}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 更新的时间间隔（秒）");
-			sb.AppendLine($"{e_Config_Header.interval}: {numericUpDown_Settings_Interval.Value}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 是否自动更新");
-			sb.AppendLine($"{e_Config_Header.auto_update}: {checkBox_Settings_AutoUpdate.Checked}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 保存 Key/Secret 到配置文件中");
-			sb.AppendLine($"{e_Config_Header.save_Key_Secret}: {checkBox_Settings_Save_Key_and_Secret.Checked}");
-			sb.AppendLine();
-
-			if(checkBox_Settings_Save_Key_and_Secret.Checked)
-			{
-				sb.AppendLine("// Key");
-				sb.AppendLine($"{e_Config_Header.Key}: {textBox_Settings_Key.Text.Trim()}");
-				sb.AppendLine();
-
-				sb.AppendLine("// Secret");
-				sb.AppendLine($"{e_Config_Header.Secret}: {textBox_Settings_Secret.Text.Trim()}");
-				sb.AppendLine();
-			}
-
-			sb.AppendLine("// 显示 Key");
-			sb.AppendLine($"{e_Config_Header.Show_Key}: {checkBox_Settings_Show_Key.Checked}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 显示 Secret");
-			sb.AppendLine($"{e_Config_Header.Show_Secret}: {checkBox_Settings_Show_Secret.Checked}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 强制更新");
-			sb.AppendLine($"{e_Config_Header.Update_Force}: {checkBox_Settings_Update_Force.Checked}");
-			sb.AppendLine();
-
-			sb.AppendLine("// 域名列表");
-			foreach(ListViewItem LVI in listView_Records.Items)
-			{
-				string name		= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
-				string domain	= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
-				string ttl		= LVI.SubItems[(int)e_Column_DomainList.TTL].Text;
-
-				sb.AppendLine($"{e_Config_Header.domain}: {name},{domain},{ttl}");
-			}	// for
-
-			File.WriteAllText(m_k_CONFIG_FILE, sb.ToString(), Encoding.UTF8);
-
-			add_log($"保存配置文件 {m_k_CONFIG_FILE}", Color.Blue);
-
-			m_dirty_config = false;
-		}
-		#endregion
-
-		#region Winform 事件
-		/*==============================================================
-		 * 窗口加载/关闭
-		 *==============================================================*/
-		private void frm_MainForm_Load(object sender, EventArgs e)
-		{
-			this.Icon				= res_Main.icon;
-			notifyIcon_Main.Icon	= res_Main.icon;
-
-			comboBox_Settings_Get_IP_URL.SelectedIndex = 0;
-
-			load_config();
-
-			m_dirty_config		= false;
-			m_can_save_concifg	= true;
-		}
-		//--------------------------------------------------
-		private void frm_MainForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
-			if(!m_exiting)
-			{
-				e.Cancel = true;
-				this.Hide();
-			}
-		}
-
-		/*==============================================================
-		 * 保存配置文件（计时器）
-		 *==============================================================*/
-		private void timer_Save_Config_Tick(object sender, EventArgs e)
-		{
-			save_config();
-		}
-
-		/*==============================================================
-		 * 更新 IP（计时器）
-		 *==============================================================*/
-		private void timer_Update_Tick(object sender, EventArgs e)
-		{
-			start_update_records();
-		}
-
-		/*==============================================================
-		 * godaddy API 网址
-		 *==============================================================*/
-		private void linkLabel_godaddy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			Process.Start(linkLabel_godaddy.Text);
-		}
-
-		/*==============================================================
-		 * github
-		 *==============================================================*/
-		private void linkLabel_Github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			Process.Start("https://github.com/foxofice/ddns_godaddy");
-		}
-
-		/*==============================================================
-		 * 官网
-		 *==============================================================*/
-		private void linkLabel_WebSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		{
-			Process.Start("https://www.AcgDev.com");
-		}
-		#endregion
-
-		#region 托盘图标
-		/*==============================================================
-		 * 双击托盘图标
-		 *==============================================================*/
-		private void notifyIcon_Main_DoubleClick(object sender, EventArgs e)
-		{
-			if(this.Visible)
-				this.Hide();
-			else
-				active_form();
-		}
-		#endregion
-		#region 托盘图标 - 上下文菜单
-		/*==============================================================
-		 * 打开
-		 *==============================================================*/
-		private void ToolStripMenuItem_Open_Click(object sender, EventArgs e)
-		{
-			active_form();
-		}
-
-		/*==============================================================
-		 * 退出程序
-		 *==============================================================*/
-		private void ToolStripMenuItem_Exit_Click(object sender, EventArgs e)
-		{
-			if(MessageBox.Show(	"是否退出程序？",
-								this.Text,
-								MessageBoxButtons.YesNo,
-								MessageBoxIcon.Question,
-								MessageBoxDefaultButton.Button2 ) == DialogResult.No)
-				return;
-
-			m_exiting					= true;
-			timer_Save_Config.Enabled	= false;
-			timer_Update.Enabled		= false;
-
-			this.Close();
-		}
-		#endregion
-
-		#region 设置
-		/*==============================================================
-		 * 检查公网IP的URL
-		 *==============================================================*/
-		private void comboBox_Settings_Get_IP_URL_TextChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 指定 IP 地址
-		 *==============================================================*/
-		private void checkBox_Settings_Specific_IP_CheckedChanged(object sender, EventArgs e)
-		{
-			textBox_Settings_Last_IP.ReadOnly = !checkBox_Settings_Specific_IP.Checked;
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 时间间隔
-		 *==============================================================*/
-		private void numericUpDown_Settings_Interval_ValueChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 自动更新
-		 *==============================================================*/
-		private void checkBox_Settings_AutoUpdate_CheckedChanged(object sender, EventArgs e)
-		{
-			numericUpDown_Settings_Interval.Enabled = checkBox_Settings_AutoUpdate.Checked;
-			timer_Update.Enabled					= checkBox_Settings_AutoUpdate.Checked;
-
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * Key
-		 *==============================================================*/
-		private void textBox_Settings_Key_TextChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * Secret
-		 *==============================================================*/
-		private void textBox_Settings_Secret_TextChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 显示 Key
-		 *==============================================================*/
-		private void checkBox_Settings_Show_Key_CheckedChanged(object sender, EventArgs e)
-		{
-			textBox_Settings_Key.PasswordChar = checkBox_Settings_Show_Key.Checked ? '\0' : '*';
-
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 显示 Secret
-		 *==============================================================*/
-		private void checkBox_Settings_Show_Secret_CheckedChanged(object sender, EventArgs e)
-		{
-			textBox_Settings_Secret.PasswordChar = checkBox_Settings_Show_Secret.Checked ? '\0' : '*';
-
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 保存 Key/Secret 到配置文件中
-		 *==============================================================*/
-		private void checkBox_Settings_Save_Key_and_Secret_CheckedChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 立即更新
-		 *==============================================================*/
-		private void button_Settings_Update_Click(object sender, EventArgs e)
-		{
-			m_next_get_ip_time = DateTime.Now;
-			start_update_records();
-		}
-
-		/*==============================================================
-		 * 强制更新
-		 *==============================================================*/
-		private void checkBox_Settings_Update_Force_CheckedChanged(object sender, EventArgs e)
-		{
-			m_dirty_config = true;
-		}
-		#endregion
-
-		#region 域名列表
-		/*==============================================================
-		 * 修改域名
-		 *==============================================================*/
-		void edit_domain()
-		{
-			if(listView_Records.SelectedItems.Count == 0)
-				return;
-
-			ListViewItem LVI = listView_Records.SelectedItems[0];
-
-			int ttl;
-			if(!int.TryParse(LVI.SubItems[(int)e_Column_DomainList.TTL].Text, out ttl))
-				ttl = 0;
-
-			frm_Record dlg = new frm_Record(LVI.SubItems[(int)e_Column_DomainList.Name].Text,
-											LVI.SubItems[(int)e_Column_DomainList.Domain].Text,
-											ttl,
-											LVI.Index);
-			dlg.ShowDialog();
-
-			if(dlg.m_res == DialogResult.OK)
-			{
-				ttl = dlg.m_ttl;
-
-				LVI.SubItems[(int)e_Column_DomainList.Name].Text	= dlg.m_name;
-				LVI.SubItems[(int)e_Column_DomainList.Domain].Text	= dlg.m_domain;
-				LVI.SubItems[(int)e_Column_DomainList.TTL].Text		= (ttl > 0) ? ttl.ToString() : "";
-
-				m_dirty_config = true;
-			}
-		}
-
-		/*==============================================================
-		 * 选择项更改
-		 *==============================================================*/
-		private void listView_Records_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			ToolStripMenuItem_Records_Edit.Enabled		= (listView_Records.SelectedItems.Count > 0);
-			ToolStripMenuItem_Records_Delete.Enabled	= (listView_Records.SelectedItems.Count > 0);
-		}
-
-		/*==============================================================
-		 * 双击修改
-		 *==============================================================*/
-		private void listView_Records_DoubleClick(object sender, EventArgs e)
-		{
-			edit_domain();
-		}
-		#endregion
-		#region 域名列表 - 上下文菜单
-		/*==============================================================
-		 * 添加
-		 *==============================================================*/
-		private void ToolStripMenuItem_Records_Add_Click(object sender, EventArgs e)
-		{
-			frm_Record dlg = new frm_Record("", "");
-			dlg.ShowDialog();
-
-			if(dlg.m_res == DialogResult.OK)
-			{
-				add_domain_LVI(dlg.m_name, dlg.m_domain, dlg.m_ttl);
-				m_dirty_config = true;
-			}
-		}
-
-		/*==============================================================
-		 * 删除
-		 *==============================================================*/
-		private void ToolStripMenuItem_Records_Delete_Click(object sender, EventArgs e)
-		{
-			if(MessageBox.Show(	$"是否要删除选定的 {listView_Records.SelectedItems.Count} 条记录？",
-								this.Text,
-								MessageBoxButtons.YesNo,
-								MessageBoxIcon.Question,
-								MessageBoxDefaultButton.Button2 ) == DialogResult.No)
-				return;
-
-			while(listView_Records.SelectedItems.Count > 0)
-				listView_Records.Items.Remove(listView_Records.SelectedItems[0]);
-
-			m_dirty_config = true;
-		}
-
-		/*==============================================================
-		 * 修改
-		 *==============================================================*/
-		private void ToolStripMenuItem_Records_Edit_Click(object sender, EventArgs e)
-		{
-			edit_domain();
-		}
-		#endregion
 
 		#region 日志
+		/*==============================================================
+		 * 添加日志记录
+		 *==============================================================*/
+		internal void add_log(string txt, Color c = default)
+		{
+			invoke(() =>
+			{
+				ListViewItem LVI = new ListViewItem();
+
+				while(LVI.SubItems.Count < listView_Logs.Columns.Count)
+					LVI.SubItems.Add("");
+
+				LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("G").Replace("/", ".");
+				LVI.SubItems[(int)e_Column_Log.Log].Text	= txt;
+
+				LVI.ForeColor = c;
+
+				listView_Logs.Items.Add(LVI);
+
+				LVI.EnsureVisible();
+			});
+		}
+
+
 		/*==============================================================
 		 * 选择项更改
 		 *==============================================================*/
@@ -956,6 +146,7 @@ namespace ddns
 			ToolStripMenuItem_Logs_Copy.Enabled		= (listView_Logs.SelectedItems.Count > 0);
 			ToolStripMenuItem_Logs_Delete.Enabled	= (listView_Logs.SelectedItems.Count > 0);
 		}
+
 
 		/*==============================================================
 		 * 大小更改
@@ -1007,9 +198,996 @@ namespace ddns
 			foreach(ListViewItem LVI in listView_Logs.Items)
 				LVI.Selected = true;
 		}
+		#endregion
+
+
+		#region 事件
+		internal class EVENTS
+		{
+			/*==============================================================
+			 * OnConnected
+			 *==============================================================*/
+			internal static void OnConnected(string ip, ushort port)
+			{
+				m_s_Mainform.add_log($"连接到 Server 成功 (client = {ip}:{port})", Color.Green);
+			}
+
+			/*==============================================================
+			 * OnDisconnecting
+			 *==============================================================*/
+			internal static void OnDisconnecting()
+			{
+				m_s_Mainform.add_log("已断开 Server 的连接");
+
+				invoke(() =>
+				{
+					m_s_Mainform.finish_update_records(true);
+					m_s_Mainform.textBox_Server_Ping.Clear();
+				});
+
+				if(CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+					CONFIG.m_s_Last_IP = "";
+			}
+
+			/*==============================================================
+			 * Recv_Ping
+			 *==============================================================*/
+			internal static void Recv_Ping(double ping)
+			{
+				invoke(() =>
+				{
+					m_s_Mainform.textBox_Server_Ping.Text = (ping * 1000).ToString("F3");
+				});
+			}
+
+			/*==============================================================
+			 * Recv_LoginResult
+			 *==============================================================*/
+			internal static void Recv_LoginResult(bool result)
+			{
+				if(result)
+				{
+					m_s_Mainform.add_log("登录服务器成功", Color.Green);
+
+					List<ddns_lib.c_Record> records = null;
+
+					invoke(() =>
+					{
+						records = m_s_Mainform.make_records();
+					});
+
+					if(records == null || records.Count == 0)
+					{
+						m_s_Mainform.add_log("没有域名需要更新");
+						m_s_Mainform.finish_update_records(true);
+						return;
+					}
+
+					m_s_Mainform.update_records_step3_2_update_by_server(records);
+				}
+				else
+				{
+					m_s_Mainform.add_log("登录服务器失败", Color.Red);
+					DDNS_CLR.CLR.DisConnect();
+				}
+			}
+
+			/*==============================================================
+			 * Recv_Update_Domains_Result
+			 *==============================================================*/
+			internal static void Recv_Update_Domains_Result(List<ddns_lib.c_Record> records)
+			{
+				int failed_count	= 0;
+				int succeed_count	= 0;
+
+				invoke(() =>
+				{
+					for(int i=0; i<records.Count; ++i)
+					{
+						ddns_lib.c_Record record = records[i];
+
+						ListViewItem LVI = m_s_Mainform.listView_Records.Items[i];
+
+						if(record.m_result_ip.Length > 0)
+						{
+							++succeed_count;
+
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "成功";
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Green;
+							LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text				= record.m_result_ip;
+
+							CONFIG.c_Domain domain = CONFIG.find_domain(record.m_name, record.m_domain);
+
+							if(domain != null)
+								domain.m_last_ip = record.m_result_ip;
+
+							if(CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+								CONFIG.m_s_Last_IP = record.m_result_ip;
+
+							m_s_Mainform.add_log($"更新 {record.m_name}.{record.m_domain} -> {record.m_result_ip} 成功", Color.Green);
+						}
+						else
+						{
+							++failed_count;
+
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
+							LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
+
+							m_s_Mainform.add_log($"更新 {record.m_name}.{record.m_domain} 失败（{record.m_err_msg}）", Color.Red);
+						}
+					}	// for
+
+					m_s_Mainform.add_log(	$"成功：{succeed_count} 条记录，失败：{failed_count} 条记录",
+											(failed_count == 0) ? Color.DarkOrange : Color.Red );
+
+					m_s_Mainform.finish_update_records(true);
+				});
+
+				if(succeed_count > 0)
+					CONFIG.m_s_dirty = true;
+			}
+
+			/*==============================================================
+			 * On_add_log
+			 *==============================================================*/
+			internal static void On_add_log(string txt, Color c)
+			{
+				m_s_Mainform.add_log(txt, c);
+			}
+		};
+		#endregion
+
+
+		#region Winform 事件
+		/*==============================================================
+		 * 窗口加载/关闭
+		 *==============================================================*/
+		private void frm_MainForm_Load(object sender, EventArgs e)
+		{
+			this.Icon				= res_Main.icon;
+			notifyIcon_Main.Icon	= res_Main.icon;
+
+			ServicePointManager.DefaultConnectionLimit = 1000;
+
+			// 初始化 DDNS_CLR
+			DDNS_CLR.CLR.DoInit();
+
+			// 设置回调函数
+			DDNS_CLR.CLR.Event_OnConnected					+= EVENTS.OnConnected;
+			DDNS_CLR.CLR.Event_OnDisconnecting				+= EVENTS.OnDisconnecting;
+			DDNS_CLR.CLR.Event_Recv_Ping					+= EVENTS.Recv_Ping;
+			DDNS_CLR.CLR.Event_Recv_LoginResult				+= EVENTS.Recv_LoginResult;
+			DDNS_CLR.CLR.Event_Recv_Update_Domains_Result	+= EVENTS.Recv_Update_Domains_Result;
+			DDNS_CLR.CLR.Event_On_add_log					+= EVENTS.On_add_log;
+
+			ddns_lib.LIB.EVENTS.Event_On_AddLog				+= EVENTS.On_add_log;
+
+			CONFIG.read_config();
+
+			//==================== 更新 UI ====================(Start)
+			//【更新方式】
+			switch(CONFIG.m_s_update_type)
+			{
+			case CONFIG.e_Update_Type.Local:	radioButton_Local.Checked	= true;	break;
+			case CONFIG.e_Update_Type.Server:	radioButton_Server.Checked	= true;	break;
+			}	// switch
+
+			//【Server 设置】
+			textBox_Server_Addr.Text			= CONFIG.m_s_server_addr;
+			textBox_Server_User.Text			= CONFIG.m_s_server_user;
+			textBox_Server_Pwd.Text				= CONFIG.m_s_server_pwd;
+			checkBox_Server_Show_Pwd.Checked	= CONFIG.m_s_show_server_pwd;
+
+			//【IP 设置】
+			switch(CONFIG.m_s_IP_get_type)
+			{
+			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:	radioButton_Get_IP_From_URL.Checked		= true;	break;
+			case CONFIG.e_IP_Get_Type.Specific_IP:		radioButton_Specific_IP.Checked			= true;	break;
+			case CONFIG.e_IP_Get_Type.Server_Accept_IP:	radioButton_Server_Accept_IP.Checked	= true; break;
+			}	// switch
+
+			comboBox_Settings_Get_IP_URL.Text	= CONFIG.m_s_Get_IP_URL;
+			textBox_Settings_Last_IP.Text		= CONFIG.m_s_Last_IP;
+
+			if(CONFIG.m_s_Get_IP_URL.Length == 0)
+				comboBox_Settings_Get_IP_URL.SelectedIndex = 0;
+
+			//【安全设置】
+			textBox_Settings_Key.Text						= CONFIG.m_s_Key;
+			checkBox_Settings_Show_Key.Checked				= CONFIG.m_s_show_Key;
+			textBox_Settings_Secret.Text					= CONFIG.m_s_Secret;
+			checkBox_Settings_Show_Secret.Checked			= CONFIG.m_s_show_Secret;
+			checkBox_Settings_Save_Key_and_Secret.Checked	= CONFIG.m_s_save_Key_Secret;
+
+			//【域名列表】
+			foreach(CONFIG.c_Domain domain in CONFIG.m_s_domain_list)
+				add_LVI(domain.m_name, domain.m_root_domain, domain.m_last_ip, domain.m_TTL);
+
+			//【更新】
+			checkBox_Settings_AutoUpdate.Checked				= CONFIG.m_s_AutoUpdate;
+			numericUpDown_Settings_AutoUpdate_Interval.Value	= CONFIG.m_s_AutoUpdate_Interval;
+			checkBox_Settings_Update_Force.Checked				= CONFIG.m_s_Update_Force;
+			//==================== 更新 UI ====================(End)
+		}
+		//--------------------------------------------------
+		private void frm_MainForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if(!m_exiting)
+			{
+				e.Cancel = true;
+				this.Hide();
+			}
+			else
+			{
+				// 清理 DDNS_CLR
+				DDNS_CLR.CLR.DoFinal();
+			}
+		}
 
 
 
+		/*==============================================================
+		 * godaddy API 网址
+		 *==============================================================*/
+		private void linkLabel_godaddy_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start(linkLabel_godaddy.Text);
+		}
+
+		/*==============================================================
+		 * github
+		 *==============================================================*/
+		private void linkLabel_Github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start("https://github.com/foxofice/ddns_godaddy");
+		}
+
+		/*==============================================================
+		 * 官网
+		 *==============================================================*/
+		private void linkLabel_WebSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			Process.Start("https://www.AcgDev.com");
+		}
+		#endregion
+
+
+		#region 更新方式
+		/*==============================================================
+		 * 改变 update_type
+		 *==============================================================*/
+		void change_update_type()
+		{
+			CONFIG.m_s_update_type = (radioButton_Local.Checked ? CONFIG.e_Update_Type.Local : CONFIG.e_Update_Type.Server);
+
+			textBox_Server_Addr.ReadOnly			= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
+			textBox_Server_User.ReadOnly			= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
+			textBox_Server_Pwd.ReadOnly				= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
+
+			radioButton_Server_Accept_IP.Enabled	= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Server);
+
+			if(CONFIG.m_s_update_type != CONFIG.e_Update_Type.Server)
+			{
+				if(radioButton_Server_Accept_IP.Checked)
+					radioButton_Get_IP_From_URL.Checked = true;
+			}
+
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 本地更新（直连）
+		 *==============================================================*/
+		private void radioButton_Local_CheckedChanged(object sender, EventArgs e)
+		{
+			change_update_type();
+		}
+
+
+		/*==============================================================
+		 * 远程更新（连接到 Server）
+		 *==============================================================*/
+		private void radioButton_Server_CheckedChanged(object sender, EventArgs e)
+		{
+			change_update_type();
+		}
+		#endregion
+
+
+		#region Server 设置
+		/*==============================================================
+		 * Server 地址
+		 *==============================================================*/
+		private void textBox_Server_Addr_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_server_addr = textBox_Server_Addr.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 登录到 Server 的用户名
+		 *==============================================================*/
+		private void textBox_Server_User_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_server_user = textBox_Server_User.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 登录到 Server 的密码
+		 *==============================================================*/
+		private void textBox_Server_Pwd_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_server_pwd = textBox_Server_Pwd.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 显示密码
+		 *==============================================================*/
+		private void checkBox_Server_Show_Pwd_CheckedChanged(object sender, EventArgs e)
+		{
+			textBox_Server_Pwd.PasswordChar = checkBox_Server_Show_Pwd.Checked ? '\0' : '*';
+
+			CONFIG.m_s_show_server_pwd = checkBox_Server_Show_Pwd.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+		#endregion
+
+
+		#region IP 设置
+		/*==============================================================
+		 * 改变 IP_get_type
+		 *==============================================================*/
+		void change_IP_get_type()
+		{
+			CONFIG.m_s_IP_get_type = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+
+			if(radioButton_Specific_IP.Checked)
+				CONFIG.m_s_IP_get_type = CONFIG.e_IP_Get_Type.Specific_IP;
+			else if(radioButton_Server_Accept_IP.Checked)
+				CONFIG.m_s_IP_get_type = CONFIG.e_IP_Get_Type.Server_Accept_IP;
+
+			comboBox_Settings_Get_IP_URL.Enabled	= (CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
+			textBox_Settings_Last_IP.ReadOnly		= (CONFIG.m_s_IP_get_type != CONFIG.e_IP_Get_Type.Specific_IP);
+
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 通过互联网获取公网 IP
+		 *==============================================================*/
+		private void radioButton_Get_IP_From_URL_CheckedChanged(object sender, EventArgs e)
+		{
+			change_IP_get_type();
+		}
+
+
+		/*==============================================================
+		 * 手动设置 IP
+		 *==============================================================*/
+		private void radioButton_Specific_IP_CheckedChanged(object sender, EventArgs e)
+		{
+			change_IP_get_type();
+		}
+
+
+		/*==============================================================
+		 * Server 接受连接的客户端 IP
+		 *==============================================================*/
+		private void radioButton_Server_Accept_IP_CheckedChanged(object sender, EventArgs e)
+		{
+			change_IP_get_type();
+		}
+
+
+		/*==============================================================
+		 * 检查公网IP的URL
+		 *==============================================================*/
+		private void comboBox_Settings_Get_IP_URL_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_Get_IP_URL = comboBox_Settings_Get_IP_URL.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 上次获取的IP
+		 *==============================================================*/
+		private void textBox_Settings_Last_IP_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_Last_IP = textBox_Settings_Last_IP.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+		#endregion
+
+
+		#region 安全设置
+		/*==============================================================
+		 * Key
+		 *==============================================================*/
+		private void textBox_Settings_Key_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_Key = textBox_Settings_Key.Text;
+
+			if(checkBox_Settings_Save_Key_and_Secret.Checked)
+				CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * Secret
+		 *==============================================================*/
+		private void textBox_Settings_Secret_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_Secret = textBox_Settings_Secret.Text;
+
+			if(checkBox_Settings_Save_Key_and_Secret.Checked)
+				CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 显示 Key
+		 *==============================================================*/
+		private void checkBox_Settings_Show_Key_CheckedChanged(object sender, EventArgs e)
+		{
+			textBox_Settings_Key.PasswordChar = checkBox_Settings_Show_Key.Checked ? '\0' : '*';
+
+			CONFIG.m_s_show_Key = checkBox_Settings_Show_Key.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 显示 Secret
+		 *==============================================================*/
+		private void checkBox_Settings_Show_Secret_CheckedChanged(object sender, EventArgs e)
+		{
+			textBox_Settings_Secret.PasswordChar = checkBox_Settings_Show_Secret.Checked ? '\0' : '*';
+
+			CONFIG.m_s_show_Secret = checkBox_Settings_Show_Secret.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 保存 Key/Secret 到配置文件中
+		 *==============================================================*/
+		private void checkBox_Settings_Save_Key_and_Secret_CheckedChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_save_Key_Secret = checkBox_Settings_Save_Key_and_Secret.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+		#endregion
+
+
+		#region 域名列表
+		/*==============================================================
+		 * 添加 LVI
+		 *==============================================================*/
+		void add_LVI(string name, string root_domain, string ip, int TTL = 0)
+		{
+			ListViewItem LVI = new ListViewItem();
+
+			while(LVI.SubItems.Count < listView_Records.Columns.Count)
+				LVI.SubItems.Add("");
+
+			LVI.SubItems[(int)e_Column_DomainList.Name].Text	= name;
+			LVI.SubItems[(int)e_Column_DomainList.Domain].Text	= root_domain;
+			LVI.SubItems[(int)e_Column_DomainList.TTL].Text		= (TTL > 0) ? TTL.ToString() : "";
+			LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text	= ip;
+
+			listView_Records.Items.Add(LVI);
+
+			LVI.UseItemStyleForSubItems = false;
+			LVI.EnsureVisible();
+		}
+
+
+		/*==============================================================
+		 * 修改域名
+		 *==============================================================*/
+		void edit_domain()
+		{
+			if(listView_Records.SelectedItems.Count == 0)
+				return;
+
+			ListViewItem LVI = listView_Records.SelectedItems[0];
+
+			int ttl;
+			if(!int.TryParse(LVI.SubItems[(int)e_Column_DomainList.TTL].Text, out ttl))
+				ttl = 0;
+
+			frm_Record dlg = new frm_Record(LVI.SubItems[(int)e_Column_DomainList.Name].Text,
+											LVI.SubItems[(int)e_Column_DomainList.Domain].Text,
+											ttl,
+											LVI.Index);
+
+			if(dlg.ShowDialog() == DialogResult.OK)
+			{
+				ttl = dlg.m_ttl;
+
+				LVI.SubItems[(int)e_Column_DomainList.Name].Text	= dlg.m_name;
+				LVI.SubItems[(int)e_Column_DomainList.Domain].Text	= dlg.m_domain;
+				LVI.SubItems[(int)e_Column_DomainList.TTL].Text		= (ttl > 0) ? ttl.ToString() : "";
+
+				CONFIG.m_s_dirty = true;
+			}
+		}
+
+		/*==============================================================
+		 * 选择项更改
+		 *==============================================================*/
+		private void listView_Records_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			ToolStripMenuItem_Records_Edit.Enabled		= (listView_Records.SelectedItems.Count > 0);
+			ToolStripMenuItem_Records_Delete.Enabled	= (listView_Records.SelectedItems.Count > 0);
+		}
+
+		/*==============================================================
+		 * 双击修改
+		 *==============================================================*/
+		private void listView_Records_DoubleClick(object sender, EventArgs e)
+		{
+			edit_domain();
+		}
+		#endregion
+		#region 域名列表 - 上下文菜单
+		/*==============================================================
+		 * 添加
+		 *==============================================================*/
+		private void ToolStripMenuItem_Records_Add_Click(object sender, EventArgs e)
+		{
+			frm_Record dlg = new frm_Record("", "");
+
+			if(dlg.ShowDialog() == DialogResult.OK)
+			{
+				add_LVI(dlg.m_name, dlg.m_domain, "", dlg.m_ttl);
+				CONFIG.m_s_dirty = true;
+			}
+		}
+
+		/*==============================================================
+		 * 删除
+		 *==============================================================*/
+		private void ToolStripMenuItem_Records_Delete_Click(object sender, EventArgs e)
+		{
+			if(MessageBox.Show(	$"是否要删除选定的 {listView_Records.SelectedItems.Count} 条记录？",
+								this.Text,
+								MessageBoxButtons.YesNo,
+								MessageBoxIcon.Question,
+								MessageBoxDefaultButton.Button2 ) == DialogResult.No)
+				return;
+
+			while(listView_Records.SelectedItems.Count > 0)
+				listView_Records.Items.Remove(listView_Records.SelectedItems[0]);
+
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 修改
+		 *==============================================================*/
+		private void ToolStripMenuItem_Records_Edit_Click(object sender, EventArgs e)
+		{
+			edit_domain();
+		}
+		#endregion
+
+
+		#region 计时器
+		/*==============================================================
+		 * 保存配置文件
+		 *==============================================================*/
+		private void timer_Save_Config_Tick(object sender, EventArgs e)
+		{
+			CONFIG.write_config();
+		}
+
+
+		/*==============================================================
+		 * 更新 IP
+		 *==============================================================*/
+		private void timer_Update_Tick(object sender, EventArgs e)
+		{
+			if(!CONFIG.m_s_AutoUpdate)
+				return;
+
+			if(DateTime.Now < m_can_auto_update_time)
+				return;
+
+			update_records_step1_start();
+		}
+
+
+		/*==============================================================
+		 * ping
+		 *==============================================================*/
+		private void timer_Ping_Tick(object sender, EventArgs e)
+		{
+			if(radioButton_Server.Checked && checkBox_Server_Ping.Checked)
+				DDNS_CLR.CLR.send_Ping();
+		}
+		#endregion
+
+
+		#region 托盘图标
+		/*==============================================================
+		 * 双击托盘图标
+		 *==============================================================*/
+		private void notifyIcon_Main_DoubleClick(object sender, EventArgs e)
+		{
+			if(this.Visible)
+				this.Hide();
+			else
+				active_form();
+		}
+		#endregion
+		#region 托盘图标 - 上下文菜单
+		/*==============================================================
+		 * 打开
+		 *==============================================================*/
+		private void ToolStripMenuItem_Open_Click(object sender, EventArgs e)
+		{
+			active_form();
+		}
+
+		/*==============================================================
+		 * 退出程序
+		 *==============================================================*/
+		private void ToolStripMenuItem_Exit_Click(object sender, EventArgs e)
+		{
+			if(MessageBox.Show(	"是否退出程序？",
+								this.Text,
+								MessageBoxButtons.YesNo,
+								MessageBoxIcon.Question,
+								MessageBoxDefaultButton.Button2 ) == DialogResult.No)
+				return;
+
+			m_exiting					= true;
+			timer_Save_Config.Enabled	= false;
+			timer_Update.Enabled		= false;
+
+			this.Close();
+		}
+		#endregion
+
+
+		#region 更新
+		/*==============================================================
+		 * 设置下次自动更新的时间
+		 *==============================================================*/
+		void set_next_update_time()
+		{
+			m_can_auto_update_time	= DateTime.Now.AddSeconds((int)numericUpDown_Settings_AutoUpdate_Interval.Value);
+			add_log($"下次更新时间：{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
+		}
+
+
+		/*==============================================================
+		 * 自动更新时间间隔（秒）
+		 *==============================================================*/
+		private void checkBox_Settings_AutoUpdate_CheckedChanged(object sender, EventArgs e)
+		{
+			numericUpDown_Settings_AutoUpdate_Interval.Enabled	= checkBox_Settings_AutoUpdate.Checked;
+			timer_Update.Enabled								= checkBox_Settings_AutoUpdate.Checked;
+
+			CONFIG.m_s_AutoUpdate = checkBox_Settings_AutoUpdate.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 时间间隔
+		 *==============================================================*/
+		private void numericUpDown_Settings_AutoUpdate_Interval_ValueChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_AutoUpdate_Interval = (uint)numericUpDown_Settings_AutoUpdate_Interval.Value;
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 强制更新
+		 *==============================================================*/
+		private void checkBox_Settings_Update_Force_CheckedChanged(object sender, EventArgs e)
+		{
+			CONFIG.m_s_Update_Force = checkBox_Settings_Update_Force.Checked;
+			CONFIG.m_s_dirty = true;
+		}
+
+
+		/*==============================================================
+		 * 立即更新
+		 *==============================================================*/
+		private void button_Settings_Update_Click(object sender, EventArgs e)
+		{
+			update_records_step1_start();
+		}
+
+
+		/*==============================================================
+		 * Step1：开始更新 A/AAAA 记录
+		 *==============================================================*/
+		void update_records_step1_start()
+		{
+			if(m_is_updating)
+				return;
+
+			m_is_updating = true;
+			lock_controls(false);
+
+			if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Server			&&
+				CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP	&&
+				!DDNS_CLR.CLR.is_connected() )
+			{
+				CONFIG.m_s_Last_IP = "";
+			}
+
+			update_records_step2_get_ip();
+		}
+
+
+		/*==============================================================
+		 * Step2：获取 IP
+		 *==============================================================*/
+		void update_records_step2_get_ip()
+		{
+			switch(CONFIG.m_s_IP_get_type)
+			{
+			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
+				if(comboBox_Settings_Get_IP_URL.Text.Length == 0)
+				{
+					add_log("请输入「检查公网IP的URL」", Color.Red);
+
+					finish_update_records(true);
+					return;
+				}
+
+				add_log("正在获取当前公网 IP 地址……");
+
+				{
+					WebClient wc = new WebClient();
+					wc.DownloadStringCompleted += WC_DownloadStringCompleted;
+
+					wc.DownloadStringAsync(new Uri(comboBox_Settings_Get_IP_URL.Text));
+				}
+				break;
+
+			case CONFIG.e_IP_Get_Type.Specific_IP:
+			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
+				new Thread(update_records_step3_do_update).Start();
+				break;
+			}	// switch
+		}
+
+
+		/*==============================================================
+		 * 获取公网 IP 完成
+		 *==============================================================*/
+		private void WC_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+		{
+			if(e.Error != null)
+			{
+				add_log(e.Error.Message, Color.Red);
+
+				finish_update_records(true);
+				return;
+			}
+
+			string ip = e.Result.Replace("\n", "").Trim();
+			if(ip.Length == 0)
+			{
+				add_log("获取 IP 失败（可能是网站提供的数据有问题）", Color.Red);
+
+				finish_update_records(true);
+				return;
+			}
+
+			textBox_Settings_Last_IP.Text = ip;
+			add_log($"当前的公网 IP：{ip}");
+
+			new Thread(update_records_step3_do_update).Start();
+		}
+
+
+		/*==============================================================
+		 * 完成更新 A/AAAA 记录
+		 *==============================================================*/
+		void finish_update_records(bool update_next_time)
+		{
+			if(update_next_time)
+				set_next_update_time();
+
+			m_is_updating = false;
+			lock_controls(true);
+		}
+
+
+		/*==============================================================
+		 * 创建 records 列表
+		 *==============================================================*/
+		List<ddns_lib.c_Record> make_records()
+		{
+			string ip;
+
+			if(CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+				ip = CONFIG.m_s_Last_IP;
+			else
+				ip = textBox_Settings_Last_IP.Text.Trim();
+
+			string	Key		= textBox_Settings_Key.Text;
+			string	Secret	= textBox_Settings_Secret.Text;
+			bool	force	= checkBox_Settings_Update_Force.Checked;
+
+			List<ddns_lib.c_Record> records = new List<ddns_lib.c_Record>();
+
+			for(int i=0; i<listView_Records.Items.Count; ++i)
+			{
+				ListViewItem LVI = listView_Records.Items[i];
+
+				if(!force)
+				{
+					if(LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text == ip)
+						continue;
+				}
+
+				ddns_lib.c_Record new_record = new ddns_lib.c_Record();
+
+				new_record.m_name			= LVI.SubItems[(int)e_Column_DomainList.Name].Text;
+				new_record.m_domain			= LVI.SubItems[(int)e_Column_DomainList.Domain].Text;
+
+				int.TryParse(LVI.SubItems[(int)e_Column_DomainList.TTL].Text, out new_record.m_TTL);
+
+				new_record.m_ip				= ip;
+				new_record.m_Key			= Key;
+				new_record.m_Secret			= Secret;
+				new_record.m_user_idx		= i;
+
+				records.Add(new_record);
+			}	// for
+
+			return records;
+		}
+
+
+		/*==============================================================
+		 * Step3：执行更新 IP 记录
+		 *==============================================================*/
+		void update_records_step3_do_update()
+		{
+			List<ddns_lib.c_Record> records = null;
+
+			invoke(() =>
+			{
+				records = make_records();
+			});
+
+			if(records == null || records.Count == 0)
+			{
+				add_log("没有域名需要更新");
+				finish_update_records(true);
+				return;
+			}
+
+			switch(CONFIG.m_s_update_type)
+			{
+			case CONFIG.e_Update_Type.Local:
+				update_records_step3_update_by_local(records);
+				break;
+
+			case CONFIG.e_Update_Type.Server:
+				update_records_step3_update_by_server(records);
+				break;
+			}	// switch
+		}
+
+
+		/*==============================================================
+		 * Step3：执行更新 IP 记录（本地更新）
+		 *==============================================================*/
+		void update_records_step3_update_by_local(List<ddns_lib.c_Record> records)
+		{
+			ThreadStart ts = delegate { ddns_lib.LIB.update_records(ref records); };
+			Thread th = new Thread(ts);
+
+			th.Start();
+			th.Join();
+
+			int failed_count	= 0;
+			int succeed_count	= 0;
+
+			invoke(() =>
+			{
+				foreach(ddns_lib.c_Record record in records)
+				{
+					ListViewItem LVI = listView_Records.Items[record.m_user_idx];
+
+					if(record.m_result_ip.Length > 0)
+					{
+						++succeed_count;
+
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "成功";
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Green;
+						LVI.SubItems[(int)e_Column_DomainList.Last_IP].Text				= record.m_result_ip;
+
+						CONFIG.c_Domain domain = CONFIG.find_domain(record.m_name, record.m_domain);
+
+						if(domain != null)
+							domain.m_last_ip = record.m_result_ip;
+					}
+					else
+					{
+						++failed_count;
+
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].Text			= "失败";
+						LVI.SubItems[(int)e_Column_DomainList.Last_Result].ForeColor	= Color.Red;
+					}
+				}	// for
+			});
+
+			add_log($"成功：{succeed_count} 条记录，失败：{failed_count} 条记录",
+					(failed_count == 0) ? Color.DarkOrange : Color.Red);
+
+			if(succeed_count > 0)
+				CONFIG.m_s_dirty = true;
+
+			finish_update_records(true);
+		}
+
+
+		/*==============================================================
+		 * Step3：执行更新 IP 记录（连接到 Server）
+		 *==============================================================*/
+		void update_records_step3_update_by_server(List<ddns_lib.c_Record> records)
+		{
+			if(!DDNS_CLR.CLR.is_connected())
+			{
+				if(!textBox_Server_Addr.Text.Contains(":"))
+				{
+					add_log("「Server 地址」请使用 <ip>:<port> 的格式", Color.Red);
+
+					finish_update_records(true);
+					return;
+				}
+
+				add_log("正在连接到 Server……");
+
+				string server_ip	= textBox_Server_Addr.Text.Substring(0, textBox_Server_Addr.Text.LastIndexOf(":"));
+				ushort server_port	= ushort.Parse(textBox_Server_Addr.Text.Substring(textBox_Server_Addr.Text.LastIndexOf(":") + 1));
+
+				if(!DDNS_CLR.CLR.Connect(	server_ip,
+											server_port,
+											textBox_Server_User.Text,
+											textBox_Server_Pwd.Text ))
+				{
+					add_log("连接到 server 失败", Color.Red);
+
+					finish_update_records(true);
+					return;
+				}
+			}
+			else
+			{
+				update_records_step3_2_update_by_server(records);
+			}
+		}
+
+
+		/*==============================================================
+		 * Step3.2：执行更新 IP 记录（连接到 Server）
+		 *==============================================================*/
+		void update_records_step3_2_update_by_server(List<ddns_lib.c_Record> records)
+		{
+			// 发送
+			DDNS_CLR.CLR.send_Update_Domains(	CONFIG.m_s_Key,
+												CONFIG.m_s_Secret,
+												(CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP) ? "" : CONFIG.m_s_Last_IP,
+												records );
+		}
 		#endregion
 	}
 }	// namespace ddns

@@ -33,8 +33,6 @@ namespace ddns
 		internal int			m_ttl			= 0;
 		int						m_edit_index	= -1;
 
-		internal DialogResult	m_res			= DialogResult.Cancel;
-
 		/*==============================================================
 		 * 窗口加载/关闭
 		 *==============================================================*/
@@ -47,6 +45,7 @@ namespace ddns
 			textBox_Domain.Text	= m_domain;
 			textBox_TTL.Text	= (m_ttl > 0) ? m_ttl.ToString() : "";
 		}
+
 
 		/*==============================================================
 		 * 确定
@@ -67,7 +66,7 @@ namespace ddns
 				return;
 			}
 
-			if(frm_MainForm.m_s_Mainform.contains_domain(textBox_Name.Text, textBox_Domain.Text))
+			if(CONFIG.find_domain(textBox_Name.Text, textBox_Domain.Text) != null)
 			{
 				bool is_exists =	(m_edit_index < 0)	||															// 添加
 									(m_name != textBox_Name.Text.Trim() || m_domain != textBox_Domain.Text.Trim());	// 修改
@@ -86,7 +85,13 @@ namespace ddns
 			if(!int.TryParse(textBox_TTL.Text, out m_ttl))
 				m_ttl = 0;
 
-			m_res = DialogResult.OK;
+			CONFIG.c_Domain new_domain = new CONFIG.c_Domain();
+			new_domain.m_name			= m_name;
+			new_domain.m_root_domain	= m_domain;
+			new_domain.m_TTL			= m_ttl;
+
+			CONFIG.m_s_domain_list.Add(new_domain);
+
 			this.Close();
 		}
 	};
