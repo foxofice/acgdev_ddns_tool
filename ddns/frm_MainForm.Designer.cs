@@ -74,6 +74,7 @@
 			this.timer_Update = new System.Windows.Forms.Timer(this.components);
 			this.linkLabel_WebSite = new System.Windows.Forms.LinkLabel();
 			this.groupBox_Server = new System.Windows.Forms.GroupBox();
+			this.checkBox_Server_Ping = new System.Windows.Forms.CheckBox();
 			this.checkBox_Server_Show_Pwd = new System.Windows.Forms.CheckBox();
 			this.label_Server_User = new System.Windows.Forms.Label();
 			this.label_Server_Ping = new System.Windows.Forms.Label();
@@ -92,7 +93,6 @@
 			this.radioButton_Server_Accept_IP = new System.Windows.Forms.RadioButton();
 			this.radioButton_Get_IP_From_URL = new System.Windows.Forms.RadioButton();
 			this.groupBox_Security = new System.Windows.Forms.GroupBox();
-			this.checkBox_Server_Ping = new System.Windows.Forms.CheckBox();
 			this.groupBox_Records.SuspendLayout();
 			this.contextMenuStrip_Records.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Settings_AutoUpdate_Interval)).BeginInit();
@@ -552,6 +552,18 @@
 			this.groupBox_Server.TabStop = false;
 			this.groupBox_Server.Text = "Server 设置";
 			// 
+			// checkBox_Server_Ping
+			// 
+			this.checkBox_Server_Ping.AutoSize = true;
+			this.checkBox_Server_Ping.Checked = true;
+			this.checkBox_Server_Ping.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.checkBox_Server_Ping.Location = new System.Drawing.Point(256, 103);
+			this.checkBox_Server_Ping.Name = "checkBox_Server_Ping";
+			this.checkBox_Server_Ping.Size = new System.Drawing.Size(120, 16);
+			this.checkBox_Server_Ping.TabIndex = 20;
+			this.checkBox_Server_Ping.Text = "自动 ping 服务器";
+			this.checkBox_Server_Ping.UseVisualStyleBackColor = true;
+			// 
 			// checkBox_Server_Show_Pwd
 			// 
 			this.checkBox_Server_Show_Pwd.AutoSize = true;
@@ -746,18 +758,6 @@
 			this.groupBox_Security.TabStop = false;
 			this.groupBox_Security.Text = "安全设置";
 			// 
-			// checkBox_Server_Ping
-			// 
-			this.checkBox_Server_Ping.AutoSize = true;
-			this.checkBox_Server_Ping.Checked = true;
-			this.checkBox_Server_Ping.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox_Server_Ping.Location = new System.Drawing.Point(256, 103);
-			this.checkBox_Server_Ping.Name = "checkBox_Server_Ping";
-			this.checkBox_Server_Ping.Size = new System.Drawing.Size(120, 16);
-			this.checkBox_Server_Ping.TabIndex = 20;
-			this.checkBox_Server_Ping.Text = "自动 ping 服务器";
-			this.checkBox_Server_Ping.UseVisualStyleBackColor = true;
-			// 
 			// frm_MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -779,7 +779,7 @@
 			this.Controls.Add(this.groupBox_Records);
 			this.Name = "frm_MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "ddns - godaddy v0.04";
+			this.Text = "ddns - godaddy v0.05";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.frm_MainForm_Load);
 			this.groupBox_Records.ResumeLayout(false);

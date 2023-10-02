@@ -302,7 +302,10 @@ namespace ddns
 								domain.m_last_ip = record.m_result_ip;
 
 							if(CONFIG.m_s_IP_get_type == CONFIG.e_IP_Get_Type.Server_Accept_IP)
-								CONFIG.m_s_Last_IP = record.m_result_ip;
+							{
+								CONFIG.m_s_Last_IP							= record.m_result_ip;
+								m_s_Mainform.textBox_Settings_Last_IP.Text	= record.m_result_ip;
+							}
 
 							m_s_Mainform.add_log($"更新 {record.m_name}.{record.m_domain} -> {record.m_result_ip} 成功", Color.Green);
 						}
