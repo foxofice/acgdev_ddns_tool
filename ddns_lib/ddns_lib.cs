@@ -129,6 +129,7 @@ namespace ddns_lib
 				{
 					EVENTS.Add_Log(	$"更新 {record.m_name}.{record.m_domain} 的「{record_type} 记录」失败（ip = {record.m_ip}, StatusCode = {response.StatusCode}，ReasonPhrase = {response.ReasonPhrase}）",
 									Color.Red );
+					EVENTS.Add_Log($"({record.m_name}.{record.m_domain}) {response.Content.ReadAsStringAsync().Result}", Color.Red);
 				}
 				else
 				{
