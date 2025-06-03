@@ -41,7 +41,11 @@ namespace ddns_tool
 			string[] dynv6_domains =
 			{
 				"dns.army",
+				"dns.navy",
 				"dynv6.net",
+				"v6.army",
+				"v6.navy",
+				"v6.rocks",
 			};
 
 			foreach(string dynv6_domain in dynv6_domains)
