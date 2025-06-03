@@ -1,8 +1,13 @@
-# AcgDev DDNS Tool
+<p style="font-size: 30pt; font-weight: bold;">AcgDev DDNS Tool</p>
 
-自动设置 IPv4/IPv6 到域名的 A/AAAA 记录中
-目前支持 Godaddy（据说改了政策，需要持有50个域名才能使用 API）、dynv6
+<p>
+	Ŀǰ֧�ֵ� DDNS ����
+	<br /><span style="padding-left: 50px;">Godaddy����˵�������ߣ���Ҫ����50����������ʹ�� API��</span>
+	<br /><span style="padding-left: 50px;">dynv6</span>
+</p>
 
-![界面预览](doc/images/01.png "")
-![界面预览](doc/images/02.png "")
-![界面预览](doc/images/03.png "")
+<p>֧�ֱ���ֱ���޸ģ�Ҳ֧�ֱ������ӵ� server �޸ģ�����ǽ��Ŀǰ�޷�ֱ�ӷ��� Godaddy API��</p>
+
+<p><img src="doc/images/01.png" /></p>
+<p><img src="doc/images/02.png" /></p>
+<p><img src="doc/images/03.png" /></p>
