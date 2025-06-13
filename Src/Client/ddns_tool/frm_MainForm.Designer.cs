@@ -178,6 +178,10 @@
 			this.label_Settings_Preview__Ping = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Set_IPv4 = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Update_Type = new System.Windows.Forms.Label();
+			this.ToolStripMenuItem_Domains_CopyText = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton_Domains_CopyText = new System.Windows.Forms.ToolStripButton();
 			this.contextMenuStrip_NotifyIcon.SuspendLayout();
 			this.tabControl_Security__Property.SuspendLayout();
 			this.tabPage_Security__Godaddy.SuspendLayout();
@@ -859,7 +863,9 @@
             this.toolStripButton_Domains_IPv4_Enable,
             this.toolStripButton_Domains_IPv6_Enable,
             this.toolStripButton_Domains_IPv4_Disable,
-            this.toolStripButton_Domains_IPv6_Disable});
+            this.toolStripButton_Domains_IPv6_Disable,
+            this.toolStripSeparator1,
+            this.toolStripButton_Domains_CopyText});
 			this.toolStrip_Domains.Location = new System.Drawing.Point(3, 17);
 			this.toolStrip_Domains.Name = "toolStrip_Domains";
 			this.toolStrip_Domains.Size = new System.Drawing.Size(904, 25);
@@ -999,15 +1005,17 @@
             this.ToolStripMenuItem_Domains_IPv4_Enable,
             this.ToolStripMenuItem_Domains_IPv6_Enable,
             this.ToolStripMenuItem_Domains_IPv4_Disable,
-            this.ToolStripMenuItem_Domains_IPv6_Disable});
+            this.ToolStripMenuItem_Domains_IPv6_Disable,
+            this.toolStripMenuItem2,
+            this.ToolStripMenuItem_Domains_CopyText});
 			this.contextMenuStrip_Domains.Name = "contextMenuStrip_Domains";
-			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(153, 158);
+			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(181, 208);
 			// 
 			// ToolStripMenuItem_Domains_Add
 			// 
 			this.ToolStripMenuItem_Domains_Add.Image = global::ddns_tool.res_Main.Add;
 			this.ToolStripMenuItem_Domains_Add.Name = "ToolStripMenuItem_Domains_Add";
-			this.ToolStripMenuItem_Domains_Add.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_Add.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_Add.Text = "添加";
 			this.ToolStripMenuItem_Domains_Add.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Add_Click);
 			// 
@@ -1016,7 +1024,7 @@
 			this.ToolStripMenuItem_Domains_Modify.Enabled = false;
 			this.ToolStripMenuItem_Domains_Modify.Image = global::ddns_tool.res_Main.Edit;
 			this.ToolStripMenuItem_Domains_Modify.Name = "ToolStripMenuItem_Domains_Modify";
-			this.ToolStripMenuItem_Domains_Modify.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_Modify.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_Modify.Text = "修改";
 			this.ToolStripMenuItem_Domains_Modify.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Modify_Click);
 			// 
@@ -1025,7 +1033,7 @@
 			this.ToolStripMenuItem_Domains_Delete.Enabled = false;
 			this.ToolStripMenuItem_Domains_Delete.Image = global::ddns_tool.res_Main.Delete;
 			this.ToolStripMenuItem_Domains_Delete.Name = "ToolStripMenuItem_Domains_Delete";
-			this.ToolStripMenuItem_Domains_Delete.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_Delete.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_Delete.Text = "删除";
 			this.ToolStripMenuItem_Domains_Delete.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Delete_Click);
 			// 
@@ -1034,7 +1042,7 @@
 			this.ToolStripMenuItem_Domains_IPv4_Enable.Enabled = false;
 			this.ToolStripMenuItem_Domains_IPv4_Enable.Image = global::ddns_tool.res_Main.On;
 			this.ToolStripMenuItem_Domains_IPv4_Enable.Name = "ToolStripMenuItem_Domains_IPv4_Enable";
-			this.ToolStripMenuItem_Domains_IPv4_Enable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_IPv4_Enable.Text = "允许更新 IPv4";
 			this.ToolStripMenuItem_Domains_IPv4_Enable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv4_Enable_Click);
 			// 
@@ -1043,7 +1051,7 @@
 			this.ToolStripMenuItem_Domains_IPv6_Enable.Enabled = false;
 			this.ToolStripMenuItem_Domains_IPv6_Enable.Image = global::ddns_tool.res_Main.On;
 			this.ToolStripMenuItem_Domains_IPv6_Enable.Name = "ToolStripMenuItem_Domains_IPv6_Enable";
-			this.ToolStripMenuItem_Domains_IPv6_Enable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_IPv6_Enable.Text = "允许更新 IPv6";
 			this.ToolStripMenuItem_Domains_IPv6_Enable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv6_Enable_Click);
 			// 
@@ -1052,7 +1060,7 @@
 			this.ToolStripMenuItem_Domains_IPv4_Disable.Enabled = false;
 			this.ToolStripMenuItem_Domains_IPv4_Disable.Image = global::ddns_tool.res_Main.Off;
 			this.ToolStripMenuItem_Domains_IPv4_Disable.Name = "ToolStripMenuItem_Domains_IPv4_Disable";
-			this.ToolStripMenuItem_Domains_IPv4_Disable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_IPv4_Disable.Text = "禁止更新 IPv4";
 			this.ToolStripMenuItem_Domains_IPv4_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv4_Disable_Click);
 			// 
@@ -1061,7 +1069,7 @@
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Enabled = false;
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Image = global::ddns_tool.res_Main.Off;
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Name = "ToolStripMenuItem_Domains_IPv6_Disable";
-			this.ToolStripMenuItem_Domains_IPv6_Disable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Text = "禁止更新 IPv6";
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv6_Disable_Click);
 			// 
@@ -1858,6 +1866,36 @@
 			this.label_Settings_Preview__Update_Type.TabIndex = 0;
 			this.label_Settings_Preview__Update_Type.Text = "更新方式：";
 			// 
+			// ToolStripMenuItem_Domains_CopyText
+			// 
+			this.ToolStripMenuItem_Domains_CopyText.Enabled = false;
+			this.ToolStripMenuItem_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
+			this.ToolStripMenuItem_Domains_CopyText.Name = "ToolStripMenuItem_Domains_CopyText";
+			this.ToolStripMenuItem_Domains_CopyText.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.ToolStripMenuItem_Domains_CopyText.Size = new System.Drawing.Size(180, 22);
+			this.ToolStripMenuItem_Domains_CopyText.Text = "复制文本";
+			this.ToolStripMenuItem_Domains_CopyText.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_CopyText_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(166, 6);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripButton_Domains_CopyText
+			// 
+			this.toolStripButton_Domains_CopyText.Enabled = false;
+			this.toolStripButton_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
+			this.toolStripButton_Domains_CopyText.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_CopyText.Name = "toolStripButton_Domains_CopyText";
+			this.toolStripButton_Domains_CopyText.Size = new System.Drawing.Size(76, 22);
+			this.toolStripButton_Domains_CopyText.Text = "复制文本";
+			this.toolStripButton_Domains_CopyText.Click += new System.EventHandler(this.toolStripButton_Domains_CopyText_Click);
+			// 
 			// frm_MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -2077,6 +2115,10 @@
 		private System.Windows.Forms.GroupBox groupBox_Set_IPv6;
 		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv6_Val;
 		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv6;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_CopyText;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_CopyText;
 	}
 }
 

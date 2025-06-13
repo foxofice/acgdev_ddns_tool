@@ -689,6 +689,7 @@ namespace ddns_tool
 			toolStripButton_Domains_IPv4_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
 			toolStripButton_Domains_IPv6_Enable.Enabled		= (listView_Domains.SelectedItems.Count > 0);
 			toolStripButton_Domains_IPv6_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_CopyText.Enabled		= (listView_Domains.SelectedItems.Count > 0);
 
 			ToolStripMenuItem_Domains_Modify.Enabled		= (listView_Domains.SelectedItems.Count > 0);
 			ToolStripMenuItem_Domains_Delete.Enabled		= (listView_Domains.SelectedItems.Count > 0);
@@ -696,6 +697,7 @@ namespace ddns_tool
 			ToolStripMenuItem_Domains_IPv4_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
 			ToolStripMenuItem_Domains_IPv6_Enable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
 			ToolStripMenuItem_Domains_IPv6_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_CopyText.Enabled		= (listView_Domains.SelectedItems.Count > 0);
 		}
 
 		/*==============================================================
@@ -825,6 +827,24 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
+		 * 复制文本
+		 *==============================================================*/
+		private void toolStripButton_Domains_CopyText_Click(object sender, EventArgs e)
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
+			{
+				for(int i=0; i<listView_Domains.Columns.Count; ++i)
+					sb.Append($"{LVI.SubItems[i].Text}\t");
+
+				sb.AppendLine();
+			}	// for
+
+			Clipboard.SetText(sb.ToString());
+		}
+
+		/*==============================================================
 		 * 添加
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_Add_Click(object sender, EventArgs e)
@@ -878,6 +898,14 @@ namespace ddns_tool
 		private void ToolStripMenuItem_Domains_IPv6_Disable_Click(object sender, EventArgs e)
 		{
 			toolStripButton_Domains_IPv6_Disable.PerformClick();
+		}
+
+		/*==============================================================
+		 * 复制文本
+		 *==============================================================*/
+		private void ToolStripMenuItem_Domains_CopyText_Click(object sender, EventArgs e)
+		{
+			toolStripButton_Domains_CopyText.PerformClick();
 		}
 		#endregion
 
