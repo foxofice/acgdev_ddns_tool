@@ -17,6 +17,7 @@ inline ddns_lib::c_Security_Profile^ make_Security_Profile(const struct s_Securi
 	gc_profile->m_Godaddy__Key		= gcnew System::String(profile.GODADDY.m_Key);
 	gc_profile->m_Godaddy__Secret	= gcnew System::String(profile.GODADDY.m_Secret);
 	gc_profile->m_dynv6__token		= gcnew System::String(profile.DYNV6.m_token);
+	gc_profile->m_dynu__API_Key		= gcnew System::String(profile.DYNU.m_API_KEY);
 
 	return gc_profile;
 }
@@ -30,6 +31,7 @@ inline void make_Security_Profile(	__in ddns_lib::c_Security_Profile	^gc_profile
 	NNN::CLR::TO_CPP::String_to_char(gc_profile->m_Godaddy__Key,	profile.GODADDY.m_Key);
 	NNN::CLR::TO_CPP::String_to_char(gc_profile->m_Godaddy__Secret,	profile.GODADDY.m_Secret);
 	NNN::CLR::TO_CPP::String_to_char(gc_profile->m_dynv6__token,	profile.DYNV6.m_token);
+	NNN::CLR::TO_CPP::String_to_char(gc_profile->m_dynu__API_Key,	profile.DYNU.m_API_KEY);
 }
 }	// namespace TO_CPP
 
@@ -47,22 +49,26 @@ inline ddns_lib::c_Domain^ make_domain(	const struct s_Domain			&domain,
 
 	gc_domain->m_domain				= gcnew System::String(domain.m_domain);
 	gc_domain->m_type				= (ddns_lib::e_DomainType)domain.m_type;
-	gc_domain->m_input_IPv4			= gcnew System::String(domain.m_input_IPv4);
-	gc_domain->m_input_IPv6			= gcnew System::String(domain.m_input_IPv6);
-	gc_domain->m_current_IPv4		= gcnew System::String(domain.m_current_IPv4);
-	gc_domain->m_current_IPv6		= gcnew System::String(domain.m_current_IPv6);
+
+	gc_domain->IPv4->m_input_IP		= gcnew System::String(domain.IPv4.m_input_IP);
+	gc_domain->IPv4->m_current_IP	= gcnew System::String(domain.IPv4.m_current_IP);
+	gc_domain->IPv4->m_enabled		= domain.IPv4.m_enabled;
+	gc_domain->IPv4->m_err_msg		= gcnew System::String(domain.IPv4.m_err_msg);
+
+	gc_domain->IPv6->m_input_IP		= gcnew System::String(domain.IPv6.m_input_IP);
+	gc_domain->IPv6->m_current_IP	= gcnew System::String(domain.IPv6.m_current_IP);
+	gc_domain->IPv6->m_enabled		= domain.IPv6.m_enabled;
+	gc_domain->IPv6->m_err_msg		= gcnew System::String(domain.IPv6.m_err_msg);
 
 	gc_domain->m_Godaddy__TTL		= domain.GODADDY.m_TTL;
 
 	gc_domain->m_dynv6__Auto_IPv4	= domain.DYNV6.m_Auto_IPv4;
 	gc_domain->m_dynv6__Auto_IPv6	= domain.DYNV6.m_Auto_IPv6;
 
+	gc_domain->m_dynu__ID			= domain.DYNU.m_ID;
+	gc_domain->m_dynu__TTL			= domain.DYNU.m_TTL;
+
 	gc_domain->m_Security_Profile	= profile;
-
-	gc_domain->m_err_msg_IPv4		= gcnew System::String(domain.m_err_msg_IPv4);
-	gc_domain->m_err_msg_IPv6		= gcnew System::String(domain.m_err_msg_IPv6);
-
-	gc_domain->m_enabled			= domain.m_enabled;
 
 	return gc_domain;
 }
@@ -76,21 +82,25 @@ inline void make_Domain(__in ddns_lib::c_Domain			^gc_domain,
 {
 	NNN::CLR::TO_CPP::String_to_char(gc_domain->m_domain,		domain.m_domain);
 	domain.m_type				= (es_DomainType)gc_domain->m_type;
-	NNN::CLR::TO_CPP::String_to_char(gc_domain->m_input_IPv4,	domain.m_input_IPv4);
-	NNN::CLR::TO_CPP::String_to_char(gc_domain->m_input_IPv6,	domain.m_input_IPv6);
-	NNN::CLR::TO_CPP::String_to_char(gc_domain->m_current_IPv4,	domain.m_current_IPv4);
-	NNN::CLR::TO_CPP::String_to_char(gc_domain->m_current_IPv6,	domain.m_current_IPv6);
+
+	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_input_IP,	domain.IPv4.m_input_IP);
+	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_current_IP,	domain.IPv4.m_current_IP);
+	domain.IPv4.m_enabled		= gc_domain->IPv4->m_enabled;
+	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv4->m_err_msg,	domain.IPv4.m_err_msg);
+
+	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_input_IP,	domain.IPv6.m_input_IP);
+	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_current_IP,	domain.IPv6.m_current_IP);
+	domain.IPv6.m_enabled		= gc_domain->IPv6->m_enabled;
+	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv6->m_err_msg,	domain.IPv6.m_err_msg);
 
 	domain.GODADDY.m_TTL		= gc_domain->m_Godaddy__TTL;
 
 	domain.DYNV6.m_Auto_IPv4	= gc_domain->m_dynv6__Auto_IPv4;
 	domain.DYNV6.m_Auto_IPv6	= gc_domain->m_dynv6__Auto_IPv6;
 
-	domain.m_Security_Profile	= profile;
+	domain.DYNU.m_ID			= gc_domain->m_dynu__ID;
+	domain.DYNU.m_TTL			= gc_domain->m_dynu__TTL;
 
-	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->m_err_msg_IPv4,	domain.m_err_msg_IPv4);
-	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->m_err_msg_IPv6,	domain.m_err_msg_IPv6);
-
-	domain.m_enabled			= gc_domain->m_enabled;
+	domain.m_Security_Profile	= profile;	
 }
 }	// namespace TO_CPP

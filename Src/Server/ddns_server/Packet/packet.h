@@ -64,10 +64,11 @@ void	send_Login_Result(struct NNN::Socket::s_SessionData *sd, es_Result result);
 		<count>.USHORT
 		{
 			<domain_len>.B <domain>.?B(char*)
-			<current_IPv4_len>.B <current_IPv4>.?B(char*)
-			<current_IPv6_len>.B <current_IPv6>.?B(char*)
 
+			<current_IPv4_len>.B <current_IPv4>.?B(char*)
 			<err_msg_IPv4_len>.USHORT <err_msg_IPv4>.?B(WCHAR*)
+
+			<current_IPv6_len>.B <current_IPv6>.?B(char*)
 			<err_msg_IPv6_len>.USHORT <err_msg_IPv6>.?B(WCHAR*)
 		}*
 	}
@@ -118,6 +119,7 @@ PARSE_FUNC(recv_Login_Data);
 			<Godaddy_Key_len>.B <Godaddy_Key>.?B(char*)
 			<Godaddy_Secret_len>.B <Godaddy_Secret>.?B(char*)
 			<dynv6_token_len>.B <dynv6_token>.?B(char*)
+			<dynu_API_Key_len>.B <dynu_API_Key>.?B(char*)
 		}*
 
 		<DNS_Lookup_First>.bool
@@ -133,12 +135,18 @@ PARSE_FUNC(recv_Login_Data);
 		{
 			<domain_len>.B <domain>.?B(char*)
 			<type>.B
-			<input_ipv4_len>.B [<input_ipv4>.?B(char*)]
-			<input_ipv6_len>.B [<input_ipv6>.?B(char*)]
 
-			<Godaddy_TTL>.int
-			<dynv6_Auto_IPv4>.bool
-			<dynv6_Auto_IPv6>.bool
+			<input_ipv4_len>.B <input_ipv4>.?B(char*)
+			<enable_ipv4>.bool
+
+			<input_ipv6_len>.B <input_ipv6>.?B(char*)
+			<enable_ipv6>.bool
+
+			<Godaddy__TTL>.int
+			<dynv6__Auto_IPv4>.bool
+			<dynv6__Auto_IPv6>.bool
+			<dynu__ID>.int
+			<dynu__TTL>.int
 
 			<Profile_idx>.B
 		}*

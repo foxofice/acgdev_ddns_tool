@@ -37,23 +37,45 @@ namespace ddns_tool
 		{
 			string domain = textBox_Domain.Text.Trim();
 
-			// dynv6
-			string[] dynv6_domains =
+			var list = new List<(string m_domain, ddns_lib.e_DomainType m_type)>
 			{
-				"dns.army",
-				"dns.navy",
-				"dynv6.net",
-				"v6.army",
-				"v6.navy",
-				"v6.rocks",
+				// m_domain,		m_type
+				("dns.army",		ddns_lib.e_DomainType.dynv6),
+				("dns.navy",		ddns_lib.e_DomainType.dynv6),
+				("dynv6.net",		ddns_lib.e_DomainType.dynv6),
+				("v6.army",			ddns_lib.e_DomainType.dynv6),
+				("v6.navy",			ddns_lib.e_DomainType.dynv6),
+				("v6.rocks",		ddns_lib.e_DomainType.dynv6),
+
+				("accesscam.org",	ddns_lib.e_DomainType.dynu),
+				("camdvr.org",		ddns_lib.e_DomainType.dynu),
+				("casacam.net",		ddns_lib.e_DomainType.dynu),
+				("ddnsfree.com",	ddns_lib.e_DomainType.dynu),
+				("ddnsgeek.com",	ddns_lib.e_DomainType.dynu),
+				("freeddns.org",	ddns_lib.e_DomainType.dynu),
+				("giize.com",		ddns_lib.e_DomainType.dynu),
+				("gleeze.com",		ddns_lib.e_DomainType.dynu),
+				("kozow.com",		ddns_lib.e_DomainType.dynu),
+				("loseyourip.com",	ddns_lib.e_DomainType.dynu),
+				("mywire.org",		ddns_lib.e_DomainType.dynu),
+				("ooguy.com",		ddns_lib.e_DomainType.dynu),
+				("theworkpc.com",	ddns_lib.e_DomainType.dynu),
+				("webredirect.org",	ddns_lib.e_DomainType.dynu),
+				("1cooldns.com",	ddns_lib.e_DomainType.dynu),
+				("4cloud.click",	ddns_lib.e_DomainType.dynu),
+				("bumbleshrimp.com",ddns_lib.e_DomainType.dynu),
+				("dynuddns.com",	ddns_lib.e_DomainType.dynu),
+				("dynuddns.net",	ddns_lib.e_DomainType.dynu),
+				("ddnsguru.com",	ddns_lib.e_DomainType.dynu),
+				("mysynology.net",	ddns_lib.e_DomainType.dynu),
 			};
 
-			foreach(string dynv6_domain in dynv6_domains)
+			foreach(var val in list)
 			{
-				if(	domain.Length > dynv6_domain.Length &&
-					string.Compare(domain.Substring(domain.Length - dynv6_domain.Length), dynv6_domain, true) == 0 )
+				if(	domain.Length > val.m_domain.Length &&
+					string.Compare(domain.Substring(domain.Length - val.m_domain.Length), val.m_domain, true) == 0 )
 				{
-					return ddns_lib.e_DomainType.dynv6;
+					return val.m_type;
 				}
 			}	// for
 
@@ -113,6 +135,12 @@ namespace ddns_tool
 
 			checkBox_dynv6__Auto_IPv4.Checked	= m_domain.m_dynv6__Auto_IPv4;
 			checkBox_dynv6__Auto_IPv6.Checked	= m_domain.m_dynv6__Auto_IPv6;
+
+			textBox_dynu__ID.Text				= (m_domain.m_dynu__ID > 0) ? m_domain.m_dynu__ID.ToString() : "";
+			textBox_dynu__TTL.Text				= (m_domain.m_dynu__TTL > 0) ? m_domain.m_dynu__TTL.ToString() : "";
+
+			checkBox_IPv4_Enable.Checked		= m_domain.IPv4.m_enabled;
+			checkBox_IPv6_Enable.Checked		= m_domain.IPv6.m_enabled;
 		}
 
 		/*==============================================================
@@ -171,13 +199,19 @@ namespace ddns_tool
 			m_domain.m_domain	= textBox_Domain.Text.Trim();
 			m_domain.m_type		= (ddns_lib.e_DomainType)comboBox_Type.SelectedIndex;
 
-			if(!uint.TryParse(textBox_Godaddy__TTL.Text, out m_domain.m_Godaddy__TTL))
+			if(!int.TryParse(textBox_Godaddy__TTL.Text, out m_domain.m_Godaddy__TTL))
 				m_domain.m_Godaddy__TTL = 0;
 
 			m_domain.m_dynv6__Auto_IPv4	= checkBox_dynv6__Auto_IPv4.Checked;
 			m_domain.m_dynv6__Auto_IPv6	= checkBox_dynv6__Auto_IPv6.Checked;
 
+			if(!int.TryParse(textBox_dynu__TTL.Text, out m_domain.m_dynu__TTL))
+				m_domain.m_dynu__TTL = 0;
+
 			m_domain.m_Security_Profile	= CONFIG.SECURITY.m_s_profiles[comboBox_Security_Profile.SelectedIndex];
+
+			m_domain.IPv4.m_enabled	= checkBox_IPv4_Enable.Checked;
+			m_domain.IPv6.m_enabled	= checkBox_IPv6_Enable.Checked;
 
 			// 更新 m_s_domains_list
 			if(domain == null)

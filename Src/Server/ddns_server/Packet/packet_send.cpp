@@ -168,36 +168,36 @@ void send_Update_Domains_Result(struct NNN::Socket::s_SessionData	*sd,
 		bw_aes.write_array(domain.m_domain, domain_len);
 
 		// current_IPv4_len
-		BYTE current_IPv4_len = (BYTE)strlen(domain.m_current_IPv4);
+		BYTE current_IPv4_len = (BYTE)strlen(domain.IPv4.m_current_IP);
 
 		bw_aes.write<BYTE>(current_IPv4_len);
 
 		// current_IPv4
-		bw_aes.write_array(domain.m_current_IPv4, current_IPv4_len);
-
-		// current_IPv6_len
-		BYTE current_IPv6_len = (BYTE)strlen(domain.m_current_IPv6);
-
-		bw_aes.write<BYTE>(current_IPv6_len);
-
-		// current_IPv6
-		bw_aes.write_array(domain.m_current_IPv6, current_IPv6_len);
+		bw_aes.write_array(domain.IPv4.m_current_IP, current_IPv4_len);
 
 		// err_msg_IPv4_len
-		USHORT err_msg_IPv4_len = (USHORT)wcslen(domain.m_err_msg_IPv4) * sizeof(WCHAR);
+		USHORT err_msg_IPv4_len = (USHORT)wcslen(domain.IPv4.m_err_msg) * sizeof(WCHAR);
 
 		bw_aes.write<USHORT>(err_msg_IPv4_len);
 
 		// err_msg_IPv4
-		bw_aes.write_wchar2(domain.m_err_msg_IPv4, err_msg_IPv4_len / sizeof(WCHAR));
+		bw_aes.write_wchar2(domain.IPv4.m_err_msg, err_msg_IPv4_len / sizeof(WCHAR));
+
+		// current_IPv6_len
+		BYTE current_IPv6_len = (BYTE)strlen(domain.IPv6.m_current_IP);
+
+		bw_aes.write<BYTE>(current_IPv6_len);
+
+		// current_IPv6
+		bw_aes.write_array(domain.IPv6.m_current_IP, current_IPv6_len);
 
 		// err_msg_IPv6_len
-		USHORT err_msg_IPv6_len = (USHORT)wcslen(domain.m_err_msg_IPv6) * sizeof(WCHAR);
+		USHORT err_msg_IPv6_len = (USHORT)wcslen(domain.IPv6.m_err_msg) * sizeof(WCHAR);
 
 		bw_aes.write<USHORT>(err_msg_IPv6_len);
 
 		// err_msg_IPv6
-		bw_aes.write_wchar2(domain.m_err_msg_IPv6, err_msg_IPv6_len / sizeof(WCHAR));
+		bw_aes.write_wchar2(domain.IPv6.m_err_msg, err_msg_IPv6_len / sizeof(WCHAR));
 	}	// for
 
 	HRESULT hr = NNN::Encrypt::Rijndael_Encrypt(aes_data,

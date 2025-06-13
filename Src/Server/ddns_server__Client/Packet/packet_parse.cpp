@@ -162,8 +162,14 @@ es_Parse_Result recv_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*s
 		// current_IPv4
 		const BYTE *current_IPv4 = br_data.read_array(current_IPv4_len);
 
-		CopyMemory(domain.m_current_IPv4, current_IPv4, current_IPv4_len);
-		domain.m_current_IPv4[current_IPv4_len] = '\0';
+		CopyMemory(domain.IPv4.m_current_IP, current_IPv4, current_IPv4_len);
+		domain.IPv4.m_current_IP[current_IPv4_len] = '\0';
+
+		// err_msg_IPv4_len
+		USHORT err_msg_IPv4_len = br_data.read<USHORT>();
+
+		// err_msg_IPv4
+		br_data.read_wchar2(domain.IPv4.m_err_msg, err_msg_IPv4_len / 2);
 
 		// current_IPv6_len
 		BYTE current_IPv6_len = br_data.read<BYTE>();
@@ -171,22 +177,14 @@ es_Parse_Result recv_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*s
 		// current_IPv6
 		const BYTE *current_IPv6 = br_data.read_array(current_IPv6_len);
 
-		CopyMemory(domain.m_current_IPv6, current_IPv6, current_IPv6_len);
-		domain.m_current_IPv6[current_IPv6_len] = '\0';
-
-		// err_msg_IPv4_len
-		USHORT err_msg_IPv4_len = br_data.read<USHORT>();
-
-		// err_msg_IPv4
-		if(err_msg_IPv4_len > 0)
-			br_data.read_wchar2(domain.m_err_msg_IPv4, err_msg_IPv4_len / 2);
+		CopyMemory(domain.IPv6.m_current_IP, current_IPv6, current_IPv6_len);
+		domain.IPv6.m_current_IP[current_IPv6_len] = '\0';
 
 		// err_msg_IPv6_len
 		USHORT err_msg_IPv6_len = br_data.read<USHORT>();
 
 		// err_msg_IPv6
-		if(err_msg_IPv6_len > 0)
-			br_data.read_wchar2(domain.m_err_msg_IPv6, err_msg_IPv6_len / 2);
+		br_data.read_wchar2(domain.IPv6.m_err_msg, err_msg_IPv6_len / 2);
 	}	// for
 
 	return es_Parse_Result::OK;

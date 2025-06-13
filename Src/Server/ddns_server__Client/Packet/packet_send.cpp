@@ -118,7 +118,7 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 
 	for(const struct s_Domain &domain : domains)
 	{
-		if(!domain.m_enabled)
+		if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 			continue;
 
 		if(domain.m_Security_Profile == nullptr)
@@ -163,6 +163,13 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 
 		// dynv6_token
 		bw_aes.write_array(profile->DYNV6.m_token, dynv6_token_len);
+
+		// dynu_API_Key_len
+		BYTE dynu_API_Key_len = (BYTE)strlen(profile->DYNU.m_API_KEY);
+		bw_aes.write<BYTE>(dynu_API_Key_len);
+
+		// dynu_API_Key
+		bw_aes.write_array(profile->DYNU.m_API_KEY, dynu_API_Key_len);
 	}	// for
 
 	// DNS_Lookup_First
@@ -196,7 +203,7 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 
 	for(const struct s_Domain &domain : domains)
 	{
-		if(!domain.m_enabled)
+		if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 			continue;
 
 		if(domain.m_Security_Profile == nullptr)
@@ -213,20 +220,26 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 		bw_aes.write<BYTE>((BYTE)domain.m_type);
 
 		// input_ipv4_len
-		BYTE input_ipv4_len = (BYTE)strlen(domain.m_input_IPv4);
+		BYTE input_ipv4_len = (BYTE)strlen(domain.IPv4.m_input_IP);
 		bw_aes.write<BYTE>(input_ipv4_len);
 
 		// input_ipv4
 		if(input_ipv4_len > 0)
-			bw_aes.write_array(domain.m_input_IPv4, input_ipv4_len);
+			bw_aes.write_array(domain.IPv4.m_input_IP, input_ipv4_len);
+
+		// enable_ipv4
+		bw_aes.write<bool>((bool)domain.IPv4.m_enabled);
 
 		// input_ipv6_len
-		BYTE input_ipv6_len = (BYTE)strlen(domain.m_input_IPv6);
+		BYTE input_ipv6_len = (BYTE)strlen(domain.IPv6.m_input_IP);
 		bw_aes.write<BYTE>(input_ipv6_len);
 
 		// input_ipv6
 		if(input_ipv6_len > 0)
-			bw_aes.write_array(domain.m_input_IPv6, input_ipv6_len);
+			bw_aes.write_array(domain.IPv6.m_input_IP, input_ipv6_len);
+
+		// enable_ipv6
+		bw_aes.write<bool>((bool)domain.IPv6.m_enabled);
 
 		// Godaddy_TTL
 		bw_aes.write<int>(domain.GODADDY.m_TTL);
@@ -236,6 +249,12 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 
 		// dynv6_Auto_IPv6
 		bw_aes.write<bool>(domain.DYNV6.m_Auto_IPv6);
+
+		// dynu__ID
+		bw_aes.write<int>(domain.DYNU.m_ID);
+
+		// dynu__TTL
+		bw_aes.write<int>(domain.DYNU.m_TTL);
 
 		// Profile_idx
 		BYTE Profile_idx = profiles_to_idx[domain.m_Security_Profile];

@@ -284,6 +284,9 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 		BYTE		dynv6_token_len		= br_data.read<BYTE>();
 		const BYTE	*dynv6_token_		= br_data.read_array(dynv6_token_len);
 
+		BYTE		dynu_API_Key_len	= br_data.read<BYTE>();
+		const BYTE	*dynu_API_Key_		= br_data.read_array(dynu_API_Key_len);
+
 		CopyMemory(profiles[i].GODADDY.m_Key,		Godaddy_Key_,		Godaddy_Key_len);
 		profiles[i].GODADDY.m_Key[Godaddy_Key_len]			= '\0';
 
@@ -292,6 +295,9 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 
 		CopyMemory(profiles[i].DYNV6.m_token,		dynv6_token_,		dynv6_token_len);
 		profiles[i].DYNV6.m_token[dynv6_token_len]			= '\0';
+
+		CopyMemory(profiles[i].DYNU.m_API_KEY,		dynu_API_Key_,		dynu_API_Key_len);
+		profiles[i].DYNU.m_API_KEY[dynu_API_Key_len]		= '\0';
 	}	// for
 	//========== profile ==========(End)
 
@@ -325,22 +331,28 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 	{
 		struct s_Domain &domain = domains[i];
 
-		BYTE		domain_len		= br_data.read<BYTE>();
-		const BYTE	*domain_		= br_data.read_array(domain_len);
+		BYTE		domain_len			= br_data.read<BYTE>();
+		const BYTE	*domain_			= br_data.read_array(domain_len);
 
-		BYTE		type			= br_data.read<BYTE>();
+		BYTE		type				= br_data.read<BYTE>();
 
-		BYTE		input_ipv4_len	= br_data.read<BYTE>();
-		const BYTE	*input_ipv4		= (input_ipv4_len > 0) ? br_data.read_array(input_ipv4_len) : nullptr;
+		BYTE		input_ipv4_len		= br_data.read<BYTE>();
+		const BYTE	*input_ipv4			= (input_ipv4_len > 0) ? br_data.read_array(input_ipv4_len) : nullptr;
 
-		BYTE		input_ipv6_len	= br_data.read<BYTE>();
-		const BYTE	*input_ipv6		= (input_ipv6_len > 0) ? br_data.read_array(input_ipv6_len) : nullptr;
+		bool		enable_ipv4			= br_data.read<bool>();
 
-		int			Godaddy_TTL		= br_data.read<int>();
-		bool		dynv6_Auto_IPv4	= br_data.read<bool>();
-		bool		dynv6_Auto_IPv6	= br_data.read<bool>();
+		BYTE		input_ipv6_len		= br_data.read<BYTE>();
+		const BYTE	*input_ipv6			= (input_ipv6_len > 0) ? br_data.read_array(input_ipv6_len) : nullptr;
 
-		BYTE		Profile_idx		= br_data.read<BYTE>();
+		bool		enable_ipv6			= br_data.read<bool>();
+
+		int			Godaddy_TTL			= br_data.read<int>();
+		bool		dynv6_Auto_IPv4		= br_data.read<bool>();
+		bool		dynv6_Auto_IPv6		= br_data.read<bool>();
+		int			dynu__ID			= br_data.read<int>();
+		int			dynu__TTL			= br_data.read<int>();
+
+		BYTE		Profile_idx			= br_data.read<BYTE>();
 
 		// 填充数据
 		CopyMemory(domain.m_domain,	domain_,	domain_len);
@@ -349,16 +361,22 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 		domain.m_type			= (es_DomainType)type;
 
 		if(input_ipv4_len > 0)
-			CopyMemory(domain.m_input_IPv4, input_ipv4, input_ipv4_len);
-		domain.m_input_IPv4[input_ipv4_len] = '\0';
+			CopyMemory(domain.IPv4.m_input_IP, input_ipv4, input_ipv4_len);
+		domain.IPv4.m_input_IP[input_ipv4_len] = '\0';
+
+		domain.IPv4.m_enabled = enable_ipv4;
 
 		if(input_ipv6_len > 0)
-			CopyMemory(domain.m_input_IPv6, input_ipv6, input_ipv6_len);
-		domain.m_input_IPv6[input_ipv6_len] = '\0';
+			CopyMemory(domain.IPv6.m_input_IP, input_ipv6, input_ipv6_len);
+		domain.IPv6.m_input_IP[input_ipv6_len] = '\0';
+
+		domain.IPv6.m_enabled = enable_ipv6;
 
 		domain.GODADDY.m_TTL		= Godaddy_TTL;
 		domain.DYNV6.m_Auto_IPv4	= dynv6_Auto_IPv4;
 		domain.DYNV6.m_Auto_IPv6	= dynv6_Auto_IPv6;
+		domain.DYNU.m_ID			= dynu__ID;
+		domain.DYNU.m_TTL			= dynu__TTL;
 
 		if(Profile_idx + 1 <= profiles_count)
 			domain.m_Security_Profile = &profiles[Profile_idx];

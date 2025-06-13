@@ -28,7 +28,7 @@ namespace ddns_tool
 		enum e_Column_Domains
 		{
 			Domain,
-			Type,	// [Godaddy] TTL = 600；[dynv6] 自动IPv4, 自动IPv6
+			Type,	// [Godaddy] TTL = 600；[dynv6] 自动IPv4, 自动IPv6；[dynu] TTL = 600, ID = 12345678
 			Profile,
 			current_IPv4,
 			current_IPv6,
@@ -53,6 +53,28 @@ namespace ddns_tool
 		bool							m_is_updating			= false;		// 是否正在执行更新
 
 		bool							m_login_server_done		= false;		// 已成功登录 Server
+
+		// (url, 支持IPv4, 支持IPv6)
+		List<(string m_url, bool m_IPv4, bool m_IPv6)>	m_get_ip_url_List	= new List<(string, bool, bool)>
+		{
+			// m_url,							m_IPv4,	m_IPv6
+			("https://icanhazip.com",			true,	true),
+			("https://ipinfo.io/ip",			true,	false),
+			("https://checkip.amazonaws.com",	true,	false),
+			("https://ifconfig.me/ip",			true,	true),
+			("https://ipecho.net/plain",		true,	true),
+			("https://api.ip.sb/ip",			true,	true),
+			("https://a.ident.me",				true,	true),
+			("https://4.ident.me",				true,	false),
+			("https://6.ident.me",				false,	true),
+			("https://ipv4.icanhazip.com",		true,	false),
+			("https://ipv6.icanhazip.com",		false,	true),
+			("https://ip.3322.net",				true,	false),
+			("https://ip.qaros.com",			true,	false),
+			("https://test.ipw.cn",				true,	true),
+			("https://4.ipw.cn",				true,	false),
+			("https://6.ipw.cn",				false,	true),
+		};
 
 		/*==============================================================
 		 * 域名 -> LVI
@@ -96,21 +118,24 @@ namespace ddns_tool
 				textBox_Settings_RemoteServer__Pwd.ReadOnly		= !enabled || !radioButton_Settings_Type__Remote.Checked;
 
 				//【设置 IP】
-				radioButton_Settings_IP__From_URL.Enabled		= enabled;
-				comboBox_Settings_IPv4__From_URL.Enabled		= enabled && radioButton_Settings_IP__From_URL.Checked;
-				comboBox_Settings_IPv6__From_URL.Enabled		= enabled && radioButton_Settings_IP__From_URL.Checked;
+				radioButton_Settings_IPv6__From_URL.Enabled		= enabled;
+				comboBox_Settings_IPv4__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
+				comboBox_Settings_IPv6__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
 
-				radioButton_Settings_IP__Manual.Enabled			= enabled;
-				textBox_Settings_IP__IPv4.ReadOnly				= !enabled || !radioButton_Settings_IP__Manual.Checked;
-				textBox_Settings_IP__IPv6.ReadOnly				= !enabled || !radioButton_Settings_IP__Manual.Checked;
+				radioButton_Settings_IPv6__Manual.Enabled		= enabled;
+				textBox_Settings_IPv4.ReadOnly					= !enabled || !radioButton_Settings_IPv6__Manual.Checked;
+				textBox_Settings_IPv6.ReadOnly					= !enabled || !radioButton_Settings_IPv6__Manual.Checked;
 
-				radioButton_Settings_IP__Accept_IP.Enabled		= enabled;
+				radioButton_Settings_IPv4__Accept_IP.Enabled	= enabled;
+				radioButton_Settings_IPv6__Accept_IP.Enabled	= enabled;
 
 				//【安全设置】
 				textBox_Security_Godaddy__Key.ReadOnly			= !enabled;
 				textBox_Security_Godaddy__Secret.ReadOnly		= !enabled;
 
 				textBox_Security_dynv6__token.ReadOnly			= !enabled;
+
+				textBox_Security_dynu__API_Key.ReadOnly			= !enabled;
 
 				//【更新操作】
 				checkBox_Action_UpdateIP.Enabled				= enabled;
@@ -160,11 +185,11 @@ namespace ddns_tool
 					m_s_Mainform.textBox_Settings_RemoteServer__Ping.Clear();
 				});
 
-				if(CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Server_Accept_IP)
-				{
+				if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
 					CONFIG.SET_IP.m_s_IPv4 = "";
+
+				if(CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
 					CONFIG.SET_IP.m_s_IPv6 = "";
-				}
 
 				m_s_Mainform.m_login_server_done = false;
 			}
@@ -217,10 +242,10 @@ namespace ddns_tool
 					if(domain == null)
 						continue;
 
-					domain.m_current_IPv4	= res.m_current_IPv4;
-					domain.m_current_IPv6	= res.m_current_IPv6;
-					domain.m_err_msg_IPv4	= res.m_err_msg_IPv4;
-					domain.m_err_msg_IPv6	= res.m_err_msg_IPv6;
+					domain.IPv4.m_current_IP	= res.IPv4.m_current_IP;
+					domain.IPv6.m_current_IP	= res.IPv6.m_current_IP;
+					domain.IPv4.m_err_msg		= res.IPv4.m_err_msg;
+					domain.IPv6.m_err_msg		= res.IPv6.m_err_msg;
 				}	// for
 
 				m_s_Mainform.update__done();
@@ -343,21 +368,32 @@ namespace ddns_tool
 			checkBox_Settings_RemoteServer__Ping.Checked	= CONFIG.REMOTE_SERVER.m_s_auto_ping;
 
 			//【设置 IP】
-			radioButton_Settings_IP__From_URL.Checked	= (CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
-			comboBox_Settings_IPv4__From_URL.Text		= CONFIG.SET_IP.m_s_Get_IPv4_URL;
-			comboBox_Settings_IPv6__From_URL.Text		= CONFIG.SET_IP.m_s_Get_IPv6_URL;
+			foreach(var get_ip_url in m_get_ip_url_List)
+			{
+				if(get_ip_url.m_IPv4)
+					comboBox_Settings_IPv4__From_URL.Items.Add(get_ip_url.m_url);
+
+				if(get_ip_url.m_IPv6)
+					comboBox_Settings_IPv6__From_URL.Items.Add(get_ip_url.m_url);
+			}	// for
+
+			radioButton_Settings_IPv4__From_URL.Checked		= (CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
+			comboBox_Settings_IPv4__From_URL.Text			= CONFIG.SET_IP.m_s_Get_IPv4_URL;
+			radioButton_Settings_IPv4__Manual.Checked		= (CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Manual_IP);
+			textBox_Settings_IPv4.Text						= CONFIG.SET_IP.m_s_IPv4;
+			radioButton_Settings_IPv4__Accept_IP.Checked	= (CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP);
+
+			radioButton_Settings_IPv6__From_URL.Checked		= (CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
+			comboBox_Settings_IPv6__From_URL.Text			= CONFIG.SET_IP.m_s_Get_IPv6_URL;
+			radioButton_Settings_IPv6__Manual.Checked		= (CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Manual_IP);
+			textBox_Settings_IPv6.Text						= CONFIG.SET_IP.m_s_IPv6;
+			radioButton_Settings_IPv6__Accept_IP.Checked	= (CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP);
 
 			if(CONFIG.SET_IP.m_s_Get_IPv4_URL.Length == 0)
 				comboBox_Settings_IPv4__From_URL.SelectedIndex = 0;
 
 			if(CONFIG.SET_IP.m_s_Get_IPv6_URL.Length == 0)
 				comboBox_Settings_IPv6__From_URL.SelectedIndex = 0;
-
-			radioButton_Settings_IP__Manual.Checked		= (CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Manual_IP);
-			textBox_Settings_IP__IPv4.Text				= CONFIG.SET_IP.m_s_IPv4;
-			textBox_Settings_IP__IPv6.Text				= CONFIG.SET_IP.m_s_IPv6;
-
-			radioButton_Settings_IP__Accept_IP.Checked	= (CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Server_Accept_IP);
 
 			//【安全设置】
 			foreach(ddns_lib.c_Security_Profile profile in CONFIG.SECURITY.m_s_profiles)
@@ -398,7 +434,8 @@ namespace ddns_tool
 
 			Update_Settings_Preview__Update_Type();
 			Update_Settings_Preview__Ping();
-			Update_Settings_Preview__Set_IP();
+			Update_Settings_Preview__Set_IPv4();
+			Update_Settings_Preview__Set_IPv6();
 			Update_Settings_Preview__Security();
 			Update_Settings_Preview__UpdateIP();
 			Update_Settings_Preview__AutoUpdate();
@@ -523,7 +560,7 @@ namespace ddns_tool
 
 			StringBuilder sb_type = new StringBuilder();
 
-			sb_type.Append(domain.m_type.ToString());
+			sb_type.Append($"[{domain.m_type}]");
 
 			switch(domain.m_type)
 			{
@@ -544,23 +581,44 @@ namespace ddns_tool
 						sb_type.Append(" 自动IPv6");
 				}
 				break;
+
+			case ddns_lib.e_DomainType.dynu:
+				if(domain.m_dynu__TTL > 0)
+					sb_type.Append($" TTL = {domain.m_dynu__TTL},");
+
+				sb_type.Append($" ID = {domain.m_dynu__ID}");
+				break;
 			}	// switch
 
 			LVI.SubItems[(int)e_Column_Domains.Type].Text			= sb_type.ToString();
 			LVI.SubItems[(int)e_Column_Domains.Profile].Text		= (domain.m_Security_Profile != null) ? domain.m_Security_Profile.m_Name : "";
 
-			LVI.SubItems[(int)e_Column_Domains.current_IPv4].Text	= domain.m_current_IPv4;
-			LVI.SubItems[(int)e_Column_Domains.current_IPv6].Text	= domain.m_current_IPv6;
+			LVI.SubItems[(int)e_Column_Domains.current_IPv4].Text	= domain.IPv4.m_current_IP;
+			LVI.SubItems[(int)e_Column_Domains.current_IPv6].Text	= domain.IPv6.m_current_IP;
 
-			if(domain.m_enabled)
+			var LVSI_IPv4 = LVI.SubItems[(int)e_Column_Domains.current_IPv4];
+			var LVSI_IPv6 = LVI.SubItems[(int)e_Column_Domains.current_IPv6];
+
+			if(domain.IPv4.m_enabled)
 			{
-				LVI.Font		= new Font(LVI.Font, LVI.Font.Style & ~FontStyle.Strikeout);
-				LVI.BackColor	= Color.White;
+				LVSI_IPv4.Font		= new Font(LVSI_IPv4.Font, LVSI_IPv4.Font.Style & ~FontStyle.Strikeout);
+				LVSI_IPv4.BackColor	= Color.White;
 			}
 			else
 			{
-				LVI.Font		= new Font(LVI.Font, LVI.Font.Style | FontStyle.Strikeout);
-				LVI.BackColor	= Color.Gray;
+				LVSI_IPv4.Font		= new Font(LVSI_IPv4.Font, LVSI_IPv4.Font.Style | FontStyle.Strikeout);
+				LVSI_IPv4.BackColor	= Color.Gray;
+			}
+
+			if(domain.IPv6.m_enabled)
+			{
+				LVSI_IPv6.Font		= new Font(LVSI_IPv6.Font, LVSI_IPv6.Font.Style & ~FontStyle.Strikeout);
+				LVSI_IPv6.BackColor	= Color.White;
+			}
+			else
+			{
+				LVSI_IPv6.Font		= new Font(LVSI_IPv6.Font, LVSI_IPv6.Font.Style | FontStyle.Strikeout);
+				LVSI_IPv6.BackColor	= Color.Gray;
 			}
 		}
 
@@ -586,7 +644,7 @@ namespace ddns_tool
 			listView_Domains.Items.Add(LVI);
 			Set_LVI_Tag__Domain(LVI, domain);
 
-			LVI.UseItemStyleForSubItems = true;
+			LVI.UseItemStyleForSubItems = false;
 			LVI.EnsureVisible();
 
 			update_LVI__Domain(LVI);
@@ -625,15 +683,19 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Domains_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			toolStripButton_Domains_Modify.Enabled		= (listView_Domains.SelectedItems.Count > 0);
-			toolStripButton_Domains_Delete.Enabled		= (listView_Domains.SelectedItems.Count > 0);
-			toolStripButton_Domains_Enable.Enabled		= (listView_Domains.SelectedItems.Count > 0);
-			toolStripButton_Domains_Disable.Enabled		= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_Modify.Enabled			= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_Delete.Enabled			= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_IPv4_Enable.Enabled		= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_IPv4_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_IPv6_Enable.Enabled		= (listView_Domains.SelectedItems.Count > 0);
+			toolStripButton_Domains_IPv6_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
 
-			ToolStripMenuItem_Domains_Modify.Enabled	= (listView_Domains.SelectedItems.Count > 0);
-			ToolStripMenuItem_Domains_Delete.Enabled	= (listView_Domains.SelectedItems.Count > 0);
-			ToolStripMenuItem_Domains_Enable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
-			ToolStripMenuItem_Domains_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_Modify.Enabled		= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_Delete.Enabled		= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_IPv4_Enable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_IPv4_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_IPv6_Enable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
+			ToolStripMenuItem_Domains_IPv6_Disable.Enabled	= (listView_Domains.SelectedItems.Count > 0);
 		}
 
 		/*==============================================================
@@ -641,7 +703,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Domains_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 168, 60, 102, 273, 66 };
+			int[] widths = { 198, 60, 102, 273, 66 };
 
 			for(int i=0; i<widths.Length; ++i)
 				listView_Domains.Columns[i + 1].Width = widths[i];
@@ -699,14 +761,14 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 允许更新
+		 * 允许更新 IPv4
 		 *==============================================================*/
-		private void toolStripButton_Domains_Enable_Click(object sender, EventArgs e)
+		private void toolStripButton_Domains_IPv4_Enable_Click(object sender, EventArgs e)
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
 				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
-				domain.m_enabled = true;
+				domain.IPv4.m_enabled = true;
 
 				update_LVI__Domain(LVI);
 
@@ -715,14 +777,46 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 禁止更新
+		 * 允许更新 IPv6
 		 *==============================================================*/
-		private void toolStripButton_Domains_Disable_Click(object sender, EventArgs e)
+		private void toolStripButton_Domains_IPv6_Enable_Click(object sender, EventArgs e)
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
 				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
-				domain.m_enabled = false;
+				domain.IPv6.m_enabled = true;
+
+				update_LVI__Domain(LVI);
+
+				CONFIG.m_s_dirty = true;
+			}	// for
+		}
+
+		/*==============================================================
+		 * 禁止更新 IPv4
+		 *==============================================================*/
+		private void toolStripButton_Domains_IPv4_Disable_Click(object sender, EventArgs e)
+		{
+			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
+			{
+				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				domain.IPv4.m_enabled = false;
+
+				update_LVI__Domain(LVI);
+
+				CONFIG.m_s_dirty = true;
+			}	// for
+		}
+
+		/*==============================================================
+		 * 禁止更新 IPv6
+		 *==============================================================*/
+		private void toolStripButton_Domains_IPv6_Disable_Click(object sender, EventArgs e)
+		{
+			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
+			{
+				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				domain.IPv6.m_enabled = false;
 
 				update_LVI__Domain(LVI);
 
@@ -755,19 +849,35 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 允许更新
+		 * 允许更新 IPv4
 		 *==============================================================*/
-		private void ToolStripMenuItem_Domains_Enable_Click(object sender, EventArgs e)
+		private void ToolStripMenuItem_Domains_IPv4_Enable_Click(object sender, EventArgs e)
 		{
-			toolStripButton_Domains_Enable.PerformClick();
+			toolStripButton_Domains_IPv4_Enable.PerformClick();
 		}
 
 		/*==============================================================
-		 * 禁止更新
+		 * 允许更新 IPv6
 		 *==============================================================*/
-		private void ToolStripMenuItem_Domains_Disable_Click(object sender, EventArgs e)
+		private void ToolStripMenuItem_Domains_IPv6_Enable_Click(object sender, EventArgs e)
 		{
-			toolStripButton_Domains_Disable.PerformClick();
+			toolStripButton_Domains_IPv6_Enable.PerformClick();
+		}
+
+		/*==============================================================
+		 * 禁止更新 IPv4
+		 *==============================================================*/
+		private void ToolStripMenuItem_Domains_IPv4_Disable_Click(object sender, EventArgs e)
+		{
+			toolStripButton_Domains_IPv4_Disable.PerformClick();
+		}
+
+		/*==============================================================
+		 * 禁止更新 IPv6
+		 *==============================================================*/
+		private void ToolStripMenuItem_Domains_IPv6_Disable_Click(object sender, EventArgs e)
+		{
+			toolStripButton_Domains_IPv6_Disable.PerformClick();
 		}
 		#endregion
 
@@ -899,14 +1009,7 @@ namespace ddns_tool
 			textBox_Settings_RemoteServer__User.ReadOnly	= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
 			textBox_Settings_RemoteServer__Pwd.ReadOnly		= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
 
-			radioButton_Settings_IP__Accept_IP.Enabled		= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote);
-
-			// 取消 Accept_IP 选择
-			if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local	&&
-				radioButton_Settings_IP__Accept_IP.Checked )
-			{
-				radioButton_Settings_IP__From_URL.Checked = true;
-			}
+			UpdateUI_radioButton_Settings_IP__Accept_IP();
 
 			Update_Settings_Preview__Update_Type();
 
@@ -921,6 +1024,10 @@ namespace ddns_tool
 		private void textBox_Settings_RemoteServer__Addr_TextChanged(object sender, EventArgs e)
 		{
 			CONFIG.REMOTE_SERVER.m_s_addr = textBox_Settings_RemoteServer__Addr.Text.Trim();
+
+			UpdateUI_radioButton_Settings_IP__Accept_IP();
+			Update_Settings_Preview__Update_Type();
+
 			CONFIG.m_s_dirty = true;
 		}
 
@@ -965,23 +1072,80 @@ namespace ddns_tool
 
 		#region 设置 IP
 		/*==============================================================
-		 * 改变【设置 IP】
+		 * 更新 UI（Server 接受连接的客户端 IP）
 		 *==============================================================*/
-		private void radioButton_Settings_IP__CheckedChanged(object sender, EventArgs e)
+		void UpdateUI_radioButton_Settings_IP__Accept_IP()
 		{
-			CONFIG.SET_IP.m_s_type = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+			void auto_reset_radioButton_IPv4()
+			{
+				if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+				{
+					radioButton_Settings_IPv4__From_URL.Checked		= true;
+					radioButton_Settings_IPv4__Accept_IP.Enabled	= false;
+				}
+			}
 
-			if(radioButton_Settings_IP__Manual.Checked)
-				CONFIG.SET_IP.m_s_type = CONFIG.e_IP_Get_Type.Manual_IP;
-			else if(radioButton_Settings_IP__Accept_IP.Checked)
-				CONFIG.SET_IP.m_s_type = CONFIG.e_IP_Get_Type.Server_Accept_IP;
+			void auto_reset_radioButton_IPv6()
+			{
+				if(CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+				{
+					radioButton_Settings_IPv6__From_URL.Checked		= true;
+					radioButton_Settings_IPv6__Accept_IP.Enabled	= false;
+				}
+			}
 
-			comboBox_Settings_IPv4__From_URL.Enabled	= (CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
-			comboBox_Settings_IPv6__From_URL.Enabled	= (CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
-			textBox_Settings_IP__IPv4.ReadOnly			= (CONFIG.SET_IP.m_s_type != CONFIG.e_IP_Get_Type.Manual_IP);
-			textBox_Settings_IP__IPv6.ReadOnly			= (CONFIG.SET_IP.m_s_type != CONFIG.e_IP_Get_Type.Manual_IP);
+			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local)
+			{
+				auto_reset_radioButton_IPv4();
+				auto_reset_radioButton_IPv6();
 
-			Update_Settings_Preview__Set_IP();
+				radioButton_Settings_IPv4__Accept_IP.Enabled	= false;
+				radioButton_Settings_IPv6__Accept_IP.Enabled	= false;
+				return;
+			}
+
+			IPAddress	server_ip;
+			ushort		server_port;
+
+			if(!CONFIG.get_server_ip_port(out server_ip, out server_port))
+			{
+				auto_reset_radioButton_IPv4();
+				auto_reset_radioButton_IPv6();
+				return;
+			}
+
+			switch(server_ip.AddressFamily)
+			{
+			case System.Net.Sockets.AddressFamily.InterNetwork:
+				auto_reset_radioButton_IPv6();
+
+				radioButton_Settings_IPv4__Accept_IP.Enabled = (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote);
+				break;
+
+			case System.Net.Sockets.AddressFamily.InterNetworkV6:
+				auto_reset_radioButton_IPv4();
+
+				radioButton_Settings_IPv6__Accept_IP.Enabled = (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote);
+				break;
+			}	// switch
+		}
+
+		/*==============================================================
+		 * 改变【设置 IPv4】
+		 *==============================================================*/
+		private void radioButton_Settings_IPv4__CheckedChanged(object sender, EventArgs e)
+		{
+			CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+
+			if(radioButton_Settings_IPv4__Manual.Checked)
+				CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Manual_IP;
+			else if(radioButton_Settings_IPv4__Accept_IP.Checked)
+				CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Server_Accept_IP;
+
+			comboBox_Settings_IPv4__From_URL.Enabled	= (CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
+			textBox_Settings_IPv4.ReadOnly				= (CONFIG.SET_IP.m_s_type_IPv4 != CONFIG.e_IP_Get_Type.Manual_IP);
+
+			Update_Settings_Preview__Set_IPv4();
 
 			CONFIG.m_s_dirty = true;
 		}
@@ -996,6 +1160,35 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
+		 * 手动指定 IPv4
+		 *==============================================================*/
+		private void textBox_Settings_IPv4_TextChanged(object sender, EventArgs e)
+		{
+			CONFIG.SET_IP.m_s_IPv4 = textBox_Settings_IPv4.Text.Trim();
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 改变【设置 IPv6】
+		 *==============================================================*/
+		private void radioButton_Settings_IPv6__CheckedChanged(object sender, EventArgs e)
+		{
+			CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+
+			if(radioButton_Settings_IPv6__Manual.Checked)
+				CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Manual_IP;
+			else if(radioButton_Settings_IPv6__Accept_IP.Checked)
+				CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Server_Accept_IP;
+
+			comboBox_Settings_IPv6__From_URL.Enabled	= (CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Get_IP_From_URL);
+			textBox_Settings_IPv6.ReadOnly				= (CONFIG.SET_IP.m_s_type_IPv6 != CONFIG.e_IP_Get_Type.Manual_IP);
+
+			Update_Settings_Preview__Set_IPv6();
+
+			CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
 		 * 通过互联网获取公网 IPv6
 		 *==============================================================*/
 		private void comboBox_Settings_IPv6__From_URL_SelectedIndexChanged(object sender, EventArgs e)
@@ -1005,20 +1198,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 手动指定 IPv4
-		 *==============================================================*/
-		private void textBox_Settings_IP__IPv4_TextChanged(object sender, EventArgs e)
-		{
-			CONFIG.SET_IP.m_s_IPv4 = textBox_Settings_IP__IPv4.Text.Trim();
-			CONFIG.m_s_dirty = true;
-		}
-
-		/*==============================================================
 		 * 手动指定 IPv6
 		 *==============================================================*/
-		private void textBox_Settings_IP__IPv6_TextChanged(object sender, EventArgs e)
+		private void textBox_Settings_IPv6_TextChanged(object sender, EventArgs e)
 		{
-			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IP__IPv6.Text.Trim();
+			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IPv6.Text.Trim();
 			CONFIG.m_s_dirty = true;
 		}
 		#endregion
@@ -1050,41 +1234,49 @@ namespace ddns_tool
 			if(profile == null)
 			{
 				textBox_Security__Property__Name.Clear();
-				textBox_Security__Property__Name.ReadOnly		= true;
+				textBox_Security__Property__Name.ReadOnly	= true;
 
 				textBox_Security_Godaddy__Key.Clear();
-				textBox_Security_Godaddy__Key.ReadOnly			= true;
+				textBox_Security_Godaddy__Key.ReadOnly		= true;
 
 				textBox_Security_Godaddy__Secret.Clear();
-				textBox_Security_Godaddy__Secret.ReadOnly		= true;
+				textBox_Security_Godaddy__Secret.ReadOnly	= true;
 
 				textBox_Security_dynv6__token.Clear();
-				textBox_Security_dynv6__token.ReadOnly			= true;
+				textBox_Security_dynv6__token.ReadOnly		= true;
 
-				checkBox_Security__Save_To_Config.Enabled		= false;
+				textBox_Security_dynu__API_Key.Clear();
+				textBox_Security_dynu__API_Key.ReadOnly		= true;
+
+				checkBox_Security__Save_To_Config.Enabled	= false;
 			}
 			else
 			{
-				textBox_Security__Property__Name.Text			= profile.m_Name;
-				textBox_Security__Property__Name.ReadOnly		= false;
+				textBox_Security__Property__Name.Text		= profile.m_Name;
+				textBox_Security__Property__Name.ReadOnly	= false;
 
-				textBox_Security_Godaddy__Key.Text				= profile.m_Godaddy__Key;
-				textBox_Security_Godaddy__Key.ReadOnly			= false;
+				textBox_Security_Godaddy__Key.Text			= profile.m_Godaddy__Key;
+				textBox_Security_Godaddy__Key.ReadOnly		= false;
 
-				checkBox_Security_Godaddy__Key.Checked			= profile.m_Godaddy__Key_Visible;
+				checkBox_Security_Godaddy__Key.Checked		= profile.m_Godaddy__Key_Visible;
 
-				textBox_Security_Godaddy__Secret.Text			= profile.m_Godaddy__Secret;
-				textBox_Security_Godaddy__Secret.ReadOnly		= false;
+				textBox_Security_Godaddy__Secret.Text		= profile.m_Godaddy__Secret;
+				textBox_Security_Godaddy__Secret.ReadOnly	= false;
 
-				checkBox_Security_Godaddy__Secret.Checked		= profile.m_Godaddy__Secret_Visible;
+				checkBox_Security_Godaddy__Secret.Checked	= profile.m_Godaddy__Secret_Visible;
 
-				textBox_Security_dynv6__token.Text				= profile.m_dynv6__token;
-				textBox_Security_dynv6__token.ReadOnly			= false;
+				textBox_Security_dynv6__token.Text			= profile.m_dynv6__token;
+				textBox_Security_dynv6__token.ReadOnly		= false;
 
-				checkBox_Security_dynv6__token.Checked			= profile.m_dynv6__token_Visible;
+				checkBox_Security_dynv6__token.Checked		= profile.m_dynv6__token_Visible;
 
-				checkBox_Security__Save_To_Config.Enabled		= true;
-				checkBox_Security__Save_To_Config.Checked		= profile.m_Save_To_Config;
+				textBox_Security_dynu__API_Key.Text			= profile.m_dynu__API_Key;
+				textBox_Security_dynu__API_Key.ReadOnly		= false;
+
+				checkBox_Security_dynu__API_Key.Checked		= profile.m_dynu__API_Key_Visible;
+
+				checkBox_Security__Save_To_Config.Enabled	= true;
+				checkBox_Security__Save_To_Config.Checked	= profile.m_Save_To_Config;
 			}
 
 			CONFIG.m_s_dirty = dirty;
@@ -1282,6 +1474,39 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
+		 * 属性 - [dynu] API_Key
+		 *==============================================================*/
+		private void textBox_Security_dynu__API_Key_TextChanged(object sender, EventArgs e)
+		{
+			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+
+			if(profile == null)
+				return;
+
+			profile.m_dynu__API_Key = textBox_Security_dynu__API_Key.Text;
+
+			if(profile.m_Save_To_Config)
+				CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
+		 * 属性 - [dynu] 显示 API_Key
+		 *==============================================================*/
+		private void checkBox_Security_dynu__API_Key_CheckedChanged(object sender, EventArgs e)
+		{
+			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+
+			if(profile == null)
+				return;
+
+			textBox_Security_dynu__API_Key.PasswordChar	= checkBox_Security_dynu__API_Key.Checked ? '\0' : '*';
+			profile.m_dynu__API_Key_Visible				= checkBox_Security_dynu__API_Key.Checked;
+
+			if(profile.m_Save_To_Config)
+				CONFIG.m_s_dirty = true;
+		}
+
+		/*==============================================================
 		 * 属性 - 保存到 Config 文件
 		 *==============================================================*/
 		private void checkBox_Security__Save_To_Config_CheckedChanged(object sender, EventArgs e)
@@ -1446,6 +1671,17 @@ namespace ddns_tool
 		}
 		#endregion
 
+		#region 修正 hosts
+		/*==============================================================
+		 * 打开目录
+		 *==============================================================*/
+		private void button_Fix_hosts__Path_Browser_Click(object sender, EventArgs e)
+		{
+			string dir = textBox_Fix_hosts__Path.Text.Substring(0, textBox_Fix_hosts__Path.Text.LastIndexOf("\\"));
+			Process.Start("explorer.exe", dir);
+		}
+		#endregion
+
 		#region 预览设置
 		/*==============================================================
 		 * 更新方式
@@ -1467,22 +1703,43 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 设置IP
+		 * 设置 IPv4
 		 *==============================================================*/
-		void Update_Settings_Preview__Set_IP()
+		void Update_Settings_Preview__Set_IPv4()
 		{
-			switch(CONFIG.SET_IP.m_s_type)
+			switch(CONFIG.SET_IP.m_s_type_IPv4)
 			{
 			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
-				label_Settings_Preview__Set_IP_Val.Text = "通过 URL 获取";
+				label_Settings_Preview__Set_IPv4_Val.Text = "通过 URL 获取";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Manual_IP:
-				label_Settings_Preview__Set_IP_Val.Text = "手动指定 IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = "手动指定 IP";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
-				label_Settings_Preview__Set_IP_Val.Text = "Server 接受连接的 IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = "Server 接受连接的 IP";
+				break;
+			}	// switch
+		}
+
+		/*==============================================================
+		 * 设置 IPv6
+		 *==============================================================*/
+		void Update_Settings_Preview__Set_IPv6()
+		{
+			switch(CONFIG.SET_IP.m_s_type_IPv6)
+			{
+			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
+				label_Settings_Preview__Set_IPv6_Val.Text = "通过 URL 获取";
+				break;
+
+			case CONFIG.e_IP_Get_Type.Manual_IP:
+				label_Settings_Preview__Set_IPv6_Val.Text = "手动指定 IP";
+				break;
+
+			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
+				label_Settings_Preview__Set_IPv6_Val.Text = "Server 接受连接的 IP";
 				break;
 			}	// switch
 		}
@@ -1537,10 +1794,10 @@ namespace ddns_tool
 		#endregion
 
 		#region 更新
-		// domain -> (ipv4, ipv6)
-		Dictionary<string, (string, string)>	m_domains_old_IP	= new Dictionary<string, (string, string)>();
+		// 全部待更新的域名数量
+		int				m_all_domains_for_update	= 0;
 
-		List<string>							m_DNS_List			=  new List<string>();
+		List<string>	m_DNS_List					=  new List<string>();
 
 		/*==============================================================
 		 * 执行更新操作
@@ -1556,6 +1813,8 @@ namespace ddns_tool
 		void set_next_Auto_Update_Time()
 		{
 			m_can_auto_update_time = DateTime.Now.AddSeconds((int)numericUpDown_Action_AutoAction_Interval.Value);
+
+			add_log($"下次自动更新时间：{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
 		}
 
 		/*==============================================================
@@ -1573,34 +1832,56 @@ namespace ddns_tool
 			th.Start();
 		}
 
+		class c_SetIP_th
+		{
+			internal CONFIG.e_IP_Get_Type				m_type;
+			internal ComboBox							m_ComboBox;
+			internal string								m_exe_Arguments;
+			internal System.Net.Sockets.AddressFamily	m_af;
+			internal string								m_ip_type;
+			internal TextBox							m_textBox_Settings_IP;
+
+			internal bool								m_get_ip_ok	= false;
+			internal Thread								m_Thread	= null;
+		};
+
 		/*==============================================================
 		 * 设置即将更新的 IP 地址
 		 *==============================================================*/
 		bool update__Set_IP()
 		{
-			CONFIG.SET_IP.m_s_IPv4 = textBox_Settings_IP__IPv4.Text;
-			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IP__IPv6.Text;
+			CONFIG.SET_IP.m_s_IPv4 = textBox_Settings_IPv4.Text;
+			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IPv6.Text;
 
-			if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote			&&
-				CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Server_Accept_IP	&&
+			if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
 				!ddns_tool_CLR.CLR.is_connected() )
 			{
-				CONFIG.SET_IP.m_s_IPv4 = "";
-				CONFIG.SET_IP.m_s_IPv6 = "";
+				if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+					CONFIG.SET_IP.m_s_IPv4 = "";
+
+				if(CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
+					CONFIG.SET_IP.m_s_IPv6 = "";
 			}
 
-			// 获取 IP
-			if(CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Get_IP_From_URL)
+			var threads = new c_SetIP_th[]
 			{
-				string comboBox_Settings_IPv4__From_URL_Text = (string)this.Invoke((Func<string>)delegate { return comboBox_Settings_IPv4__From_URL.Text; });
-				string comboBox_Settings_IPv6__From_URL_Text = (string)this.Invoke((Func<string>)delegate { return comboBox_Settings_IPv6__From_URL.Text; });
+				new c_SetIP_th { m_type = CONFIG.SET_IP.m_s_type_IPv4,	m_ComboBox = comboBox_Settings_IPv4__From_URL,	m_exe_Arguments = " v4",	m_af = System.Net.Sockets.AddressFamily.InterNetwork,	m_ip_type = "IPv4",	m_textBox_Settings_IP = textBox_Settings_IPv4,	},
+				new c_SetIP_th { m_type = CONFIG.SET_IP.m_s_type_IPv6,	m_ComboBox = comboBox_Settings_IPv6__From_URL,	m_exe_Arguments = "",		m_af = System.Net.Sockets.AddressFamily.InterNetworkV6,	m_ip_type = "IPv6",	m_textBox_Settings_IP = textBox_Settings_IPv6,	},
+			};
 
-				if(	(comboBox_Settings_IPv4__From_URL_Text.Length == 0)	&&
-					(comboBox_Settings_IPv6__From_URL_Text.Length == 0) )
+			// 获取 IP
+			foreach(var th in threads)
+			{
+				if(th.m_type != CONFIG.e_IP_Get_Type.Get_IP_From_URL)
+					continue;
+
+				string url = (string)this.Invoke((Func<string>)delegate
 				{
-					add_log("[Error] 请输入「检查公网IP的URL」", Color.Red);
-					return false;
-				}
+					if(th.m_ComboBox.Text.Length == 0)
+						th.m_ComboBox.SelectedIndex = 0;
+
+					return th.m_ComboBox.Text;
+				});
 
 				const string k_GET_IP_EXE = "get_ip_from_URL.exe";
 				if(!File.Exists(k_GET_IP_EXE))
@@ -1609,96 +1890,78 @@ namespace ddns_tool
 					return false;
 				}
 
-				add_log("正在获取当前公网 IP 地址……");
-
-				bool get_ipv4_ok = true;
-				bool get_ipv6_ok = true;
+				add_log($"正在获取当前公网 {th.m_ip_type} 地址……");
 
 				// 由于 ServicePointManager 缓存问题，在应用程序生命周期无法切换 IP 地址族，这里使用外部进程获取 IP
-				Thread th_ipv4 = new Thread(() =>
+				th.m_Thread = new Thread(() =>
 				{
 					ProcessStartInfo psi = new ProcessStartInfo();
 					psi.FileName				= k_GET_IP_EXE;
-					psi.Arguments				= comboBox_Settings_IPv4__From_URL_Text + " v4";
+					psi.Arguments				= url + th.m_exe_Arguments;
 					psi.RedirectStandardOutput	= true;
+					psi.RedirectStandardError	= true;
 					psi.UseShellExecute			= false;
 					psi.CreateNoWindow			= true;
 
 					Process p = Process.Start(psi);
 
-					StreamReader reader = p.StandardOutput;
+					StreamReader reader		= p.StandardOutput;
+					StreamReader reader_err	= p.StandardError;
 
 					p.WaitForExit();
 					p.Close();
 
-					string ip = reader.ReadLine().Trim();
+					string ip = reader.ReadLine();
 
-					if(IPAddress.TryParse(ip, out IPAddress addr) && addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+					if(	!string.IsNullOrEmpty(ip)					&&
+						IPAddress.TryParse(ip, out IPAddress addr)	&&
+						addr.AddressFamily == th.m_af )
 					{
-						add_log($"通过互联网获取公网 IPv4 成功 ({ip})");
+						add_log($"通过互联网获取公网 {th.m_ip_type} 成功 ({ip})");
+						th.m_get_ip_ok = true;
+
+						invoke(() =>
+						{
+							th.m_textBox_Settings_IP.Text = ip.Trim();
+						});
 					}
 					else
 					{
 						ip = "";
-						add_log("[Error] 通过互联网获取公网 IPv4 失败", Color.Red);
-						get_ipv4_ok = false;
+						add_log($"[Error] 通过互联网获取公网 {th.m_ip_type} 失败（{psi.FileName} {psi.Arguments}）", Color.Red);
+
+						string str_err = reader_err.ReadLine();
+						if(!string.IsNullOrEmpty(str_err))
+							add_log($"[Error] {str_err}（{psi.FileName} {psi.Arguments}）", Color.Red);
 					}
 
-					CONFIG.SET_IP.m_s_IPv4 = ip;
-
-					invoke(() =>
-					{
-						textBox_Settings_IP__IPv4.Text = ip;
-					});
+					if(th.m_af == System.Net.Sockets.AddressFamily.InterNetwork)
+						CONFIG.SET_IP.m_s_IPv4 = ip;
+					else
+						CONFIG.SET_IP.m_s_IPv6 = ip;
 				});
+			}	// for
 
-				Thread th_ipv6 = new Thread(() =>
+			foreach(var th in threads)
+			{
+				if(th.m_Thread != null)
+					th.m_Thread.Start();
+			}	// for
+
+			bool get_ip_ok = true;
+
+			foreach(var th in threads)
+			{
+				if(th.m_Thread != null)
 				{
-					ProcessStartInfo psi = new ProcessStartInfo();
-					psi.FileName				= k_GET_IP_EXE;
-					psi.Arguments				= comboBox_Settings_IPv6__From_URL_Text;
-					psi.RedirectStandardOutput	= true;
-					psi.UseShellExecute			= false;
-					psi.CreateNoWindow			= true;
+					th.m_Thread.Join();
 
-					Process p = Process.Start(psi);
+					if(!th.m_get_ip_ok)
+						get_ip_ok = false;
+				}
+			}	// for
 
-					StreamReader reader = p.StandardOutput;
-
-					p.WaitForExit();
-					p.Close();
-
-					string ip = reader.ReadLine().Trim();
-
-					if(IPAddress.TryParse(ip, out IPAddress addr) && addr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-					{
-						add_log($"通过互联网获取公网 IPv6 成功 ({ip})");
-					}
-					else
-					{
-						ip = "";
-						add_log("[Error] 通过互联网获取公网 IPv6 失败", Color.Red);
-						get_ipv6_ok = false;
-					}
-
-					CONFIG.SET_IP.m_s_IPv6 = ip;
-
-					invoke(() =>
-					{
-						textBox_Settings_IP__IPv6.Text = ip;
-					});
-				});
-
-				th_ipv4.Start();
-				th_ipv6.Start();
-
-				th_ipv4.Join();
-				th_ipv6.Join();
-
-				return get_ipv4_ok && get_ipv6_ok;
-			}
-
-			return true;
+			return get_ip_ok;
 		}
 
 		/*==============================================================
@@ -1713,21 +1976,18 @@ namespace ddns_tool
 				return;
 			}
 
-			m_domains_old_IP.Clear();
-
-			List<string> domains_list = new List<string>();
+			m_all_domains_for_update = 0;
 
 			// 更新 IP
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 			{
-				if(!domain.m_enabled)
+				if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 					continue;
 
-				domain.m_input_IPv4	= CONFIG.SET_IP.m_s_IPv4;
-				domain.m_input_IPv6	= CONFIG.SET_IP.m_s_IPv6;
+				domain.IPv4.m_input_IP	= CONFIG.SET_IP.m_s_IPv4;
+				domain.IPv6.m_input_IP	= CONFIG.SET_IP.m_s_IPv6;
 
-				// 记录旧 IP
-				m_domains_old_IP.Add(domain.m_domain, (domain.m_current_IPv4, domain.m_current_IPv6));
+				++m_all_domains_for_update;
 
 				EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Starting);
 			}	// for
@@ -1766,7 +2026,7 @@ namespace ddns_tool
 						{
 							foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 							{
-								if(!domain.m_enabled)
+								if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 									continue;
 
 								EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.None);
@@ -1775,25 +2035,28 @@ namespace ddns_tool
 							update__done();
 						}
 
-						string[] vals = CONFIG.REMOTE_SERVER.m_s_addr.Split(':');
-						if(vals.Length != 2)
+						IPAddress	server_ip;
+						ushort		server_port;
+
+						if(!CONFIG.get_server_ip_port(out server_ip, out server_port))
 						{
-							add_log("[Error] Server 地址/端口 错误", Color.Red);
-							reset_domains_status();
-							return;
+							if(server_ip == null)
+							{
+								add_log("[Error] Server 地址/端口 错误", Color.Red);
+								reset_domains_status();
+								return;
+							}
+
+							if(server_port == 0)
+							{
+								add_log("[Error] Server 端口错误", Color.Red);
+								reset_domains_status();
+								return;
+							}
 						}
 
-						string ip = vals[0];
-						ushort port;
-						if(!ushort.TryParse(vals[1], out port))
-						{
-							add_log("[Error] Server 端口错误", Color.Red);
-							reset_domains_status();
-							return;
-						}
-
-						bool res = ddns_tool_CLR.CLR.Connect(	ip,
-																port,
+						bool res = ddns_tool_CLR.CLR.Connect(	server_ip.ToString(),
+																server_port,
 																CONFIG.REMOTE_SERVER.m_s_user,
 																CONFIG.REMOTE_SERVER.m_s_pwd );
 						if(!res)
@@ -1830,61 +2093,71 @@ namespace ddns_tool
 			int failed_count	= 0;
 			int skip_count		= 0;
 
-			bool update_current_IP = false;
+			// 是否已更新当前 IP（仅「远程更新」）
+			bool update_current_IPv4_remote = false;
+			bool update_current_IPv6_remote = false;
 
-			// IP 发生变化的域名（domain, IPv4_change, IPv6_change）[]
-			List<(string, bool, bool)> IP_change_domains = new List<(string, bool, bool)>();
+			// IP 发生变化的域名
+			List<ddns_lib.c_Domain> IP_change_domains = new List<ddns_lib.c_Domain>();
 
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 			{
-				if(!domain.m_enabled)
+				if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 					continue;
 
-				(string, string) vals;
+				if(	(domain.IPv4.m_enabled && !domain.IPv4.m_same_ip)	||
+					(domain.IPv6.m_enabled && !domain.IPv6.m_same_ip) )
+					IP_change_domains.Add(domain);
 
-				if(!m_domains_old_IP.TryGetValue(domain.m_domain, out vals))
-					continue;
-
-				bool IPv4_change = (vals.Item1 != domain.m_current_IPv4);
-				bool IPv6_change = (vals.Item2 != domain.m_current_IPv6);
-
-				if(IPv4_change || IPv6_change)
-					IP_change_domains.Add((domain.m_domain, IPv4_change, IPv6_change));
-
-				if(domain.m_err_msg_IPv4.Length > 0 || domain.m_err_msg_IPv6.Length > 0)
+				if(domain.IPv4.m_err_msg.Length > 0 || domain.IPv6.m_err_msg.Length > 0)
 				{
 					++failed_count;
 
 					EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Failed);
 
-					if(domain.m_err_msg_IPv4.Length > 0)
-						add_log($"[Error] {domain.m_domain} : 更新 IPv4 失败（{domain.m_err_msg_IPv4}）", Color.Red);
+					if(domain.IPv4.m_err_msg.Length > 0)
+						add_log($"[Error] {domain.m_domain} : 更新 IPv4 失败（{domain.IPv4.m_err_msg}）", Color.Red);
 
-					if(domain.m_err_msg_IPv6.Length > 0)
-						add_log($"[Error] {domain.m_domain} : 更新 IPv6 失败（{domain.m_err_msg_IPv6}）", Color.Red);
+					if(domain.IPv6.m_err_msg.Length > 0)
+						add_log($"[Error] {domain.m_domain} : 更新 IPv6 失败（{domain.IPv6.m_err_msg}）", Color.Red);
 				}
 				else
 				{
 					EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Done);
 
-					if(IPv4_change || IPv6_change)
+					if(	(domain.IPv4.m_enabled && !domain.IPv4.m_same_ip)	||
+						(domain.IPv6.m_enabled && !domain.IPv6.m_same_ip) )
 					{
-						add_log($"{domain.m_domain} : 更新成功。IPv4 = {domain.m_current_IPv4}, IPv6 = {domain.m_current_IPv6}", Color.Green);
+						add_log($"{domain.m_domain} : 更新成功。IPv4 = {domain.IPv4.m_current_IP}, IPv6 = {domain.IPv6.m_current_IP}", Color.Green);
 
-						if(!update_current_IP)
+						if(!update_current_IPv4_remote)
 						{
 							if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
-								CONFIG.SET_IP.m_s_type == CONFIG.e_IP_Get_Type.Server_Accept_IP )
+								CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP )
 							{
-								update_current_IP = true;
+								update_current_IPv4_remote = true;
 
-								CONFIG.SET_IP.m_s_IPv4	= domain.m_current_IPv4;
-								CONFIG.SET_IP.m_s_IPv6	= domain.m_current_IPv6;
+								CONFIG.SET_IP.m_s_IPv4	= domain.IPv4.m_current_IP;
 
 								invoke(() =>
 								{
-									textBox_Settings_IP__IPv4.Text	= domain.m_current_IPv4;
-									textBox_Settings_IP__IPv6.Text	= domain.m_current_IPv6;
+									textBox_Settings_IPv4.Text	= domain.IPv4.m_current_IP;
+								});
+							}
+						}
+
+						if(!update_current_IPv6_remote)
+						{
+							if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
+								CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP )
+							{
+								update_current_IPv6_remote = true;
+
+								CONFIG.SET_IP.m_s_IPv6	= domain.IPv6.m_current_IP;
+
+								invoke(() =>
+								{
+									textBox_Settings_IPv6.Text	= domain.IPv6.m_current_IP;
 								});
 							}
 						}
@@ -1894,7 +2167,7 @@ namespace ddns_tool
 				}
 			}	// for
 
-			add_log($"全部：{m_domains_old_IP.Count}。成功/失败/跳过：{IP_change_domains.Count}/{failed_count}/{skip_count}",
+			add_log($"{IP_change_domains.Count} 成功，{failed_count} 失败，{skip_count} 已跳过，{m_all_domains_for_update} 总计",
 					(failed_count == 0) ? Color.DarkOrange : Color.Red);
 
 			if(IP_change_domains.Count > 0)
@@ -1919,7 +2192,6 @@ namespace ddns_tool
 
 			// 设置下次自动更新的时间
 			set_next_Auto_Update_Time();
-			add_log($"下次自动更新时间：{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
 
 			lock_controls(true);
 			m_is_updating = false;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -28,13 +29,16 @@ namespace ddns_tool
 			RemoteServer_AutoPing,				// 自动 ping 服务器
 
 			//【设置 IP】
-			SetIP_type,							// IP 获取方式（1 = 通过互联网获取公网 IP、2 = 手动指定 IP、3 = Server 接受连接的客户端 IP）
+			SetIP_type_IPv4,					// IPv4 获取方式（1 = 通过互联网获取公网 IP、2 = 手动指定 IP、3 = Server 接受连接的客户端 IP）
 			SetIP_get_ipv4_URL,					// 检查公网 IPv4 的 URL
-			SetIP_get_ipv6_URL,					// 检查公网 IPv6 的 URL
 			SetIP_IPv4,							// 设置的 IPv4/上次的 IPv4
+
+			SetIP_type_IPv6,					// IPv6 获取方式（1 = 通过互联网获取公网 IP、2 = 手动指定 IP、3 = Server 接受连接的客户端 IP）
+			SetIP_get_ipv6_URL,					// 检查公网 IPv6 的 URL
 			SetIP_IPv6,							// 设置的 IPv6/上次的 IPv6
 
 			//【安全设置】
+			Security_Profile,					// [Header]
 			Security_Profile__Name,
 			Security_Profile__SaveToConfig,		// 保存安全信息到 Config 文件
 
@@ -45,6 +49,9 @@ namespace ddns_tool
 
 			Security_Profile__dynv6_token,
 			Security_Profile__dynv6_token_Visible,
+
+			Security_Profile__dynu_API_Key,
+			Security_Profile__dynu_API_Key_Visible,
 
 			//【更新操作】
 			UpdateAction_UpdateIP,				// 更新域名的 IP
@@ -63,7 +70,19 @@ namespace ddns_tool
 			Log_SaveToFile,						// 保存到日志文件
 
 			//【域名列表】
-			domain,								// 域名
+			Domain,								// [Header]
+			Domain__Domain,
+			Domain__Type,
+			Domain__IPv4_Enabled,
+			Domain__IPv6_Enabled,
+			Domain__profile_idx,
+			Domain__Current_IPv4,
+			Domain__Current_IPv6,
+			Domain__Godaddy_TTL,
+			Domain__dynv6_auto_ipv4,
+			Domain__dynv6_auto_ipv6,
+			Domain__dynu_ID,
+			Domain__dynu_TTL,
 		};
 
 		internal enum e_Update_Type
@@ -97,10 +116,12 @@ namespace ddns_tool
 		//【设置 IP】
 		internal class SET_IP
 		{
-			internal static e_IP_Get_Type	m_s_type			= e_IP_Get_Type.Get_IP_From_URL;
+			internal static e_IP_Get_Type	m_s_type_IPv4		= e_IP_Get_Type.Get_IP_From_URL;
 			internal static string			m_s_Get_IPv4_URL	= "";	// 检查公网 IPv4 的 URL
-			internal static string			m_s_Get_IPv6_URL	= "";	// 检查公网 IPv6 的 URL
 			internal static string			m_s_IPv4			= "";	// 设置的 IPv4/上次的 IPv4
+
+			internal static e_IP_Get_Type	m_s_type_IPv6		= e_IP_Get_Type.Get_IP_From_URL;
+			internal static string			m_s_Get_IPv6_URL	= "";	// 检查公网 IPv6 的 URL
 			internal static string			m_s_IPv6			= "";	// 设置的 IPv6/上次的 IPv6
 		};
 
@@ -164,6 +185,37 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
+		 * 获取 Server 的 IP/Port
+		 *==============================================================*/
+		internal static bool get_server_ip_port(out IPAddress server_ip, out ushort server_port)
+		{
+			server_ip	= null;
+			server_port	= 0;
+
+			int idx = REMOTE_SERVER.m_s_addr.LastIndexOf(":");
+
+			if(idx <= 0)
+				return false;
+
+			string str_ip	= REMOTE_SERVER.m_s_addr.Substring(0, idx);
+			string str_port	= REMOTE_SERVER.m_s_addr.Substring(idx + 1);
+
+			if(!IPAddress.TryParse(str_ip, out server_ip))
+			{
+				server_ip = null;
+				return false;
+			}
+
+			if(!ushort.TryParse(str_port, out server_port))
+			{
+				server_port = 0;
+				return false;
+			}
+
+			return true;
+		}
+
+		/*==============================================================
 		 * 读取配置文件
 		 *==============================================================*/
 		internal static void read_config()
@@ -185,9 +237,6 @@ namespace ddns_tool
 			m_s_domains_list.Clear();
 
 			SECURITY.m_s_profiles.Clear();
-
-			// "Security_Profile"
-			string HEADER_Security_Profile = e_Header.Security_Profile__Name.ToString().Substring(0, e_Header.Security_Profile__Name.ToString().IndexOf("__"));
 
 			// c_Domain -> profile_index
 			Dictionary<ddns_lib.c_Domain, int> domains_profile_index = new Dictionary<ddns_lib.c_Domain, int>();
@@ -261,11 +310,11 @@ namespace ddns_tool
 				//====================【远程 Server 设置】====================(End)
 
 				//====================【设置 IP】====================(Start)
-				// IP 获取方式
-				if(string.Compare(w1, e_Header.SetIP_type.ToString(), true) == 0)
+				// IPv4 获取方式
+				if(string.Compare(w1, e_Header.SetIP_type_IPv4.ToString(), true) == 0)
 				{
 					if(int.TryParse(w2, out int val) && val >= 0 && val < (int)e_IP_Get_Type.MAX)
-						SET_IP.m_s_type = (e_IP_Get_Type)val;
+						SET_IP.m_s_type_IPv4 = (e_IP_Get_Type)val;
 
 					continue;
 				}
@@ -277,17 +326,26 @@ namespace ddns_tool
 					continue;
 				}
 
-				// 检查公网 IPv6 的 URL
-				if(string.Compare(w1, e_Header.SetIP_get_ipv6_URL.ToString(), true) == 0)
-				{
-					SET_IP.m_s_Get_IPv6_URL = w2;
-					continue;
-				}
-
 				// 设置的 IPv4/上次的 IPv4
 				if(string.Compare(w1, e_Header.SetIP_IPv4.ToString(), true) == 0)
 				{
 					SET_IP.m_s_IPv4 = w2;
+					continue;
+				}
+
+				// IPv6 获取方式
+				if(string.Compare(w1, e_Header.SetIP_type_IPv6.ToString(), true) == 0)
+				{
+					if(int.TryParse(w2, out int val) && val >= 0 && val < (int)e_IP_Get_Type.MAX)
+						SET_IP.m_s_type_IPv6 = (e_IP_Get_Type)val;
+
+					continue;
+				}
+
+				// 检查公网 IPv6 的 URL
+				if(string.Compare(w1, e_Header.SetIP_get_ipv6_URL.ToString(), true) == 0)
+				{
+					SET_IP.m_s_Get_IPv6_URL = w2;
 					continue;
 				}
 
@@ -300,6 +358,8 @@ namespace ddns_tool
 				//====================【设置 IP】====================(End)
 
 				//====================【安全设置】====================(Start)
+				string HEADER_Security_Profile = e_Header.Security_Profile.ToString();
+
 				// Security_Profile[x].Name
 				if(w1.IndexOf(HEADER_Security_Profile, StringComparison.CurrentCultureIgnoreCase) == 0)
 				{
@@ -320,15 +380,17 @@ namespace ddns_tool
 						else
 							profile = SECURITY.m_s_profiles[profile_idx];
 
+						HEADER_Security_Profile += "__";
+
 						// Name
-						if(string.Compare(profile_vars, e_Header.Security_Profile__Name.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__Name.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							profile.m_Name = w2;
 							continue;
 						}
 
 						// SaveToConfig
-						if(string.Compare(profile_vars, e_Header.Security_Profile__SaveToConfig.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__SaveToConfig.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							if(bool.TryParse(w2, out bool val))
 								profile.m_Save_To_Config = val;
@@ -337,14 +399,14 @@ namespace ddns_tool
 						}
 
 						// [Godaddy] Key
-						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Key.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Key.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							profile.m_Godaddy__Key = w2;
 							continue;
 						}
 
 						// [Godaddy] 显示 Key
-						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Key_Visible.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Key_Visible.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							if(bool.TryParse(w2, out bool val))
 								profile.m_Godaddy__Key_Visible = val;
@@ -353,14 +415,14 @@ namespace ddns_tool
 						}
 
 						// [Godaddy] Secret
-						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Secret.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Secret.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							profile.m_Godaddy__Secret = w2;
 							continue;
 						}
 
 						// [Godaddy] 显示 Secret
-						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Secret_Visible.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__Godaddy_Secret_Visible.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							if(bool.TryParse(w2, out bool val))
 								profile.m_Godaddy__Secret_Visible = val;
@@ -369,17 +431,33 @@ namespace ddns_tool
 						}
 
 						// [dynv6] token
-						if(string.Compare(profile_vars, e_Header.Security_Profile__dynv6_token.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__dynv6_token.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							profile.m_dynv6__token = w2;
 							continue;
 						}
 
 						// [dynv6] 显示 token
-						if(string.Compare(profile_vars, e_Header.Security_Profile__dynv6_token_Visible.ToString().Replace(HEADER_Security_Profile, "").Substring(2), true) == 0)
+						if(string.Compare(profile_vars, e_Header.Security_Profile__dynv6_token_Visible.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
 						{
 							if(bool.TryParse(w2, out bool val))
 								profile.m_dynv6__token_Visible = val;
+
+							continue;
+						}
+
+						// [dynu] API_Key
+						if(string.Compare(profile_vars, e_Header.Security_Profile__dynu_API_Key.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
+						{
+							profile.m_dynu__API_Key = w2;
+							continue;
+						}
+
+						// [dynu] 显示 API_Key
+						if(string.Compare(profile_vars, e_Header.Security_Profile__dynu_API_Key_Visible.ToString().Replace(HEADER_Security_Profile, ""), true) == 0)
+						{
+							if(bool.TryParse(w2, out bool val))
+								profile.m_dynu__API_Key_Visible = val;
 
 							continue;
 						}
@@ -496,37 +574,130 @@ namespace ddns_tool
 				//====================【日志记录】====================(End)
 
 				//【域名列表】
-				if(string.Compare(w1, e_Header.domain.ToString(), true) == 0)
+				string HEADER_Domain = e_Header.Domain.ToString();
+
+				// Domain[x].Domain
+				if(w1.IndexOf(HEADER_Domain, StringComparison.CurrentCultureIgnoreCase) == 0)
 				{
-					// <domain>,<type>,<enabled>,<current_ipv4>,<current_ipv6>,<TTL>,<auto_ipv4>,<auto_ipv6>,<profile_idx>
-					string[] vals = w2.Split(',');
+					string[] vals = w1.Split('.');
 
-					if(vals.Length < 9)
-						continue;
+					if(vals.Length == 2)
+					{
+						int		domain_idx	= int.Parse(vals[0].Replace(HEADER_Domain, "").Replace("[", "").Replace("]", ""));
+						string	domain_vars	= vals[1];
 
-					ddns_lib.c_Domain new_domain = new ddns_lib.c_Domain();
+						ddns_lib.c_Domain domain;
 
-					int col_idx = -1;
-					new_domain.m_domain				= vals[++col_idx].Trim();
+						if(m_s_domains_list.Count < domain_idx + 1)
+						{
+							domain = new ddns_lib.c_Domain();
+							m_s_domains_list.Add(domain);
+						}
+						else
+							domain = m_s_domains_list[domain_idx];
 
-					if(int.TryParse(vals[++col_idx], out int type) && type >= 0 && type < (int)ddns_lib.e_DomainType.MAX)
-						new_domain.m_type = (ddns_lib.e_DomainType)type;
-					else
-						new_domain.m_type = ddns_lib.e_DomainType.dynv6;
+						HEADER_Domain += "__";
 
-					new_domain.m_enabled			= bool.Parse(vals[++col_idx]);
+						// Domain
+						if(string.Compare(domain_vars, e_Header.Domain__Domain.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							domain.m_domain = w2;
+							continue;
+						}
 
-					new_domain.m_current_IPv4		= vals[++col_idx].Trim();
-					new_domain.m_current_IPv6		= vals[++col_idx].Trim();
+						// Type
+						if(string.Compare(domain_vars, e_Header.Domain__Type.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							domain.m_type = ddns_lib.c_Domain.string_to_type(w2);
+							continue;
+						}
 
-					new_domain.m_Godaddy__TTL		= uint.Parse(vals[++col_idx]);
-					new_domain.m_dynv6__Auto_IPv4	= bool.Parse(vals[++col_idx]);
-					new_domain.m_dynv6__Auto_IPv6	= bool.Parse(vals[++col_idx]);
+						// IPv4_enabled
+						if(string.Compare(domain_vars, e_Header.Domain__IPv4_Enabled.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(bool.TryParse(w2, out bool val))
+								domain.IPv4.m_enabled = val;
 
-					m_s_domains_list.Add(new_domain);
+							continue;
+						}
 
-					int profile_idx = int.Parse(vals[++col_idx]);
-					domains_profile_index.Add(new_domain, profile_idx);
+						// IPv6_enabled
+						if(string.Compare(domain_vars, e_Header.Domain__IPv6_Enabled.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(bool.TryParse(w2, out bool val))
+								domain.IPv6.m_enabled = val;
+
+							continue;
+						}
+
+						// profile_idx
+						if(string.Compare(domain_vars, e_Header.Domain__profile_idx.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(int.TryParse(w2, out int profile_idx))
+								domains_profile_index.Add(domain, profile_idx);
+
+							continue;
+						}
+
+						// Current_IPv4
+						if(string.Compare(domain_vars, e_Header.Domain__Current_IPv4.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							domain.IPv4.m_current_IP = w2;
+							continue;
+						}
+
+						// Current_IPv6
+						if(string.Compare(domain_vars, e_Header.Domain__Current_IPv6.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							domain.IPv6.m_current_IP = w2;
+							continue;
+						}
+
+						// Godaddy_TTL
+						if(string.Compare(domain_vars, e_Header.Domain__Godaddy_TTL.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(int.TryParse(w2, out int val))
+								domain.m_Godaddy__TTL = val;
+
+							continue;
+						}
+
+						// dynv6_auto_ipv4
+						if(string.Compare(domain_vars, e_Header.Domain__dynv6_auto_ipv4.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(bool.TryParse(w2, out bool val))
+								domain.m_dynv6__Auto_IPv4 = val;
+
+							continue;
+						}
+
+						// dynv6_auto_ipv6
+						if(string.Compare(domain_vars, e_Header.Domain__dynv6_auto_ipv6.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(bool.TryParse(w2, out bool val))
+								domain.m_dynv6__Auto_IPv6 = val;
+
+							continue;
+						}
+
+						// dynu_ID
+						if(string.Compare(domain_vars, e_Header.Domain__dynu_ID.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(int.TryParse(w2, out int val))
+								domain.m_dynu__ID = val;
+
+							continue;
+						}
+
+						// dynu_TTL
+						if(string.Compare(domain_vars, e_Header.Domain__dynu_TTL.ToString().Replace(HEADER_Domain, ""), true) == 0)
+						{
+							if(int.TryParse(w2, out int val))
+								domain.m_dynu__TTL = val;
+
+							continue;
+						}
+					}
 				}
 			}	// for
 
@@ -597,9 +768,9 @@ namespace ddns_tool
 			//====================【远程 Server 设置】====================(End)
 
 			//====================【设置 IP】====================(Start)
-			// IP 获取方式
-			sb.AppendLine("// IP 获取方式（0 = 通过互联网获取公网 IP、2 = 手动设置 IP、3 = Server 接受连接的客户端 IP）");
-			sb.AppendLine($"{e_Header.SetIP_type}: {(int)SET_IP.m_s_type}");
+			// IPv4 获取方式
+			sb.AppendLine("// IPv4 获取方式（0 = 通过互联网获取公网 IP、2 = 手动设置 IP、3 = Server 接受连接的客户端 IP）");
+			sb.AppendLine($"{e_Header.SetIP_type_IPv4}: {(int)SET_IP.m_s_type_IPv4}");
 			sb.AppendLine();
 
 			// 检查公网 IPv4 的 URL
@@ -607,14 +778,19 @@ namespace ddns_tool
 			sb.AppendLine($"{e_Header.SetIP_get_ipv4_URL}: {SET_IP.m_s_Get_IPv4_URL}");
 			sb.AppendLine();
 
-			// 检查公网 IPv6 的 URL
-			sb.AppendLine("// 检查公网 IPv6 的 URL");
-			sb.AppendLine($"{e_Header.SetIP_get_ipv6_URL}: {SET_IP.m_s_Get_IPv6_URL}");
-			sb.AppendLine();
-
 			// 设置的 IPv4/上次的 IPv4
 			sb.AppendLine("// 设置的 IPv4/上次的 IPv4");
 			sb.AppendLine($"{e_Header.SetIP_IPv4}: {SET_IP.m_s_IPv4}");
+			sb.AppendLine();
+
+			// IPv6 获取方式
+			sb.AppendLine("// IPv6 获取方式（0 = 通过互联网获取公网 IP、2 = 手动设置 IP、3 = Server 接受连接的客户端 IP）");
+			sb.AppendLine($"{e_Header.SetIP_type_IPv6}: {(int)SET_IP.m_s_type_IPv6}");
+			sb.AppendLine();
+
+			// 检查公网 IPv6 的 URL
+			sb.AppendLine("// 检查公网 IPv6 的 URL");
+			sb.AppendLine($"{e_Header.SetIP_get_ipv6_URL}: {SET_IP.m_s_Get_IPv6_URL}");
 			sb.AppendLine();
 
 			// 设置的 IPv6/上次的 IPv6
@@ -656,6 +832,12 @@ namespace ddns_tool
 
 				// [dynv6] 显示 token
 				sb.AppendLine($"{e_Header.Security_Profile__dynv6_token_Visible.ToString().Replace("__", $"[{i}].")}: {profile.m_dynv6__token_Visible}");
+
+				// [dynu] API_Key
+				sb.AppendLine($"{e_Header.Security_Profile__dynu_API_Key.ToString().Replace("__", $"[{i}].")}: {profile.m_dynu__API_Key}");
+
+				// [dynu] 显示 API_Key
+				sb.AppendLine($"{e_Header.Security_Profile__dynu_API_Key_Visible.ToString().Replace("__", $"[{i}].")}: {profile.m_dynu__API_Key_Visible}");
 
 				sb.AppendLine();
 			}	// for
@@ -728,34 +910,49 @@ namespace ddns_tool
 			//====================【日志记录】====================(End)
 
 			//====================【域名列表】====================(Start)
-			sb.AppendLine("// 域名列表（<domain>,<type>,<enabled>,<current_ipv4>,<current_ipv6>,<TTL>,<auto_ipv4>,<auto_ipv6>,<profile_idx>）");
-
-			sb.Append("// <type>：");
-			for(int i=0; i<(int)ddns_lib.e_DomainType.MAX; ++i)
+			for(int i=0; i<m_s_domains_list.Count; ++i)
 			{
-				sb.Append($"{i} = {(ddns_lib.e_DomainType)i}");
+				ddns_lib.c_Domain domain = m_s_domains_list[i];
 
-				if(i == (int)ddns_lib.e_DomainType.MAX - 1)
-					sb.AppendLine();
-				else
-					sb.Append("、");
-			}	// for
+				sb.AppendLine($"// Domain[{i}] - {domain.m_domain}");
 
-			foreach(ddns_lib.c_Domain domain in m_s_domains_list)
-			{
-				string line = string.Format("{0:s}: {1:s},{2:d},{3:s},{4:s},{5:s},{6:d},{7:s},{8:s},{9:d}",
-											e_Header.domain.ToString(),
-											domain.m_domain,
-											(int)domain.m_type,
-											domain.m_enabled.ToString(),
-											domain.m_current_IPv4,
-											domain.m_current_IPv6,
-											domain.m_Godaddy__TTL,
-											domain.m_dynv6__Auto_IPv4.ToString(),
-											domain.m_dynv6__Auto_IPv6.ToString(),
-											SECURITY.m_s_profiles.IndexOf(domain.m_Security_Profile));
+				// Domain
+				sb.AppendLine($"{e_Header.Domain__Domain.ToString().Replace("__", $"[{i}].")}: {domain.m_domain}");
 
-				sb.AppendLine(line);
+				// Type
+				sb.AppendLine($"{e_Header.Domain__Type.ToString().Replace("__", $"[{i}].")}: {domain.m_type}");
+
+				// IPv4_Enabled
+				sb.AppendLine($"{e_Header.Domain__IPv4_Enabled.ToString().Replace("__", $"[{i}].")}: {domain.IPv4.m_enabled}");
+
+				// IPv6_Enabled
+				sb.AppendLine($"{e_Header.Domain__IPv6_Enabled.ToString().Replace("__", $"[{i}].")}: {domain.IPv6.m_enabled}");
+
+				// profile_idx
+				sb.AppendLine($"{e_Header.Domain__profile_idx.ToString().Replace("__", $"[{i}].")}: {SECURITY.m_s_profiles.IndexOf(domain.m_Security_Profile)}");
+
+				// Current_IPv4
+				sb.AppendLine($"{e_Header.Domain__Current_IPv4.ToString().Replace("__", $"[{i}].")}: {domain.IPv4.m_current_IP}");
+
+				// Current_IPv6
+				sb.AppendLine($"{e_Header.Domain__Current_IPv6.ToString().Replace("__", $"[{i}].")}: {domain.IPv6.m_current_IP}");
+
+				// Godaddy_TTL
+				sb.AppendLine($"{e_Header.Domain__Godaddy_TTL.ToString().Replace("__", $"[{i}].")}: {domain.m_Godaddy__TTL}");
+
+				// dynv6_auto_ipv4
+				sb.AppendLine($"{e_Header.Domain__dynv6_auto_ipv4.ToString().Replace("__", $"[{i}].")}: {domain.m_dynv6__Auto_IPv4}");
+
+				// dynv6_auto_ipv6
+				sb.AppendLine($"{e_Header.Domain__dynv6_auto_ipv6.ToString().Replace("__", $"[{i}].")}: {domain.m_dynv6__Auto_IPv6}");
+
+				// dynu_ID
+				sb.AppendLine($"{e_Header.Domain__dynu_ID.ToString().Replace("__", $"[{i}].")}: {domain.m_dynu__ID}");
+
+				// dynu_TTL
+				sb.AppendLine($"{e_Header.Domain__dynu_TTL.ToString().Replace("__", $"[{i}].")}: {domain.m_dynu__TTL}");
+
+				sb.AppendLine();
 			}	// for
 
 			File.WriteAllText(m_k_CONFIG_FILE, sb.ToString(), Encoding.UTF8);

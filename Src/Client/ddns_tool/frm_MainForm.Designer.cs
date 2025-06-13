@@ -30,6 +30,9 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this.notifyIcon_Main = new System.Windows.Forms.NotifyIcon(this.components);
+			this.contextMenuStrip_NotifyIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.ToolStripMenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl_Security__Property = new System.Windows.Forms.TabControl();
 			this.tabPage_Security__Godaddy = new System.Windows.Forms.TabPage();
 			this.linkLabel_Security_Godaddy__API = new System.Windows.Forms.LinkLabel();
@@ -44,6 +47,11 @@
 			this.textBox_Security_dynv6__token = new System.Windows.Forms.TextBox();
 			this.label_Security_dynv6__token = new System.Windows.Forms.Label();
 			this.linkLabel_Security_dynv6__API = new System.Windows.Forms.LinkLabel();
+			this.tabPage_Security__dynu = new System.Windows.Forms.TabPage();
+			this.checkBox_Security_dynu__API_Key = new System.Windows.Forms.CheckBox();
+			this.textBox_Security_dynu__API_Key = new System.Windows.Forms.TextBox();
+			this.label_Security_dynu__API_Key = new System.Windows.Forms.Label();
+			this.linkLabel_Security_dynu__API = new System.Windows.Forms.LinkLabel();
 			this.groupBox_Action_IP_Change_PlaySound = new System.Windows.Forms.GroupBox();
 			this.checkBox_Action_IP_Change_PlaySound = new System.Windows.Forms.CheckBox();
 			this.textBox_Action_IP_Change_PlaySound = new System.Windows.Forms.TextBox();
@@ -55,19 +63,13 @@
 			this.checkBox_Action_IP_Change_Popup = new System.Windows.Forms.CheckBox();
 			this.checkBox_Action_DNS_Lookup_First = new System.Windows.Forms.CheckBox();
 			this.checkBox_Action_UpdateIP = new System.Windows.Forms.CheckBox();
-			this.groupBox_Settings_IP__Manual = new System.Windows.Forms.GroupBox();
-			this.label_Settings_IP__Last_IPv6 = new System.Windows.Forms.Label();
-			this.textBox_Settings_IP__IPv6 = new System.Windows.Forms.TextBox();
-			this.textBox_Settings_IP__IPv4 = new System.Windows.Forms.TextBox();
-			this.label_Settings_IP__Last_IPv4 = new System.Windows.Forms.Label();
-			this.radioButton_Settings_IP__Manual = new System.Windows.Forms.RadioButton();
-			this.groupBox_Settings_IP__From_URL = new System.Windows.Forms.GroupBox();
-			this.label_Settings_IPv6__From_URL = new System.Windows.Forms.Label();
+			this.textBox_Settings_IPv6 = new System.Windows.Forms.TextBox();
+			this.textBox_Settings_IPv4 = new System.Windows.Forms.TextBox();
+			this.radioButton_Settings_IPv6__Manual = new System.Windows.Forms.RadioButton();
 			this.comboBox_Settings_IPv6__From_URL = new System.Windows.Forms.ComboBox();
 			this.comboBox_Settings_IPv4__From_URL = new System.Windows.Forms.ComboBox();
-			this.label_Settings_IPv4__From_URL = new System.Windows.Forms.Label();
-			this.radioButton_Settings_IP__From_URL = new System.Windows.Forms.RadioButton();
-			this.radioButton_Settings_IP__Accept_IP = new System.Windows.Forms.RadioButton();
+			this.radioButton_Settings_IPv6__From_URL = new System.Windows.Forms.RadioButton();
+			this.radioButton_Settings_IPv6__Accept_IP = new System.Windows.Forms.RadioButton();
 			this.groupBox_Settings_RemoteServer = new System.Windows.Forms.GroupBox();
 			this.checkBox_Settings_RemoteServer__Ping = new System.Windows.Forms.CheckBox();
 			this.checkBox_Settings_RemoteServer__Pwd = new System.Windows.Forms.CheckBox();
@@ -87,8 +89,10 @@
 			this.toolStripButton_Domains_Add = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton_Domains_Modify = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton_Domains_Delete = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton_Domains_Enable = new System.Windows.Forms.ToolStripButton();
-			this.toolStripButton_Domains_Disable = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton_Domains_IPv4_Enable = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton_Domains_IPv6_Enable = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton_Domains_IPv4_Disable = new System.Windows.Forms.ToolStripButton();
+			this.toolStripButton_Domains_IPv6_Disable = new System.Windows.Forms.ToolStripButton();
 			this.listView_Domains = new System.Windows.Forms.ListView();
 			this.columnHeader_Domains_Domain = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader_Domains_Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -100,8 +104,10 @@
 			this.ToolStripMenuItem_Domains_Add = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Domains_Modify = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Domains_Delete = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItem_Domains_Enable = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItem_Domains_Disable = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItem_Domains_IPv4_Enable = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItem_Domains_IPv6_Enable = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItem_Domains_IPv4_Disable = new System.Windows.Forms.ToolStripMenuItem();
+			this.ToolStripMenuItem_Domains_IPv6_Disable = new System.Windows.Forms.ToolStripMenuItem();
 			this.listView_Logs = new System.Windows.Forms.ListView();
 			this.columnHeader_Logs_Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader_Logs_Log = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -122,13 +128,15 @@
 			this.timer_Save_Config = new System.Windows.Forms.Timer(this.components);
 			this.timer_Update = new System.Windows.Forms.Timer(this.components);
 			this.timer_Ping = new System.Windows.Forms.Timer(this.components);
-			this.contextMenuStrip_NotifyIcon = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.ToolStripMenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
-			this.ToolStripMenuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitContainer_Main = new System.Windows.Forms.SplitContainer();
 			this.tabControl_Main = new System.Windows.Forms.TabControl();
 			this.tabPage_Update_Type = new System.Windows.Forms.TabPage();
 			this.tabPage_Set_IP = new System.Windows.Forms.TabPage();
+			this.groupBox_Set_IPv6 = new System.Windows.Forms.GroupBox();
+			this.groupBox_Set_IPv4 = new System.Windows.Forms.GroupBox();
+			this.radioButton_Settings_IPv4__From_URL = new System.Windows.Forms.RadioButton();
+			this.radioButton_Settings_IPv4__Manual = new System.Windows.Forms.RadioButton();
+			this.radioButton_Settings_IPv4__Accept_IP = new System.Windows.Forms.RadioButton();
 			this.tabPage_Security = new System.Windows.Forms.TabPage();
 			this.listView_Security = new System.Windows.Forms.ListView();
 			this.columnHeader_Security = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -143,6 +151,12 @@
 			this.tabPage_Update_Action = new System.Windows.Forms.TabPage();
 			this.label_Action_Timeout = new System.Windows.Forms.Label();
 			this.numericUpDown_Action_Timeout = new System.Windows.Forms.NumericUpDown();
+			this.tabPage_Fix_hosts = new System.Windows.Forms.TabPage();
+			this.button_Fix_hosts__Path_Browser = new System.Windows.Forms.Button();
+			this.textBox_Fix_hosts__Content = new System.Windows.Forms.TextBox();
+			this.textBox_Fix_hosts__Path = new System.Windows.Forms.TextBox();
+			this.label_Fix_hosts__Content = new System.Windows.Forms.Label();
+			this.label_Fix_hosts__Path = new System.Windows.Forms.Label();
 			this.groupBox_Settings_Preview = new System.Windows.Forms.GroupBox();
 			this.label_Settings_Preview__Action_AutoUpdate_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Timeout_Val = new System.Windows.Forms.Label();
@@ -150,7 +164,8 @@
 			this.label_Settings_Preview__DNS_Lookup_First_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Action_UpdateIP_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Security_Val = new System.Windows.Forms.Label();
-			this.label_Settings_Preview__Set_IP_Val = new System.Windows.Forms.Label();
+			this.label_Settings_Preview__Set_IPv6_Val = new System.Windows.Forms.Label();
+			this.label_Settings_Preview__Set_IPv4_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Ping_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Update_Type_Val = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Action_AutoUpdate = new System.Windows.Forms.Label();
@@ -159,16 +174,17 @@
 			this.label_Settings_Preview__DNS_Lookup_First = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Action_UpdateIP = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Security = new System.Windows.Forms.Label();
+			this.label_Settings_Preview__Set_IPv6 = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Ping = new System.Windows.Forms.Label();
-			this.label_Settings_Preview__Set_IP = new System.Windows.Forms.Label();
+			this.label_Settings_Preview__Set_IPv4 = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Update_Type = new System.Windows.Forms.Label();
+			this.contextMenuStrip_NotifyIcon.SuspendLayout();
 			this.tabControl_Security__Property.SuspendLayout();
 			this.tabPage_Security__Godaddy.SuspendLayout();
 			this.tabPage_Security__dynv6.SuspendLayout();
+			this.tabPage_Security__dynu.SuspendLayout();
 			this.groupBox_Action_IP_Change_PlaySound.SuspendLayout();
 			this.groupBox_Action_Set_DNS_Server.SuspendLayout();
-			this.groupBox_Settings_IP__Manual.SuspendLayout();
-			this.groupBox_Settings_IP__From_URL.SuspendLayout();
 			this.groupBox_Settings_RemoteServer.SuspendLayout();
 			this.groupBox_Domains.SuspendLayout();
 			this.toolStrip_Domains.SuspendLayout();
@@ -177,7 +193,6 @@
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Logs_MaxLines)).BeginInit();
 			this.groupBox_Logs.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Action_AutoAction_Interval)).BeginInit();
-			this.contextMenuStrip_NotifyIcon.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer_Main)).BeginInit();
 			this.splitContainer_Main.Panel1.SuspendLayout();
 			this.splitContainer_Main.Panel2.SuspendLayout();
@@ -185,11 +200,14 @@
 			this.tabControl_Main.SuspendLayout();
 			this.tabPage_Update_Type.SuspendLayout();
 			this.tabPage_Set_IP.SuspendLayout();
+			this.groupBox_Set_IPv6.SuspendLayout();
+			this.groupBox_Set_IPv4.SuspendLayout();
 			this.tabPage_Security.SuspendLayout();
 			this.contextMenuStrip_Security.SuspendLayout();
 			this.groupBox_Security__Property.SuspendLayout();
 			this.tabPage_Update_Action.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Action_Timeout)).BeginInit();
+			this.tabPage_Fix_hosts.SuspendLayout();
 			this.groupBox_Settings_Preview.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -199,12 +217,37 @@
 			this.notifyIcon_Main.Visible = true;
 			this.notifyIcon_Main.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_Main_MouseDoubleClick);
 			// 
+			// contextMenuStrip_NotifyIcon
+			// 
+			this.contextMenuStrip_NotifyIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItem_Open,
+            this.ToolStripMenuItem_Exit});
+			this.contextMenuStrip_NotifyIcon.Name = "contextMenuStrip_NotifyIcon";
+			this.contextMenuStrip_NotifyIcon.Size = new System.Drawing.Size(101, 48);
+			// 
+			// ToolStripMenuItem_Open
+			// 
+			this.ToolStripMenuItem_Open.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Bold);
+			this.ToolStripMenuItem_Open.Name = "ToolStripMenuItem_Open";
+			this.ToolStripMenuItem_Open.Size = new System.Drawing.Size(100, 22);
+			this.ToolStripMenuItem_Open.Text = "打开";
+			this.ToolStripMenuItem_Open.Click += new System.EventHandler(this.ToolStripMenuItem_Open_Click);
+			// 
+			// ToolStripMenuItem_Exit
+			// 
+			this.ToolStripMenuItem_Exit.Image = global::ddns_tool.res_Main.Exit;
+			this.ToolStripMenuItem_Exit.Name = "ToolStripMenuItem_Exit";
+			this.ToolStripMenuItem_Exit.Size = new System.Drawing.Size(100, 22);
+			this.ToolStripMenuItem_Exit.Text = "退出";
+			this.ToolStripMenuItem_Exit.Click += new System.EventHandler(this.ToolStripMenuItem_Exit_Click);
+			// 
 			// tabControl_Security__Property
 			// 
 			this.tabControl_Security__Property.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.tabControl_Security__Property.Controls.Add(this.tabPage_Security__Godaddy);
 			this.tabControl_Security__Property.Controls.Add(this.tabPage_Security__dynv6);
+			this.tabControl_Security__Property.Controls.Add(this.tabPage_Security__dynu);
 			this.tabControl_Security__Property.Location = new System.Drawing.Point(6, 47);
 			this.tabControl_Security__Property.Name = "tabControl_Security__Property";
 			this.tabControl_Security__Property.SelectedIndex = 0;
@@ -225,7 +268,7 @@
 			this.tabPage_Security__Godaddy.Padding = new System.Windows.Forms.Padding(3);
 			this.tabPage_Security__Godaddy.Size = new System.Drawing.Size(345, 69);
 			this.tabPage_Security__Godaddy.TabIndex = 1;
-			this.tabPage_Security__Godaddy.Text = "Godaddy 设置";
+			this.tabPage_Security__Godaddy.Text = "Godaddy";
 			this.tabPage_Security__Godaddy.UseVisualStyleBackColor = true;
 			// 
 			// linkLabel_Security_Godaddy__API
@@ -243,10 +286,10 @@
 			// 
 			this.textBox_Security_Godaddy__Key.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox_Security_Godaddy__Key.Location = new System.Drawing.Point(67, 18);
+			this.textBox_Security_Godaddy__Key.Location = new System.Drawing.Point(73, 18);
 			this.textBox_Security_Godaddy__Key.Name = "textBox_Security_Godaddy__Key";
 			this.textBox_Security_Godaddy__Key.PasswordChar = '*';
-			this.textBox_Security_Godaddy__Key.Size = new System.Drawing.Size(218, 21);
+			this.textBox_Security_Godaddy__Key.Size = new System.Drawing.Size(212, 21);
 			this.textBox_Security_Godaddy__Key.TabIndex = 42;
 			this.textBox_Security_Godaddy__Key.TextChanged += new System.EventHandler(this.textBox_Security_Godaddy__Key_TextChanged);
 			// 
@@ -254,10 +297,10 @@
 			// 
 			this.textBox_Security_Godaddy__Secret.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox_Security_Godaddy__Secret.Location = new System.Drawing.Point(67, 45);
+			this.textBox_Security_Godaddy__Secret.Location = new System.Drawing.Point(73, 45);
 			this.textBox_Security_Godaddy__Secret.Name = "textBox_Security_Godaddy__Secret";
 			this.textBox_Security_Godaddy__Secret.PasswordChar = '*';
-			this.textBox_Security_Godaddy__Secret.Size = new System.Drawing.Size(218, 21);
+			this.textBox_Security_Godaddy__Secret.Size = new System.Drawing.Size(212, 21);
 			this.textBox_Security_Godaddy__Secret.TabIndex = 45;
 			this.textBox_Security_Godaddy__Secret.TextChanged += new System.EventHandler(this.textBox_Security_Godaddy__Secret_TextChanged);
 			// 
@@ -313,7 +356,7 @@
 			this.tabPage_Security__dynv6.Name = "tabPage_Security__dynv6";
 			this.tabPage_Security__dynv6.Size = new System.Drawing.Size(345, 69);
 			this.tabPage_Security__dynv6.TabIndex = 2;
-			this.tabPage_Security__dynv6.Text = "dynv6 设置";
+			this.tabPage_Security__dynv6.Text = "dynv6";
 			this.tabPage_Security__dynv6.UseVisualStyleBackColor = true;
 			// 
 			// checkBox_Security_dynv6__token
@@ -332,10 +375,10 @@
 			// 
 			this.textBox_Security_dynv6__token.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox_Security_dynv6__token.Location = new System.Drawing.Point(67, 18);
+			this.textBox_Security_dynv6__token.Location = new System.Drawing.Point(73, 18);
 			this.textBox_Security_dynv6__token.Name = "textBox_Security_dynv6__token";
 			this.textBox_Security_dynv6__token.PasswordChar = '*';
-			this.textBox_Security_dynv6__token.Size = new System.Drawing.Size(218, 21);
+			this.textBox_Security_dynv6__token.Size = new System.Drawing.Size(212, 21);
 			this.textBox_Security_dynv6__token.TabIndex = 1;
 			this.textBox_Security_dynv6__token.TextChanged += new System.EventHandler(this.textBox_Security_dynv6__token_TextChanged);
 			// 
@@ -358,6 +401,62 @@
 			this.linkLabel_Security_dynv6__API.TabStop = true;
 			this.linkLabel_Security_dynv6__API.Text = "https://dynv6.com/docs/apis";
 			this.linkLabel_Security_dynv6__API.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_Security__LinkClicked);
+			// 
+			// tabPage_Security__dynu
+			// 
+			this.tabPage_Security__dynu.Controls.Add(this.checkBox_Security_dynu__API_Key);
+			this.tabPage_Security__dynu.Controls.Add(this.textBox_Security_dynu__API_Key);
+			this.tabPage_Security__dynu.Controls.Add(this.label_Security_dynu__API_Key);
+			this.tabPage_Security__dynu.Controls.Add(this.linkLabel_Security_dynu__API);
+			this.tabPage_Security__dynu.Location = new System.Drawing.Point(4, 22);
+			this.tabPage_Security__dynu.Name = "tabPage_Security__dynu";
+			this.tabPage_Security__dynu.Size = new System.Drawing.Size(345, 69);
+			this.tabPage_Security__dynu.TabIndex = 3;
+			this.tabPage_Security__dynu.Text = "dynu";
+			this.tabPage_Security__dynu.UseVisualStyleBackColor = true;
+			// 
+			// checkBox_Security_dynu__API_Key
+			// 
+			this.checkBox_Security_dynu__API_Key.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.checkBox_Security_dynu__API_Key.AutoSize = true;
+			this.checkBox_Security_dynu__API_Key.Location = new System.Drawing.Point(291, 20);
+			this.checkBox_Security_dynu__API_Key.Name = "checkBox_Security_dynu__API_Key";
+			this.checkBox_Security_dynu__API_Key.Size = new System.Drawing.Size(48, 16);
+			this.checkBox_Security_dynu__API_Key.TabIndex = 73;
+			this.checkBox_Security_dynu__API_Key.Text = "显示";
+			this.checkBox_Security_dynu__API_Key.UseVisualStyleBackColor = true;
+			this.checkBox_Security_dynu__API_Key.CheckedChanged += new System.EventHandler(this.checkBox_Security_dynu__API_Key_CheckedChanged);
+			// 
+			// textBox_Security_dynu__API_Key
+			// 
+			this.textBox_Security_dynu__API_Key.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox_Security_dynu__API_Key.Location = new System.Drawing.Point(73, 18);
+			this.textBox_Security_dynu__API_Key.Name = "textBox_Security_dynu__API_Key";
+			this.textBox_Security_dynu__API_Key.PasswordChar = '*';
+			this.textBox_Security_dynu__API_Key.Size = new System.Drawing.Size(212, 21);
+			this.textBox_Security_dynu__API_Key.TabIndex = 72;
+			this.textBox_Security_dynu__API_Key.TextChanged += new System.EventHandler(this.textBox_Security_dynu__API_Key_TextChanged);
+			// 
+			// label_Security_dynu__API_Key
+			// 
+			this.label_Security_dynu__API_Key.AutoSize = true;
+			this.label_Security_dynu__API_Key.Location = new System.Drawing.Point(8, 21);
+			this.label_Security_dynu__API_Key.Name = "label_Security_dynu__API_Key";
+			this.label_Security_dynu__API_Key.Size = new System.Drawing.Size(59, 12);
+			this.label_Security_dynu__API_Key.TabIndex = 71;
+			this.label_Security_dynu__API_Key.Text = "API-Key：";
+			// 
+			// linkLabel_Security_dynu__API
+			// 
+			this.linkLabel_Security_dynu__API.AutoSize = true;
+			this.linkLabel_Security_dynu__API.Location = new System.Drawing.Point(8, 3);
+			this.linkLabel_Security_dynu__API.Name = "linkLabel_Security_dynu__API";
+			this.linkLabel_Security_dynu__API.Size = new System.Drawing.Size(233, 12);
+			this.linkLabel_Security_dynu__API.TabIndex = 69;
+			this.linkLabel_Security_dynu__API.TabStop = true;
+			this.linkLabel_Security_dynu__API.Text = "https://www.dynu.com/en-US/Support/API";
+			this.linkLabel_Security_dynu__API.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_Security__LinkClicked);
 			// 
 			// groupBox_Action_IP_Change_PlaySound
 			// 
@@ -496,106 +595,47 @@
 			this.checkBox_Action_UpdateIP.UseVisualStyleBackColor = true;
 			this.checkBox_Action_UpdateIP.CheckedChanged += new System.EventHandler(this.checkBox_Action_UpdateIP_CheckedChanged);
 			// 
-			// groupBox_Settings_IP__Manual
+			// textBox_Settings_IPv6
 			// 
-			this.groupBox_Settings_IP__Manual.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.textBox_Settings_IPv6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox_Settings_IP__Manual.Controls.Add(this.label_Settings_IP__Last_IPv6);
-			this.groupBox_Settings_IP__Manual.Controls.Add(this.textBox_Settings_IP__IPv6);
-			this.groupBox_Settings_IP__Manual.Controls.Add(this.textBox_Settings_IP__IPv4);
-			this.groupBox_Settings_IP__Manual.Controls.Add(this.label_Settings_IP__Last_IPv4);
-			this.groupBox_Settings_IP__Manual.Location = new System.Drawing.Point(6, 112);
-			this.groupBox_Settings_IP__Manual.Name = "groupBox_Settings_IP__Manual";
-			this.groupBox_Settings_IP__Manual.Size = new System.Drawing.Size(517, 68);
-			this.groupBox_Settings_IP__Manual.TabIndex = 39;
-			this.groupBox_Settings_IP__Manual.TabStop = false;
+			this.textBox_Settings_IPv6.Location = new System.Drawing.Point(173, 46);
+			this.textBox_Settings_IPv6.Name = "textBox_Settings_IPv6";
+			this.textBox_Settings_IPv6.ReadOnly = true;
+			this.textBox_Settings_IPv6.Size = new System.Drawing.Size(338, 21);
+			this.textBox_Settings_IPv6.TabIndex = 37;
+			this.textBox_Settings_IPv6.TextChanged += new System.EventHandler(this.textBox_Settings_IPv6_TextChanged);
 			// 
-			// label_Settings_IP__Last_IPv6
+			// textBox_Settings_IPv4
 			// 
-			this.label_Settings_IP__Last_IPv6.AutoSize = true;
-			this.label_Settings_IP__Last_IPv6.Location = new System.Drawing.Point(6, 49);
-			this.label_Settings_IP__Last_IPv6.Name = "label_Settings_IP__Last_IPv6";
-			this.label_Settings_IP__Last_IPv6.Size = new System.Drawing.Size(41, 12);
-			this.label_Settings_IP__Last_IPv6.TabIndex = 40;
-			this.label_Settings_IP__Last_IPv6.Text = "IPv6：";
-			// 
-			// textBox_Settings_IP__IPv6
-			// 
-			this.textBox_Settings_IP__IPv6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.textBox_Settings_IPv4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox_Settings_IP__IPv6.Location = new System.Drawing.Point(53, 41);
-			this.textBox_Settings_IP__IPv6.Name = "textBox_Settings_IP__IPv6";
-			this.textBox_Settings_IP__IPv6.ReadOnly = true;
-			this.textBox_Settings_IP__IPv6.Size = new System.Drawing.Size(458, 21);
-			this.textBox_Settings_IP__IPv6.TabIndex = 37;
-			this.textBox_Settings_IP__IPv6.TextChanged += new System.EventHandler(this.textBox_Settings_IP__IPv6_TextChanged);
+			this.textBox_Settings_IPv4.Location = new System.Drawing.Point(173, 46);
+			this.textBox_Settings_IPv4.Name = "textBox_Settings_IPv4";
+			this.textBox_Settings_IPv4.ReadOnly = true;
+			this.textBox_Settings_IPv4.Size = new System.Drawing.Size(338, 21);
+			this.textBox_Settings_IPv4.TabIndex = 37;
+			this.textBox_Settings_IPv4.TextChanged += new System.EventHandler(this.textBox_Settings_IPv4_TextChanged);
 			// 
-			// textBox_Settings_IP__IPv4
+			// radioButton_Settings_IPv6__Manual
 			// 
-			this.textBox_Settings_IP__IPv4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox_Settings_IP__IPv4.Location = new System.Drawing.Point(53, 14);
-			this.textBox_Settings_IP__IPv4.Name = "textBox_Settings_IP__IPv4";
-			this.textBox_Settings_IP__IPv4.ReadOnly = true;
-			this.textBox_Settings_IP__IPv4.Size = new System.Drawing.Size(458, 21);
-			this.textBox_Settings_IP__IPv4.TabIndex = 37;
-			this.textBox_Settings_IP__IPv4.TextChanged += new System.EventHandler(this.textBox_Settings_IP__IPv4_TextChanged);
-			// 
-			// label_Settings_IP__Last_IPv4
-			// 
-			this.label_Settings_IP__Last_IPv4.AutoSize = true;
-			this.label_Settings_IP__Last_IPv4.Location = new System.Drawing.Point(6, 23);
-			this.label_Settings_IP__Last_IPv4.Name = "label_Settings_IP__Last_IPv4";
-			this.label_Settings_IP__Last_IPv4.Size = new System.Drawing.Size(41, 12);
-			this.label_Settings_IP__Last_IPv4.TabIndex = 39;
-			this.label_Settings_IP__Last_IPv4.Text = "IPv4：";
-			// 
-			// radioButton_Settings_IP__Manual
-			// 
-			this.radioButton_Settings_IP__Manual.AutoSize = true;
-			this.radioButton_Settings_IP__Manual.Location = new System.Drawing.Point(6, 100);
-			this.radioButton_Settings_IP__Manual.Name = "radioButton_Settings_IP__Manual";
-			this.radioButton_Settings_IP__Manual.Size = new System.Drawing.Size(89, 16);
-			this.radioButton_Settings_IP__Manual.TabIndex = 32;
-			this.radioButton_Settings_IP__Manual.Text = "手动指定 IP";
-			this.radioButton_Settings_IP__Manual.UseVisualStyleBackColor = true;
-			this.radioButton_Settings_IP__Manual.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IP__CheckedChanged);
-			// 
-			// groupBox_Settings_IP__From_URL
-			// 
-			this.groupBox_Settings_IP__From_URL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox_Settings_IP__From_URL.Controls.Add(this.label_Settings_IPv6__From_URL);
-			this.groupBox_Settings_IP__From_URL.Controls.Add(this.comboBox_Settings_IPv6__From_URL);
-			this.groupBox_Settings_IP__From_URL.Controls.Add(this.comboBox_Settings_IPv4__From_URL);
-			this.groupBox_Settings_IP__From_URL.Controls.Add(this.label_Settings_IPv4__From_URL);
-			this.groupBox_Settings_IP__From_URL.Location = new System.Drawing.Point(6, 18);
-			this.groupBox_Settings_IP__From_URL.Name = "groupBox_Settings_IP__From_URL";
-			this.groupBox_Settings_IP__From_URL.Size = new System.Drawing.Size(517, 66);
-			this.groupBox_Settings_IP__From_URL.TabIndex = 38;
-			this.groupBox_Settings_IP__From_URL.TabStop = false;
-			// 
-			// label_Settings_IPv6__From_URL
-			// 
-			this.label_Settings_IPv6__From_URL.AutoSize = true;
-			this.label_Settings_IPv6__From_URL.Location = new System.Drawing.Point(6, 43);
-			this.label_Settings_IPv6__From_URL.Name = "label_Settings_IPv6__From_URL";
-			this.label_Settings_IPv6__From_URL.Size = new System.Drawing.Size(41, 12);
-			this.label_Settings_IPv6__From_URL.TabIndex = 40;
-			this.label_Settings_IPv6__From_URL.Text = "IPv6：";
+			this.radioButton_Settings_IPv6__Manual.AutoSize = true;
+			this.radioButton_Settings_IPv6__Manual.Location = new System.Drawing.Point(6, 47);
+			this.radioButton_Settings_IPv6__Manual.Name = "radioButton_Settings_IPv6__Manual";
+			this.radioButton_Settings_IPv6__Manual.Size = new System.Drawing.Size(101, 16);
+			this.radioButton_Settings_IPv6__Manual.TabIndex = 32;
+			this.radioButton_Settings_IPv6__Manual.Text = "手动指定 IPv6";
+			this.radioButton_Settings_IPv6__Manual.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv6__Manual.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv6__CheckedChanged);
 			// 
 			// comboBox_Settings_IPv6__From_URL
 			// 
 			this.comboBox_Settings_IPv6__From_URL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.comboBox_Settings_IPv6__From_URL.FormattingEnabled = true;
-			this.comboBox_Settings_IPv6__From_URL.Items.AddRange(new object[] {
-            "https://icanhazip.com",
-            "https://api.ip.sb/ip",
-            "https://ident.me"});
-			this.comboBox_Settings_IPv6__From_URL.Location = new System.Drawing.Point(53, 40);
+			this.comboBox_Settings_IPv6__From_URL.Location = new System.Drawing.Point(173, 20);
 			this.comboBox_Settings_IPv6__From_URL.Name = "comboBox_Settings_IPv6__From_URL";
-			this.comboBox_Settings_IPv6__From_URL.Size = new System.Drawing.Size(458, 20);
+			this.comboBox_Settings_IPv6__From_URL.Size = new System.Drawing.Size(338, 20);
 			this.comboBox_Settings_IPv6__From_URL.TabIndex = 35;
 			this.comboBox_Settings_IPv6__From_URL.SelectedIndexChanged += new System.EventHandler(this.comboBox_Settings_IPv6__From_URL_SelectedIndexChanged);
 			// 
@@ -604,54 +644,36 @@
 			this.comboBox_Settings_IPv4__From_URL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.comboBox_Settings_IPv4__From_URL.FormattingEnabled = true;
-			this.comboBox_Settings_IPv4__From_URL.Items.AddRange(new object[] {
-            "https://icanhazip.com",
-            "https://ipinfo.io/ip",
-            "https://ip.42.pl/raw",
-            "https://api.ip.sb/ip",
-            "https://ip.3322.net",
-            "https://ip.qaros.com",
-            "https://ident.me",
-            "https://api.ipify.org/"});
-			this.comboBox_Settings_IPv4__From_URL.Location = new System.Drawing.Point(53, 14);
+			this.comboBox_Settings_IPv4__From_URL.Location = new System.Drawing.Point(173, 20);
 			this.comboBox_Settings_IPv4__From_URL.Name = "comboBox_Settings_IPv4__From_URL";
-			this.comboBox_Settings_IPv4__From_URL.Size = new System.Drawing.Size(458, 20);
+			this.comboBox_Settings_IPv4__From_URL.Size = new System.Drawing.Size(338, 20);
 			this.comboBox_Settings_IPv4__From_URL.TabIndex = 35;
 			this.comboBox_Settings_IPv4__From_URL.SelectedIndexChanged += new System.EventHandler(this.comboBox_Settings_IPv4__From_URL_SelectedIndexChanged);
 			// 
-			// label_Settings_IPv4__From_URL
+			// radioButton_Settings_IPv6__From_URL
 			// 
-			this.label_Settings_IPv4__From_URL.AutoSize = true;
-			this.label_Settings_IPv4__From_URL.Location = new System.Drawing.Point(6, 17);
-			this.label_Settings_IPv4__From_URL.Name = "label_Settings_IPv4__From_URL";
-			this.label_Settings_IPv4__From_URL.Size = new System.Drawing.Size(41, 12);
-			this.label_Settings_IPv4__From_URL.TabIndex = 39;
-			this.label_Settings_IPv4__From_URL.Text = "IPv4：";
+			this.radioButton_Settings_IPv6__From_URL.AutoSize = true;
+			this.radioButton_Settings_IPv6__From_URL.Checked = true;
+			this.radioButton_Settings_IPv6__From_URL.Location = new System.Drawing.Point(6, 21);
+			this.radioButton_Settings_IPv6__From_URL.Name = "radioButton_Settings_IPv6__From_URL";
+			this.radioButton_Settings_IPv6__From_URL.Size = new System.Drawing.Size(161, 16);
+			this.radioButton_Settings_IPv6__From_URL.TabIndex = 31;
+			this.radioButton_Settings_IPv6__From_URL.TabStop = true;
+			this.radioButton_Settings_IPv6__From_URL.Text = "通过互联网获取公网 IPv6";
+			this.radioButton_Settings_IPv6__From_URL.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv6__From_URL.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv6__CheckedChanged);
 			// 
-			// radioButton_Settings_IP__From_URL
+			// radioButton_Settings_IPv6__Accept_IP
 			// 
-			this.radioButton_Settings_IP__From_URL.AutoSize = true;
-			this.radioButton_Settings_IP__From_URL.Checked = true;
-			this.radioButton_Settings_IP__From_URL.Location = new System.Drawing.Point(6, 6);
-			this.radioButton_Settings_IP__From_URL.Name = "radioButton_Settings_IP__From_URL";
-			this.radioButton_Settings_IP__From_URL.Size = new System.Drawing.Size(149, 16);
-			this.radioButton_Settings_IP__From_URL.TabIndex = 31;
-			this.radioButton_Settings_IP__From_URL.TabStop = true;
-			this.radioButton_Settings_IP__From_URL.Text = "通过互联网获取公网 IP";
-			this.radioButton_Settings_IP__From_URL.UseVisualStyleBackColor = true;
-			this.radioButton_Settings_IP__From_URL.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IP__CheckedChanged);
-			// 
-			// radioButton_Settings_IP__Accept_IP
-			// 
-			this.radioButton_Settings_IP__Accept_IP.AutoSize = true;
-			this.radioButton_Settings_IP__Accept_IP.Enabled = false;
-			this.radioButton_Settings_IP__Accept_IP.Location = new System.Drawing.Point(6, 196);
-			this.radioButton_Settings_IP__Accept_IP.Name = "radioButton_Settings_IP__Accept_IP";
-			this.radioButton_Settings_IP__Accept_IP.Size = new System.Drawing.Size(179, 16);
-			this.radioButton_Settings_IP__Accept_IP.TabIndex = 33;
-			this.radioButton_Settings_IP__Accept_IP.Text = "Server 接受连接的客户端 IP";
-			this.radioButton_Settings_IP__Accept_IP.UseVisualStyleBackColor = true;
-			this.radioButton_Settings_IP__Accept_IP.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IP__CheckedChanged);
+			this.radioButton_Settings_IPv6__Accept_IP.AutoSize = true;
+			this.radioButton_Settings_IPv6__Accept_IP.Enabled = false;
+			this.radioButton_Settings_IPv6__Accept_IP.Location = new System.Drawing.Point(6, 73);
+			this.radioButton_Settings_IPv6__Accept_IP.Name = "radioButton_Settings_IPv6__Accept_IP";
+			this.radioButton_Settings_IPv6__Accept_IP.Size = new System.Drawing.Size(191, 16);
+			this.radioButton_Settings_IPv6__Accept_IP.TabIndex = 33;
+			this.radioButton_Settings_IPv6__Accept_IP.Text = "Server 接受连接的客户端 IPv6";
+			this.radioButton_Settings_IPv6__Accept_IP.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv6__Accept_IP.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv6__CheckedChanged);
 			// 
 			// groupBox_Settings_RemoteServer
 			// 
@@ -823,7 +845,7 @@
 			this.groupBox_Domains.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox_Domains.Location = new System.Drawing.Point(0, 0);
 			this.groupBox_Domains.Name = "groupBox_Domains";
-			this.groupBox_Domains.Size = new System.Drawing.Size(846, 162);
+			this.groupBox_Domains.Size = new System.Drawing.Size(910, 162);
 			this.groupBox_Domains.TabIndex = 51;
 			this.groupBox_Domains.TabStop = false;
 			this.groupBox_Domains.Text = "【域名列表】";
@@ -834,11 +856,13 @@
             this.toolStripButton_Domains_Add,
             this.toolStripButton_Domains_Modify,
             this.toolStripButton_Domains_Delete,
-            this.toolStripButton_Domains_Enable,
-            this.toolStripButton_Domains_Disable});
+            this.toolStripButton_Domains_IPv4_Enable,
+            this.toolStripButton_Domains_IPv6_Enable,
+            this.toolStripButton_Domains_IPv4_Disable,
+            this.toolStripButton_Domains_IPv6_Disable});
 			this.toolStrip_Domains.Location = new System.Drawing.Point(3, 17);
 			this.toolStrip_Domains.Name = "toolStrip_Domains";
-			this.toolStrip_Domains.Size = new System.Drawing.Size(840, 25);
+			this.toolStrip_Domains.Size = new System.Drawing.Size(904, 25);
 			this.toolStrip_Domains.TabIndex = 52;
 			this.toolStrip_Domains.Text = "域名列表";
 			// 
@@ -871,25 +895,45 @@
 			this.toolStripButton_Domains_Delete.Text = "删除";
 			this.toolStripButton_Domains_Delete.Click += new System.EventHandler(this.toolStripButton_Domains_Delete_Click);
 			// 
-			// toolStripButton_Domains_Enable
+			// toolStripButton_Domains_IPv4_Enable
 			// 
-			this.toolStripButton_Domains_Enable.Enabled = false;
-			this.toolStripButton_Domains_Enable.Image = global::ddns_tool.res_Main.On;
-			this.toolStripButton_Domains_Enable.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton_Domains_Enable.Name = "toolStripButton_Domains_Enable";
-			this.toolStripButton_Domains_Enable.Size = new System.Drawing.Size(76, 22);
-			this.toolStripButton_Domains_Enable.Text = "允许更新";
-			this.toolStripButton_Domains_Enable.Click += new System.EventHandler(this.toolStripButton_Domains_Enable_Click);
+			this.toolStripButton_Domains_IPv4_Enable.Enabled = false;
+			this.toolStripButton_Domains_IPv4_Enable.Image = global::ddns_tool.res_Main.On;
+			this.toolStripButton_Domains_IPv4_Enable.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_IPv4_Enable.Name = "toolStripButton_Domains_IPv4_Enable";
+			this.toolStripButton_Domains_IPv4_Enable.Size = new System.Drawing.Size(104, 22);
+			this.toolStripButton_Domains_IPv4_Enable.Text = "允许更新 IPv4";
+			this.toolStripButton_Domains_IPv4_Enable.Click += new System.EventHandler(this.toolStripButton_Domains_IPv4_Enable_Click);
 			// 
-			// toolStripButton_Domains_Disable
+			// toolStripButton_Domains_IPv6_Enable
 			// 
-			this.toolStripButton_Domains_Disable.Enabled = false;
-			this.toolStripButton_Domains_Disable.Image = global::ddns_tool.res_Main.Off;
-			this.toolStripButton_Domains_Disable.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton_Domains_Disable.Name = "toolStripButton_Domains_Disable";
-			this.toolStripButton_Domains_Disable.Size = new System.Drawing.Size(76, 22);
-			this.toolStripButton_Domains_Disable.Text = "禁止更新";
-			this.toolStripButton_Domains_Disable.Click += new System.EventHandler(this.toolStripButton_Domains_Disable_Click);
+			this.toolStripButton_Domains_IPv6_Enable.Enabled = false;
+			this.toolStripButton_Domains_IPv6_Enable.Image = global::ddns_tool.res_Main.On;
+			this.toolStripButton_Domains_IPv6_Enable.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_IPv6_Enable.Name = "toolStripButton_Domains_IPv6_Enable";
+			this.toolStripButton_Domains_IPv6_Enable.Size = new System.Drawing.Size(104, 22);
+			this.toolStripButton_Domains_IPv6_Enable.Text = "允许更新 IPv6";
+			this.toolStripButton_Domains_IPv6_Enable.Click += new System.EventHandler(this.toolStripButton_Domains_IPv6_Enable_Click);
+			// 
+			// toolStripButton_Domains_IPv4_Disable
+			// 
+			this.toolStripButton_Domains_IPv4_Disable.Enabled = false;
+			this.toolStripButton_Domains_IPv4_Disable.Image = global::ddns_tool.res_Main.Off;
+			this.toolStripButton_Domains_IPv4_Disable.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_IPv4_Disable.Name = "toolStripButton_Domains_IPv4_Disable";
+			this.toolStripButton_Domains_IPv4_Disable.Size = new System.Drawing.Size(104, 22);
+			this.toolStripButton_Domains_IPv4_Disable.Text = "禁止更新 IPv4";
+			this.toolStripButton_Domains_IPv4_Disable.Click += new System.EventHandler(this.toolStripButton_Domains_IPv4_Disable_Click);
+			// 
+			// toolStripButton_Domains_IPv6_Disable
+			// 
+			this.toolStripButton_Domains_IPv6_Disable.Enabled = false;
+			this.toolStripButton_Domains_IPv6_Disable.Image = global::ddns_tool.res_Main.Off;
+			this.toolStripButton_Domains_IPv6_Disable.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_IPv6_Disable.Name = "toolStripButton_Domains_IPv6_Disable";
+			this.toolStripButton_Domains_IPv6_Disable.Size = new System.Drawing.Size(104, 22);
+			this.toolStripButton_Domains_IPv6_Disable.Text = "禁止更新 IPv6";
+			this.toolStripButton_Domains_IPv6_Disable.Click += new System.EventHandler(this.toolStripButton_Domains_IPv6_Disable_Click);
 			// 
 			// listView_Domains
 			// 
@@ -909,7 +953,7 @@
 			this.listView_Domains.HideSelection = false;
 			this.listView_Domains.Location = new System.Drawing.Point(3, 45);
 			this.listView_Domains.Name = "listView_Domains";
-			this.listView_Domains.Size = new System.Drawing.Size(840, 111);
+			this.listView_Domains.Size = new System.Drawing.Size(904, 111);
 			this.listView_Domains.TabIndex = 51;
 			this.listView_Domains.UseCompatibleStateImageBehavior = false;
 			this.listView_Domains.View = System.Windows.Forms.View.Details;
@@ -920,12 +964,12 @@
 			// columnHeader_Domains_Domain
 			// 
 			this.columnHeader_Domains_Domain.Text = "域名";
-			this.columnHeader_Domains_Domain.Width = 150;
+			this.columnHeader_Domains_Domain.Width = 184;
 			// 
 			// columnHeader_Domains_Type
 			// 
 			this.columnHeader_Domains_Type.Text = "类型";
-			this.columnHeader_Domains_Type.Width = 168;
+			this.columnHeader_Domains_Type.Width = 198;
 			// 
 			// columnHeader_Domains_Profile
 			// 
@@ -952,16 +996,18 @@
             this.ToolStripMenuItem_Domains_Add,
             this.ToolStripMenuItem_Domains_Modify,
             this.ToolStripMenuItem_Domains_Delete,
-            this.ToolStripMenuItem_Domains_Enable,
-            this.ToolStripMenuItem_Domains_Disable});
+            this.ToolStripMenuItem_Domains_IPv4_Enable,
+            this.ToolStripMenuItem_Domains_IPv6_Enable,
+            this.ToolStripMenuItem_Domains_IPv4_Disable,
+            this.ToolStripMenuItem_Domains_IPv6_Disable});
 			this.contextMenuStrip_Domains.Name = "contextMenuStrip_Domains";
-			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(125, 114);
+			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(153, 158);
 			// 
 			// ToolStripMenuItem_Domains_Add
 			// 
 			this.ToolStripMenuItem_Domains_Add.Image = global::ddns_tool.res_Main.Add;
 			this.ToolStripMenuItem_Domains_Add.Name = "ToolStripMenuItem_Domains_Add";
-			this.ToolStripMenuItem_Domains_Add.Size = new System.Drawing.Size(124, 22);
+			this.ToolStripMenuItem_Domains_Add.Size = new System.Drawing.Size(152, 22);
 			this.ToolStripMenuItem_Domains_Add.Text = "添加";
 			this.ToolStripMenuItem_Domains_Add.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Add_Click);
 			// 
@@ -970,7 +1016,7 @@
 			this.ToolStripMenuItem_Domains_Modify.Enabled = false;
 			this.ToolStripMenuItem_Domains_Modify.Image = global::ddns_tool.res_Main.Edit;
 			this.ToolStripMenuItem_Domains_Modify.Name = "ToolStripMenuItem_Domains_Modify";
-			this.ToolStripMenuItem_Domains_Modify.Size = new System.Drawing.Size(124, 22);
+			this.ToolStripMenuItem_Domains_Modify.Size = new System.Drawing.Size(152, 22);
 			this.ToolStripMenuItem_Domains_Modify.Text = "修改";
 			this.ToolStripMenuItem_Domains_Modify.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Modify_Click);
 			// 
@@ -979,27 +1025,45 @@
 			this.ToolStripMenuItem_Domains_Delete.Enabled = false;
 			this.ToolStripMenuItem_Domains_Delete.Image = global::ddns_tool.res_Main.Delete;
 			this.ToolStripMenuItem_Domains_Delete.Name = "ToolStripMenuItem_Domains_Delete";
-			this.ToolStripMenuItem_Domains_Delete.Size = new System.Drawing.Size(124, 22);
+			this.ToolStripMenuItem_Domains_Delete.Size = new System.Drawing.Size(152, 22);
 			this.ToolStripMenuItem_Domains_Delete.Text = "删除";
 			this.ToolStripMenuItem_Domains_Delete.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Delete_Click);
 			// 
-			// ToolStripMenuItem_Domains_Enable
+			// ToolStripMenuItem_Domains_IPv4_Enable
 			// 
-			this.ToolStripMenuItem_Domains_Enable.Enabled = false;
-			this.ToolStripMenuItem_Domains_Enable.Image = global::ddns_tool.res_Main.On;
-			this.ToolStripMenuItem_Domains_Enable.Name = "ToolStripMenuItem_Domains_Enable";
-			this.ToolStripMenuItem_Domains_Enable.Size = new System.Drawing.Size(124, 22);
-			this.ToolStripMenuItem_Domains_Enable.Text = "允许更新";
-			this.ToolStripMenuItem_Domains_Enable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Enable_Click);
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Enabled = false;
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Image = global::ddns_tool.res_Main.On;
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Name = "ToolStripMenuItem_Domains_IPv4_Enable";
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Text = "允许更新 IPv4";
+			this.ToolStripMenuItem_Domains_IPv4_Enable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv4_Enable_Click);
 			// 
-			// ToolStripMenuItem_Domains_Disable
+			// ToolStripMenuItem_Domains_IPv6_Enable
 			// 
-			this.ToolStripMenuItem_Domains_Disable.Enabled = false;
-			this.ToolStripMenuItem_Domains_Disable.Image = global::ddns_tool.res_Main.Off;
-			this.ToolStripMenuItem_Domains_Disable.Name = "ToolStripMenuItem_Domains_Disable";
-			this.ToolStripMenuItem_Domains_Disable.Size = new System.Drawing.Size(124, 22);
-			this.ToolStripMenuItem_Domains_Disable.Text = "禁止更新";
-			this.ToolStripMenuItem_Domains_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_Disable_Click);
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Enabled = false;
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Image = global::ddns_tool.res_Main.On;
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Name = "ToolStripMenuItem_Domains_IPv6_Enable";
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Text = "允许更新 IPv6";
+			this.ToolStripMenuItem_Domains_IPv6_Enable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv6_Enable_Click);
+			// 
+			// ToolStripMenuItem_Domains_IPv4_Disable
+			// 
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Enabled = false;
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Image = global::ddns_tool.res_Main.Off;
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Name = "ToolStripMenuItem_Domains_IPv4_Disable";
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Text = "禁止更新 IPv4";
+			this.ToolStripMenuItem_Domains_IPv4_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv4_Disable_Click);
+			// 
+			// ToolStripMenuItem_Domains_IPv6_Disable
+			// 
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Enabled = false;
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Image = global::ddns_tool.res_Main.Off;
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Name = "ToolStripMenuItem_Domains_IPv6_Disable";
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Size = new System.Drawing.Size(152, 22);
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Text = "禁止更新 IPv6";
+			this.ToolStripMenuItem_Domains_IPv6_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv6_Disable_Click);
 			// 
 			// listView_Logs
 			// 
@@ -1015,7 +1079,7 @@
 			this.listView_Logs.HideSelection = false;
 			this.listView_Logs.Location = new System.Drawing.Point(6, 20);
 			this.listView_Logs.Name = "listView_Logs";
-			this.listView_Logs.Size = new System.Drawing.Size(834, 225);
+			this.listView_Logs.Size = new System.Drawing.Size(898, 225);
 			this.listView_Logs.TabIndex = 67;
 			this.listView_Logs.UseCompatibleStateImageBehavior = false;
 			this.listView_Logs.View = System.Windows.Forms.View.Details;
@@ -1031,7 +1095,7 @@
 			// columnHeader_Logs_Log
 			// 
 			this.columnHeader_Logs_Log.Text = "日志";
-			this.columnHeader_Logs_Log.Width = 691;
+			this.columnHeader_Logs_Log.Width = 755;
 			// 
 			// contextMenuStrip_Logs
 			// 
@@ -1079,7 +1143,7 @@
 			// button_Update
 			// 
 			this.button_Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.button_Update.Location = new System.Drawing.Point(758, 746);
+			this.button_Update.Location = new System.Drawing.Point(822, 746);
 			this.button_Update.Name = "button_Update";
 			this.button_Update.Size = new System.Drawing.Size(100, 23);
 			this.button_Update.TabIndex = 68;
@@ -1127,7 +1191,7 @@
 			this.groupBox_Logs.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.groupBox_Logs.Location = new System.Drawing.Point(0, 0);
 			this.groupBox_Logs.Name = "groupBox_Logs";
-			this.groupBox_Logs.Size = new System.Drawing.Size(846, 278);
+			this.groupBox_Logs.Size = new System.Drawing.Size(910, 278);
 			this.groupBox_Logs.TabIndex = 73;
 			this.groupBox_Logs.TabStop = false;
 			this.groupBox_Logs.Text = "【日志记录】";
@@ -1138,7 +1202,7 @@
 			this.checkBox_Logs__Save_To_File.AutoSize = true;
 			this.checkBox_Logs__Save_To_File.Checked = true;
 			this.checkBox_Logs__Save_To_File.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.checkBox_Logs__Save_To_File.Location = new System.Drawing.Point(732, 252);
+			this.checkBox_Logs__Save_To_File.Location = new System.Drawing.Point(796, 252);
 			this.checkBox_Logs__Save_To_File.Name = "checkBox_Logs__Save_To_File";
 			this.checkBox_Logs__Save_To_File.Size = new System.Drawing.Size(108, 16);
 			this.checkBox_Logs__Save_To_File.TabIndex = 76;
@@ -1220,30 +1284,6 @@
 			this.timer_Ping.Interval = 1000;
 			this.timer_Ping.Tick += new System.EventHandler(this.timer_Ping_Tick);
 			// 
-			// contextMenuStrip_NotifyIcon
-			// 
-			this.contextMenuStrip_NotifyIcon.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolStripMenuItem_Open,
-            this.ToolStripMenuItem_Exit});
-			this.contextMenuStrip_NotifyIcon.Name = "contextMenuStrip_NotifyIcon";
-			this.contextMenuStrip_NotifyIcon.Size = new System.Drawing.Size(101, 48);
-			// 
-			// ToolStripMenuItem_Open
-			// 
-			this.ToolStripMenuItem_Open.Font = new System.Drawing.Font("Microsoft YaHei UI", 9F, System.Drawing.FontStyle.Bold);
-			this.ToolStripMenuItem_Open.Name = "ToolStripMenuItem_Open";
-			this.ToolStripMenuItem_Open.Size = new System.Drawing.Size(180, 22);
-			this.ToolStripMenuItem_Open.Text = "打开";
-			this.ToolStripMenuItem_Open.Click += new System.EventHandler(this.ToolStripMenuItem_Open_Click);
-			// 
-			// ToolStripMenuItem_Exit
-			// 
-			this.ToolStripMenuItem_Exit.Image = global::ddns_tool.res_Main.Exit;
-			this.ToolStripMenuItem_Exit.Name = "ToolStripMenuItem_Exit";
-			this.ToolStripMenuItem_Exit.Size = new System.Drawing.Size(180, 22);
-			this.ToolStripMenuItem_Exit.Text = "退出";
-			this.ToolStripMenuItem_Exit.Click += new System.EventHandler(this.ToolStripMenuItem_Exit_Click);
-			// 
 			// splitContainer_Main
 			// 
 			this.splitContainer_Main.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1261,7 +1301,7 @@
 			// splitContainer_Main.Panel2
 			// 
 			this.splitContainer_Main.Panel2.Controls.Add(this.groupBox_Logs);
-			this.splitContainer_Main.Size = new System.Drawing.Size(846, 444);
+			this.splitContainer_Main.Size = new System.Drawing.Size(910, 444);
 			this.splitContainer_Main.SplitterDistance = 162;
 			this.splitContainer_Main.TabIndex = 78;
 			// 
@@ -1272,6 +1312,7 @@
 			this.tabControl_Main.Controls.Add(this.tabPage_Set_IP);
 			this.tabControl_Main.Controls.Add(this.tabPage_Security);
 			this.tabControl_Main.Controls.Add(this.tabPage_Update_Action);
+			this.tabControl_Main.Controls.Add(this.tabPage_Fix_hosts);
 			this.tabControl_Main.Location = new System.Drawing.Point(12, 462);
 			this.tabControl_Main.Name = "tabControl_Main";
 			this.tabControl_Main.SelectedIndex = 0;
@@ -1293,11 +1334,8 @@
 			// 
 			// tabPage_Set_IP
 			// 
-			this.tabPage_Set_IP.Controls.Add(this.radioButton_Settings_IP__Manual);
-			this.tabPage_Set_IP.Controls.Add(this.radioButton_Settings_IP__From_URL);
-			this.tabPage_Set_IP.Controls.Add(this.radioButton_Settings_IP__Accept_IP);
-			this.tabPage_Set_IP.Controls.Add(this.groupBox_Settings_IP__Manual);
-			this.tabPage_Set_IP.Controls.Add(this.groupBox_Settings_IP__From_URL);
+			this.tabPage_Set_IP.Controls.Add(this.groupBox_Set_IPv6);
+			this.tabPage_Set_IP.Controls.Add(this.groupBox_Set_IPv4);
 			this.tabPage_Set_IP.Location = new System.Drawing.Point(4, 22);
 			this.tabPage_Set_IP.Name = "tabPage_Set_IP";
 			this.tabPage_Set_IP.Padding = new System.Windows.Forms.Padding(3);
@@ -1305,6 +1343,74 @@
 			this.tabPage_Set_IP.TabIndex = 1;
 			this.tabPage_Set_IP.Text = "设置 IP";
 			this.tabPage_Set_IP.UseVisualStyleBackColor = true;
+			// 
+			// groupBox_Set_IPv6
+			// 
+			this.groupBox_Set_IPv6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox_Set_IPv6.Controls.Add(this.radioButton_Settings_IPv6__From_URL);
+			this.groupBox_Set_IPv6.Controls.Add(this.textBox_Settings_IPv6);
+			this.groupBox_Set_IPv6.Controls.Add(this.radioButton_Settings_IPv6__Accept_IP);
+			this.groupBox_Set_IPv6.Controls.Add(this.comboBox_Settings_IPv6__From_URL);
+			this.groupBox_Set_IPv6.Controls.Add(this.radioButton_Settings_IPv6__Manual);
+			this.groupBox_Set_IPv6.Location = new System.Drawing.Point(6, 107);
+			this.groupBox_Set_IPv6.Name = "groupBox_Set_IPv6";
+			this.groupBox_Set_IPv6.Size = new System.Drawing.Size(517, 95);
+			this.groupBox_Set_IPv6.TabIndex = 41;
+			this.groupBox_Set_IPv6.TabStop = false;
+			this.groupBox_Set_IPv6.Text = "IPv6";
+			// 
+			// groupBox_Set_IPv4
+			// 
+			this.groupBox_Set_IPv4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox_Set_IPv4.Controls.Add(this.radioButton_Settings_IPv4__From_URL);
+			this.groupBox_Set_IPv4.Controls.Add(this.radioButton_Settings_IPv4__Manual);
+			this.groupBox_Set_IPv4.Controls.Add(this.textBox_Settings_IPv4);
+			this.groupBox_Set_IPv4.Controls.Add(this.comboBox_Settings_IPv4__From_URL);
+			this.groupBox_Set_IPv4.Controls.Add(this.radioButton_Settings_IPv4__Accept_IP);
+			this.groupBox_Set_IPv4.Location = new System.Drawing.Point(6, 6);
+			this.groupBox_Set_IPv4.Name = "groupBox_Set_IPv4";
+			this.groupBox_Set_IPv4.Size = new System.Drawing.Size(517, 95);
+			this.groupBox_Set_IPv4.TabIndex = 40;
+			this.groupBox_Set_IPv4.TabStop = false;
+			this.groupBox_Set_IPv4.Text = "IPv4";
+			// 
+			// radioButton_Settings_IPv4__From_URL
+			// 
+			this.radioButton_Settings_IPv4__From_URL.AutoSize = true;
+			this.radioButton_Settings_IPv4__From_URL.Checked = true;
+			this.radioButton_Settings_IPv4__From_URL.Location = new System.Drawing.Point(6, 21);
+			this.radioButton_Settings_IPv4__From_URL.Name = "radioButton_Settings_IPv4__From_URL";
+			this.radioButton_Settings_IPv4__From_URL.Size = new System.Drawing.Size(161, 16);
+			this.radioButton_Settings_IPv4__From_URL.TabIndex = 31;
+			this.radioButton_Settings_IPv4__From_URL.TabStop = true;
+			this.radioButton_Settings_IPv4__From_URL.Text = "通过互联网获取公网 IPv4";
+			this.radioButton_Settings_IPv4__From_URL.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv4__From_URL.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv4__CheckedChanged);
+			// 
+			// radioButton_Settings_IPv4__Manual
+			// 
+			this.radioButton_Settings_IPv4__Manual.AutoSize = true;
+			this.radioButton_Settings_IPv4__Manual.Location = new System.Drawing.Point(6, 47);
+			this.radioButton_Settings_IPv4__Manual.Name = "radioButton_Settings_IPv4__Manual";
+			this.radioButton_Settings_IPv4__Manual.Size = new System.Drawing.Size(101, 16);
+			this.radioButton_Settings_IPv4__Manual.TabIndex = 32;
+			this.radioButton_Settings_IPv4__Manual.Text = "手动指定 IPv4";
+			this.radioButton_Settings_IPv4__Manual.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv4__Manual.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv4__CheckedChanged);
+			// 
+			// radioButton_Settings_IPv4__Accept_IP
+			// 
+			this.radioButton_Settings_IPv4__Accept_IP.AutoSize = true;
+			this.radioButton_Settings_IPv4__Accept_IP.Enabled = false;
+			this.radioButton_Settings_IPv4__Accept_IP.Location = new System.Drawing.Point(6, 73);
+			this.radioButton_Settings_IPv4__Accept_IP.Name = "radioButton_Settings_IPv4__Accept_IP";
+			this.radioButton_Settings_IPv4__Accept_IP.Size = new System.Drawing.Size(191, 16);
+			this.radioButton_Settings_IPv4__Accept_IP.TabIndex = 33;
+			this.radioButton_Settings_IPv4__Accept_IP.Text = "Server 接受连接的客户端 IPv4";
+			this.radioButton_Settings_IPv4__Accept_IP.UseVisualStyleBackColor = true;
+			this.radioButton_Settings_IPv4__Accept_IP.CheckedChanged += new System.EventHandler(this.radioButton_Settings_IPv4__CheckedChanged);
 			// 
 			// tabPage_Security
 			// 
@@ -1472,6 +1578,75 @@
             0});
 			this.numericUpDown_Action_Timeout.ValueChanged += new System.EventHandler(this.numericUpDown_Action_Timeout_ValueChanged);
 			// 
+			// tabPage_Fix_hosts
+			// 
+			this.tabPage_Fix_hosts.Controls.Add(this.button_Fix_hosts__Path_Browser);
+			this.tabPage_Fix_hosts.Controls.Add(this.textBox_Fix_hosts__Content);
+			this.tabPage_Fix_hosts.Controls.Add(this.textBox_Fix_hosts__Path);
+			this.tabPage_Fix_hosts.Controls.Add(this.label_Fix_hosts__Content);
+			this.tabPage_Fix_hosts.Controls.Add(this.label_Fix_hosts__Path);
+			this.tabPage_Fix_hosts.Location = new System.Drawing.Point(4, 22);
+			this.tabPage_Fix_hosts.Name = "tabPage_Fix_hosts";
+			this.tabPage_Fix_hosts.Size = new System.Drawing.Size(529, 281);
+			this.tabPage_Fix_hosts.TabIndex = 4;
+			this.tabPage_Fix_hosts.Text = "修正 hosts";
+			this.tabPage_Fix_hosts.UseVisualStyleBackColor = true;
+			// 
+			// button_Fix_hosts__Path_Browser
+			// 
+			this.button_Fix_hosts__Path_Browser.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.button_Fix_hosts__Path_Browser.Location = new System.Drawing.Point(451, 16);
+			this.button_Fix_hosts__Path_Browser.Name = "button_Fix_hosts__Path_Browser";
+			this.button_Fix_hosts__Path_Browser.Size = new System.Drawing.Size(75, 23);
+			this.button_Fix_hosts__Path_Browser.TabIndex = 2;
+			this.button_Fix_hosts__Path_Browser.Text = "打开目录";
+			this.button_Fix_hosts__Path_Browser.UseVisualStyleBackColor = true;
+			this.button_Fix_hosts__Path_Browser.Click += new System.EventHandler(this.button_Fix_hosts__Path_Browser_Click);
+			// 
+			// textBox_Fix_hosts__Content
+			// 
+			this.textBox_Fix_hosts__Content.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox_Fix_hosts__Content.Location = new System.Drawing.Point(3, 57);
+			this.textBox_Fix_hosts__Content.Multiline = true;
+			this.textBox_Fix_hosts__Content.Name = "textBox_Fix_hosts__Content";
+			this.textBox_Fix_hosts__Content.ReadOnly = true;
+			this.textBox_Fix_hosts__Content.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.textBox_Fix_hosts__Content.Size = new System.Drawing.Size(523, 221);
+			this.textBox_Fix_hosts__Content.TabIndex = 1;
+			this.textBox_Fix_hosts__Content.Text = "72.246.164.14\tapi.godaddy.com\r\n162.216.242.29\twww.dynu.com\r\n162.216.242.253\tapi.d" +
+    "ynu.com\r\n172.67.74.152\tapi.ipify.org";
+			// 
+			// textBox_Fix_hosts__Path
+			// 
+			this.textBox_Fix_hosts__Path.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.textBox_Fix_hosts__Path.Location = new System.Drawing.Point(3, 18);
+			this.textBox_Fix_hosts__Path.Name = "textBox_Fix_hosts__Path";
+			this.textBox_Fix_hosts__Path.ReadOnly = true;
+			this.textBox_Fix_hosts__Path.Size = new System.Drawing.Size(442, 21);
+			this.textBox_Fix_hosts__Path.TabIndex = 1;
+			this.textBox_Fix_hosts__Path.Text = "C:\\Windows\\System32\\drivers\\etc\\hosts";
+			// 
+			// label_Fix_hosts__Content
+			// 
+			this.label_Fix_hosts__Content.AutoSize = true;
+			this.label_Fix_hosts__Content.Location = new System.Drawing.Point(3, 42);
+			this.label_Fix_hosts__Content.Name = "label_Fix_hosts__Content";
+			this.label_Fix_hosts__Content.Size = new System.Drawing.Size(101, 12);
+			this.label_Fix_hosts__Content.TabIndex = 0;
+			this.label_Fix_hosts__Content.Text = "并添加以下记录：";
+			// 
+			// label_Fix_hosts__Path
+			// 
+			this.label_Fix_hosts__Path.AutoSize = true;
+			this.label_Fix_hosts__Path.Location = new System.Drawing.Point(3, 3);
+			this.label_Fix_hosts__Path.Name = "label_Fix_hosts__Path";
+			this.label_Fix_hosts__Path.Size = new System.Drawing.Size(377, 12);
+			this.label_Fix_hosts__Path.TabIndex = 0;
+			this.label_Fix_hosts__Path.Text = "如果出现访问部分域名不正常，可以尝试修改 hosts。修改以下文件：";
+			// 
 			// groupBox_Settings_Preview
 			// 
 			this.groupBox_Settings_Preview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -1482,7 +1657,8 @@
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__DNS_Lookup_First_Val);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Action_UpdateIP_Val);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Security_Val);
-			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IP_Val);
+			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IPv6_Val);
+			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IPv4_Val);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Ping_Val);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Update_Type_Val);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Action_AutoUpdate);
@@ -1491,12 +1667,13 @@
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__DNS_Lookup_First);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Action_UpdateIP);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Security);
+			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IPv6);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Ping);
-			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IP);
+			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Set_IPv4);
 			this.groupBox_Settings_Preview.Controls.Add(this.label_Settings_Preview__Update_Type);
 			this.groupBox_Settings_Preview.Location = new System.Drawing.Point(551, 484);
 			this.groupBox_Settings_Preview.Name = "groupBox_Settings_Preview";
-			this.groupBox_Settings_Preview.Size = new System.Drawing.Size(307, 200);
+			this.groupBox_Settings_Preview.Size = new System.Drawing.Size(371, 222);
 			this.groupBox_Settings_Preview.TabIndex = 81;
 			this.groupBox_Settings_Preview.TabStop = false;
 			this.groupBox_Settings_Preview.Text = "【预览设置】";
@@ -1504,7 +1681,7 @@
 			// label_Settings_Preview__Action_AutoUpdate_Val
 			// 
 			this.label_Settings_Preview__Action_AutoUpdate_Val.AutoSize = true;
-			this.label_Settings_Preview__Action_AutoUpdate_Val.Location = new System.Drawing.Point(95, 117);
+			this.label_Settings_Preview__Action_AutoUpdate_Val.Location = new System.Drawing.Point(95, 137);
 			this.label_Settings_Preview__Action_AutoUpdate_Val.Name = "label_Settings_Preview__Action_AutoUpdate_Val";
 			this.label_Settings_Preview__Action_AutoUpdate_Val.Size = new System.Drawing.Size(47, 12);
 			this.label_Settings_Preview__Action_AutoUpdate_Val.TabIndex = 0;
@@ -1513,7 +1690,7 @@
 			// label_Settings_Preview__Timeout_Val
 			// 
 			this.label_Settings_Preview__Timeout_Val.AutoSize = true;
-			this.label_Settings_Preview__Timeout_Val.Location = new System.Drawing.Point(95, 177);
+			this.label_Settings_Preview__Timeout_Val.Location = new System.Drawing.Point(95, 197);
 			this.label_Settings_Preview__Timeout_Val.Name = "label_Settings_Preview__Timeout_Val";
 			this.label_Settings_Preview__Timeout_Val.Size = new System.Drawing.Size(17, 12);
 			this.label_Settings_Preview__Timeout_Val.TabIndex = 0;
@@ -1522,7 +1699,7 @@
 			// label_Settings_Preview__DNS_Server_Val
 			// 
 			this.label_Settings_Preview__DNS_Server_Val.AutoSize = true;
-			this.label_Settings_Preview__DNS_Server_Val.Location = new System.Drawing.Point(95, 157);
+			this.label_Settings_Preview__DNS_Server_Val.Location = new System.Drawing.Point(95, 177);
 			this.label_Settings_Preview__DNS_Server_Val.Name = "label_Settings_Preview__DNS_Server_Val";
 			this.label_Settings_Preview__DNS_Server_Val.Size = new System.Drawing.Size(41, 12);
 			this.label_Settings_Preview__DNS_Server_Val.TabIndex = 0;
@@ -1531,7 +1708,7 @@
 			// label_Settings_Preview__DNS_Lookup_First_Val
 			// 
 			this.label_Settings_Preview__DNS_Lookup_First_Val.AutoSize = true;
-			this.label_Settings_Preview__DNS_Lookup_First_Val.Location = new System.Drawing.Point(95, 137);
+			this.label_Settings_Preview__DNS_Lookup_First_Val.Location = new System.Drawing.Point(95, 157);
 			this.label_Settings_Preview__DNS_Lookup_First_Val.Name = "label_Settings_Preview__DNS_Lookup_First_Val";
 			this.label_Settings_Preview__DNS_Lookup_First_Val.Size = new System.Drawing.Size(17, 12);
 			this.label_Settings_Preview__DNS_Lookup_First_Val.TabIndex = 0;
@@ -1540,7 +1717,7 @@
 			// label_Settings_Preview__Action_UpdateIP_Val
 			// 
 			this.label_Settings_Preview__Action_UpdateIP_Val.AutoSize = true;
-			this.label_Settings_Preview__Action_UpdateIP_Val.Location = new System.Drawing.Point(95, 97);
+			this.label_Settings_Preview__Action_UpdateIP_Val.Location = new System.Drawing.Point(95, 117);
 			this.label_Settings_Preview__Action_UpdateIP_Val.Name = "label_Settings_Preview__Action_UpdateIP_Val";
 			this.label_Settings_Preview__Action_UpdateIP_Val.Size = new System.Drawing.Size(17, 12);
 			this.label_Settings_Preview__Action_UpdateIP_Val.TabIndex = 0;
@@ -1549,20 +1726,29 @@
 			// label_Settings_Preview__Security_Val
 			// 
 			this.label_Settings_Preview__Security_Val.AutoSize = true;
-			this.label_Settings_Preview__Security_Val.Location = new System.Drawing.Point(95, 77);
+			this.label_Settings_Preview__Security_Val.Location = new System.Drawing.Point(95, 97);
 			this.label_Settings_Preview__Security_Val.Name = "label_Settings_Preview__Security_Val";
 			this.label_Settings_Preview__Security_Val.Size = new System.Drawing.Size(83, 12);
 			this.label_Settings_Preview__Security_Val.TabIndex = 0;
 			this.label_Settings_Preview__Security_Val.Text = "xx 个配置文件";
 			// 
-			// label_Settings_Preview__Set_IP_Val
+			// label_Settings_Preview__Set_IPv6_Val
 			// 
-			this.label_Settings_Preview__Set_IP_Val.AutoSize = true;
-			this.label_Settings_Preview__Set_IP_Val.Location = new System.Drawing.Point(95, 57);
-			this.label_Settings_Preview__Set_IP_Val.Name = "label_Settings_Preview__Set_IP_Val";
-			this.label_Settings_Preview__Set_IP_Val.Size = new System.Drawing.Size(125, 12);
-			this.label_Settings_Preview__Set_IP_Val.TabIndex = 0;
-			this.label_Settings_Preview__Set_IP_Val.Text = "Server 接受连接的 IP";
+			this.label_Settings_Preview__Set_IPv6_Val.AutoSize = true;
+			this.label_Settings_Preview__Set_IPv6_Val.Location = new System.Drawing.Point(95, 77);
+			this.label_Settings_Preview__Set_IPv6_Val.Name = "label_Settings_Preview__Set_IPv6_Val";
+			this.label_Settings_Preview__Set_IPv6_Val.Size = new System.Drawing.Size(125, 12);
+			this.label_Settings_Preview__Set_IPv6_Val.TabIndex = 0;
+			this.label_Settings_Preview__Set_IPv6_Val.Text = "Server 接受连接的 IP";
+			// 
+			// label_Settings_Preview__Set_IPv4_Val
+			// 
+			this.label_Settings_Preview__Set_IPv4_Val.AutoSize = true;
+			this.label_Settings_Preview__Set_IPv4_Val.Location = new System.Drawing.Point(95, 57);
+			this.label_Settings_Preview__Set_IPv4_Val.Name = "label_Settings_Preview__Set_IPv4_Val";
+			this.label_Settings_Preview__Set_IPv4_Val.Size = new System.Drawing.Size(125, 12);
+			this.label_Settings_Preview__Set_IPv4_Val.TabIndex = 0;
+			this.label_Settings_Preview__Set_IPv4_Val.Text = "Server 接受连接的 IP";
 			// 
 			// label_Settings_Preview__Ping_Val
 			// 
@@ -1585,7 +1771,7 @@
 			// label_Settings_Preview__Action_AutoUpdate
 			// 
 			this.label_Settings_Preview__Action_AutoUpdate.AutoSize = true;
-			this.label_Settings_Preview__Action_AutoUpdate.Location = new System.Drawing.Point(6, 117);
+			this.label_Settings_Preview__Action_AutoUpdate.Location = new System.Drawing.Point(6, 137);
 			this.label_Settings_Preview__Action_AutoUpdate.Name = "label_Settings_Preview__Action_AutoUpdate";
 			this.label_Settings_Preview__Action_AutoUpdate.Size = new System.Drawing.Size(65, 12);
 			this.label_Settings_Preview__Action_AutoUpdate.TabIndex = 0;
@@ -1594,7 +1780,7 @@
 			// label_Settings_Preview__Timeout
 			// 
 			this.label_Settings_Preview__Timeout.AutoSize = true;
-			this.label_Settings_Preview__Timeout.Location = new System.Drawing.Point(6, 177);
+			this.label_Settings_Preview__Timeout.Location = new System.Drawing.Point(6, 197);
 			this.label_Settings_Preview__Timeout.Name = "label_Settings_Preview__Timeout";
 			this.label_Settings_Preview__Timeout.Size = new System.Drawing.Size(83, 12);
 			this.label_Settings_Preview__Timeout.TabIndex = 0;
@@ -1603,7 +1789,7 @@
 			// label_Settings_Preview__DNS_Server
 			// 
 			this.label_Settings_Preview__DNS_Server.AutoSize = true;
-			this.label_Settings_Preview__DNS_Server.Location = new System.Drawing.Point(6, 157);
+			this.label_Settings_Preview__DNS_Server.Location = new System.Drawing.Point(6, 177);
 			this.label_Settings_Preview__DNS_Server.Name = "label_Settings_Preview__DNS_Server";
 			this.label_Settings_Preview__DNS_Server.Size = new System.Drawing.Size(77, 12);
 			this.label_Settings_Preview__DNS_Server.TabIndex = 0;
@@ -1612,7 +1798,7 @@
 			// label_Settings_Preview__DNS_Lookup_First
 			// 
 			this.label_Settings_Preview__DNS_Lookup_First.AutoSize = true;
-			this.label_Settings_Preview__DNS_Lookup_First.Location = new System.Drawing.Point(6, 137);
+			this.label_Settings_Preview__DNS_Lookup_First.Location = new System.Drawing.Point(6, 157);
 			this.label_Settings_Preview__DNS_Lookup_First.Name = "label_Settings_Preview__DNS_Lookup_First";
 			this.label_Settings_Preview__DNS_Lookup_First.Size = new System.Drawing.Size(77, 12);
 			this.label_Settings_Preview__DNS_Lookup_First.TabIndex = 0;
@@ -1621,7 +1807,7 @@
 			// label_Settings_Preview__Action_UpdateIP
 			// 
 			this.label_Settings_Preview__Action_UpdateIP.AutoSize = true;
-			this.label_Settings_Preview__Action_UpdateIP.Location = new System.Drawing.Point(6, 97);
+			this.label_Settings_Preview__Action_UpdateIP.Location = new System.Drawing.Point(6, 117);
 			this.label_Settings_Preview__Action_UpdateIP.Name = "label_Settings_Preview__Action_UpdateIP";
 			this.label_Settings_Preview__Action_UpdateIP.Size = new System.Drawing.Size(83, 12);
 			this.label_Settings_Preview__Action_UpdateIP.TabIndex = 0;
@@ -1630,11 +1816,20 @@
 			// label_Settings_Preview__Security
 			// 
 			this.label_Settings_Preview__Security.AutoSize = true;
-			this.label_Settings_Preview__Security.Location = new System.Drawing.Point(6, 77);
+			this.label_Settings_Preview__Security.Location = new System.Drawing.Point(6, 97);
 			this.label_Settings_Preview__Security.Name = "label_Settings_Preview__Security";
 			this.label_Settings_Preview__Security.Size = new System.Drawing.Size(65, 12);
 			this.label_Settings_Preview__Security.TabIndex = 0;
 			this.label_Settings_Preview__Security.Text = "安全设置：";
+			// 
+			// label_Settings_Preview__Set_IPv6
+			// 
+			this.label_Settings_Preview__Set_IPv6.AutoSize = true;
+			this.label_Settings_Preview__Set_IPv6.Location = new System.Drawing.Point(6, 77);
+			this.label_Settings_Preview__Set_IPv6.Name = "label_Settings_Preview__Set_IPv6";
+			this.label_Settings_Preview__Set_IPv6.Size = new System.Drawing.Size(65, 12);
+			this.label_Settings_Preview__Set_IPv6.TabIndex = 0;
+			this.label_Settings_Preview__Set_IPv6.Text = "设置IPv6：";
 			// 
 			// label_Settings_Preview__Ping
 			// 
@@ -1645,14 +1840,14 @@
 			this.label_Settings_Preview__Ping.TabIndex = 0;
 			this.label_Settings_Preview__Ping.Text = "Ping（ms）：";
 			// 
-			// label_Settings_Preview__Set_IP
+			// label_Settings_Preview__Set_IPv4
 			// 
-			this.label_Settings_Preview__Set_IP.AutoSize = true;
-			this.label_Settings_Preview__Set_IP.Location = new System.Drawing.Point(6, 57);
-			this.label_Settings_Preview__Set_IP.Name = "label_Settings_Preview__Set_IP";
-			this.label_Settings_Preview__Set_IP.Size = new System.Drawing.Size(53, 12);
-			this.label_Settings_Preview__Set_IP.TabIndex = 0;
-			this.label_Settings_Preview__Set_IP.Text = "设置IP：";
+			this.label_Settings_Preview__Set_IPv4.AutoSize = true;
+			this.label_Settings_Preview__Set_IPv4.Location = new System.Drawing.Point(6, 57);
+			this.label_Settings_Preview__Set_IPv4.Name = "label_Settings_Preview__Set_IPv4";
+			this.label_Settings_Preview__Set_IPv4.Size = new System.Drawing.Size(65, 12);
+			this.label_Settings_Preview__Set_IPv4.TabIndex = 0;
+			this.label_Settings_Preview__Set_IPv4.Text = "设置IPv4：";
 			// 
 			// label_Settings_Preview__Update_Type
 			// 
@@ -1667,7 +1862,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(870, 781);
+			this.ClientSize = new System.Drawing.Size(934, 781);
 			this.Controls.Add(this.groupBox_Settings_Preview);
 			this.Controls.Add(this.tabControl_Main);
 			this.Controls.Add(this.splitContainer_Main);
@@ -1676,22 +1871,21 @@
 			this.Controls.Add(this.button_Update);
 			this.Name = "frm_MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "AcgDev DDNS Tool v0.01";
+			this.Text = "AcgDev DDNS Tool v0.02";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.frm_MainForm_Load);
+			this.contextMenuStrip_NotifyIcon.ResumeLayout(false);
 			this.tabControl_Security__Property.ResumeLayout(false);
 			this.tabPage_Security__Godaddy.ResumeLayout(false);
 			this.tabPage_Security__Godaddy.PerformLayout();
 			this.tabPage_Security__dynv6.ResumeLayout(false);
 			this.tabPage_Security__dynv6.PerformLayout();
+			this.tabPage_Security__dynu.ResumeLayout(false);
+			this.tabPage_Security__dynu.PerformLayout();
 			this.groupBox_Action_IP_Change_PlaySound.ResumeLayout(false);
 			this.groupBox_Action_IP_Change_PlaySound.PerformLayout();
 			this.groupBox_Action_Set_DNS_Server.ResumeLayout(false);
 			this.groupBox_Action_Set_DNS_Server.PerformLayout();
-			this.groupBox_Settings_IP__Manual.ResumeLayout(false);
-			this.groupBox_Settings_IP__Manual.PerformLayout();
-			this.groupBox_Settings_IP__From_URL.ResumeLayout(false);
-			this.groupBox_Settings_IP__From_URL.PerformLayout();
 			this.groupBox_Settings_RemoteServer.ResumeLayout(false);
 			this.groupBox_Settings_RemoteServer.PerformLayout();
 			this.groupBox_Domains.ResumeLayout(false);
@@ -1704,7 +1898,6 @@
 			this.groupBox_Logs.ResumeLayout(false);
 			this.groupBox_Logs.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Action_AutoAction_Interval)).EndInit();
-			this.contextMenuStrip_NotifyIcon.ResumeLayout(false);
 			this.splitContainer_Main.Panel1.ResumeLayout(false);
 			this.splitContainer_Main.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer_Main)).EndInit();
@@ -1713,7 +1906,10 @@
 			this.tabPage_Update_Type.ResumeLayout(false);
 			this.tabPage_Update_Type.PerformLayout();
 			this.tabPage_Set_IP.ResumeLayout(false);
-			this.tabPage_Set_IP.PerformLayout();
+			this.groupBox_Set_IPv6.ResumeLayout(false);
+			this.groupBox_Set_IPv6.PerformLayout();
+			this.groupBox_Set_IPv4.ResumeLayout(false);
+			this.groupBox_Set_IPv4.PerformLayout();
 			this.tabPage_Security.ResumeLayout(false);
 			this.contextMenuStrip_Security.ResumeLayout(false);
 			this.groupBox_Security__Property.ResumeLayout(false);
@@ -1721,6 +1917,8 @@
 			this.tabPage_Update_Action.ResumeLayout(false);
 			this.tabPage_Update_Action.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Action_Timeout)).EndInit();
+			this.tabPage_Fix_hosts.ResumeLayout(false);
+			this.tabPage_Fix_hosts.PerformLayout();
 			this.groupBox_Settings_Preview.ResumeLayout(false);
 			this.groupBox_Settings_Preview.PerformLayout();
 			this.ResumeLayout(false);
@@ -1747,11 +1945,11 @@
 		private System.Windows.Forms.TextBox textBox_Settings_RemoteServer__Ping;
 		private System.Windows.Forms.TextBox textBox_Settings_RemoteServer__Pwd;
 		private System.Windows.Forms.TextBox textBox_Settings_RemoteServer__Addr;
-		private System.Windows.Forms.RadioButton radioButton_Settings_IP__Manual;
-		private System.Windows.Forms.RadioButton radioButton_Settings_IP__Accept_IP;
-		private System.Windows.Forms.RadioButton radioButton_Settings_IP__From_URL;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv6__Manual;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv6__Accept_IP;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv6__From_URL;
 		private System.Windows.Forms.ComboBox comboBox_Settings_IPv4__From_URL;
-		private System.Windows.Forms.TextBox textBox_Settings_IP__IPv4;
+		private System.Windows.Forms.TextBox textBox_Settings_IPv4;
 		private System.Windows.Forms.TextBox textBox_Security_Godaddy__Key;
 		private System.Windows.Forms.TextBox textBox_Security_Godaddy__Secret;
 		private System.Windows.Forms.CheckBox checkBox_Security_Godaddy__Secret;
@@ -1804,14 +2002,8 @@
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip_NotifyIcon;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Open;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Exit;
-		private System.Windows.Forms.GroupBox groupBox_Settings_IP__From_URL;
-		private System.Windows.Forms.Label label_Settings_IPv6__From_URL;
-		private System.Windows.Forms.Label label_Settings_IPv4__From_URL;
 		private System.Windows.Forms.ComboBox comboBox_Settings_IPv6__From_URL;
-		private System.Windows.Forms.GroupBox groupBox_Settings_IP__Manual;
-		private System.Windows.Forms.Label label_Settings_IP__Last_IPv6;
-		private System.Windows.Forms.Label label_Settings_IP__Last_IPv4;
-		private System.Windows.Forms.TextBox textBox_Settings_IP__IPv6;
+		private System.Windows.Forms.TextBox textBox_Settings_IPv6;
 		private System.Windows.Forms.CheckBox checkBox_Action_Use_Custom_DNS;
 		private System.Windows.Forms.ColumnHeader columnHeader_Domains_IPv4;
 		private System.Windows.Forms.SplitContainer splitContainer_Main;
@@ -1828,9 +2020,9 @@
 		private System.Windows.Forms.Label label_Security__Property__Name;
 		private System.Windows.Forms.Button button_Security_Del;
 		private System.Windows.Forms.GroupBox groupBox_Settings_Preview;
-		private System.Windows.Forms.Label label_Settings_Preview__Set_IP_Val;
+		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv4_Val;
 		private System.Windows.Forms.Label label_Settings_Preview__Update_Type_Val;
-		private System.Windows.Forms.Label label_Settings_Preview__Set_IP;
+		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv4;
 		private System.Windows.Forms.Label label_Settings_Preview__Update_Type;
 		private System.Windows.Forms.Label label_Settings_Preview__Security_Val;
 		private System.Windows.Forms.Label label_Settings_Preview__Security;
@@ -1854,15 +2046,37 @@
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_Add;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_Modify;
 		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_Delete;
-		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_Enable;
-		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_Disable;
-		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_Enable;
-		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_Disable;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_IPv4_Enable;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_IPv4_Disable;
+		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_IPv4_Enable;
+		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_IPv4_Disable;
 		internal System.Windows.Forms.TextBox textBox_Action_Custom_DNS_List;
 		private System.Windows.Forms.NumericUpDown numericUpDown_Action_Timeout;
 		private System.Windows.Forms.Label label_Settings_Preview__Timeout_Val;
 		private System.Windows.Forms.Label label_Settings_Preview__Timeout;
 		private System.Windows.Forms.Label label_Action_Timeout;
+		private System.Windows.Forms.TabPage tabPage_Fix_hosts;
+		private System.Windows.Forms.Label label_Fix_hosts__Path;
+		private System.Windows.Forms.TextBox textBox_Fix_hosts__Path;
+		private System.Windows.Forms.TextBox textBox_Fix_hosts__Content;
+		private System.Windows.Forms.Label label_Fix_hosts__Content;
+		private System.Windows.Forms.Button button_Fix_hosts__Path_Browser;
+		private System.Windows.Forms.TabPage tabPage_Security__dynu;
+		private System.Windows.Forms.LinkLabel linkLabel_Security_dynu__API;
+		private System.Windows.Forms.CheckBox checkBox_Security_dynu__API_Key;
+		private System.Windows.Forms.TextBox textBox_Security_dynu__API_Key;
+		private System.Windows.Forms.Label label_Security_dynu__API_Key;
+		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_IPv6_Enable;
+		private System.Windows.Forms.ToolStripButton toolStripButton_Domains_IPv6_Disable;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_IPv6_Enable;
+		private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItem_Domains_IPv6_Disable;
+		private System.Windows.Forms.GroupBox groupBox_Set_IPv4;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv4__From_URL;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv4__Manual;
+		private System.Windows.Forms.RadioButton radioButton_Settings_IPv4__Accept_IP;
+		private System.Windows.Forms.GroupBox groupBox_Set_IPv6;
+		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv6_Val;
+		private System.Windows.Forms.Label label_Settings_Preview__Set_IPv6;
 	}
 }
 

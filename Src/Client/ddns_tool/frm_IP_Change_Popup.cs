@@ -42,20 +42,20 @@ namespace ddns_tool
 		/*==============================================================
 		 * 设置域名列表
 		 *==============================================================*/
-		internal void set_domains(List<(string, bool, bool)> IP_change_domains)
+		internal void set_domains(List<ddns_lib.c_Domain> IP_change_domains)
 		{
 			listView_Main.Items.Clear();
 
-			foreach(var vals in IP_change_domains)
+			foreach(ddns_lib.c_Domain domain in IP_change_domains)
 			{
 				ListViewItem LVI = new ListViewItem();
 
 				while(LVI.SubItems.Count < listView_Main.Columns.Count)
 					LVI.SubItems.Add("");
 
-				LVI.SubItems[0].Text = vals.Item1;
-				LVI.SubItems[1].Text = vals.Item2 ? frm_MainForm.STR_TRUE : "";
-				LVI.SubItems[2].Text = vals.Item3 ? frm_MainForm.STR_TRUE : "";
+				LVI.SubItems[0].Text = domain.m_domain;
+				LVI.SubItems[1].Text = domain.IPv4.m_same_ip ? "" : frm_MainForm.STR_TRUE;
+				LVI.SubItems[2].Text = domain.IPv6.m_same_ip ? "" : frm_MainForm.STR_TRUE;
 
 				listView_Main.Items.Add(LVI);
 			}	// for

@@ -86,10 +86,11 @@ void update_domains(__inout std::vector<struct s_Domain>	&domains,
 		ddns_lib::c_Domain	^gc_domain	= gc_domains[i];
 		struct s_Domain		&domain		= domains[i];
 
-		NNN::CLR::TO_CPP::String_to_char(gc_domain->m_current_IPv4,		domain.m_current_IPv4);
-		NNN::CLR::TO_CPP::String_to_char(gc_domain->m_current_IPv6,		domain.m_current_IPv6);
-		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->m_err_msg_IPv4,	domain.m_err_msg_IPv4);
-		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->m_err_msg_IPv6,	domain.m_err_msg_IPv6);
+		NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_current_IP,	domain.IPv4.m_current_IP);
+		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv4->m_err_msg,	domain.IPv4.m_err_msg);
+
+		NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_current_IP,	domain.IPv6.m_current_IP);
+		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv6->m_err_msg,	domain.IPv6.m_err_msg);
 	}	// for
 }
 
