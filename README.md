@@ -2,7 +2,8 @@
 
 **目前支持的 DDNS 服务：**  
 > Godaddy（据说改了政策，需要持有 50 个域名才能使用 API）  
-> dynv6
+> dynv6  
+> dynu
 
 支持本机直连修改，也支持本机连接到 server 修改（比如墙内目前无法直接访问 Godaddy API）
 
