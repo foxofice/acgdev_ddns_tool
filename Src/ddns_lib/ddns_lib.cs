@@ -705,8 +705,8 @@ namespace ddns_lib
 
 					case e_DomainType.dynu:
 						update_domain_dynu(	domain,
-											domain.IPv4.m_enabled && (!domain.IPv4.m_same_ip || !domain.IPv6.m_same_ip),
-											domain.IPv6.m_enabled && (!domain.IPv4.m_same_ip || !domain.IPv6.m_same_ip) );
+											domain.IPv4.m_enabled && !domain.IPv4.m_same_ip,
+											domain.IPv6.m_enabled && !domain.IPv6.m_same_ip );
 						break;
 					}	// switch
 

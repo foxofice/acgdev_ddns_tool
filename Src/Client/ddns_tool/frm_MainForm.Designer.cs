@@ -93,6 +93,8 @@
 			this.toolStripButton_Domains_IPv6_Enable = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton_Domains_IPv4_Disable = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton_Domains_IPv6_Disable = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripButton_Domains_CopyText = new System.Windows.Forms.ToolStripButton();
 			this.listView_Domains = new System.Windows.Forms.ListView();
 			this.columnHeader_Domains_Domain = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader_Domains_Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -108,6 +110,8 @@
 			this.ToolStripMenuItem_Domains_IPv6_Enable = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Domains_IPv4_Disable = new System.Windows.Forms.ToolStripMenuItem();
 			this.ToolStripMenuItem_Domains_IPv6_Disable = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.ToolStripMenuItem_Domains_CopyText = new System.Windows.Forms.ToolStripMenuItem();
 			this.listView_Logs = new System.Windows.Forms.ListView();
 			this.columnHeader_Logs_Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader_Logs_Log = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -178,10 +182,6 @@
 			this.label_Settings_Preview__Ping = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Set_IPv4 = new System.Windows.Forms.Label();
 			this.label_Settings_Preview__Update_Type = new System.Windows.Forms.Label();
-			this.ToolStripMenuItem_Domains_CopyText = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.toolStripButton_Domains_CopyText = new System.Windows.Forms.ToolStripButton();
 			this.contextMenuStrip_NotifyIcon.SuspendLayout();
 			this.tabControl_Security__Property.SuspendLayout();
 			this.tabPage_Security__Godaddy.SuspendLayout();
@@ -941,6 +941,21 @@
 			this.toolStripButton_Domains_IPv6_Disable.Text = "禁止更新 IPv6";
 			this.toolStripButton_Domains_IPv6_Disable.Click += new System.EventHandler(this.toolStripButton_Domains_IPv6_Disable_Click);
 			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripButton_Domains_CopyText
+			// 
+			this.toolStripButton_Domains_CopyText.Enabled = false;
+			this.toolStripButton_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
+			this.toolStripButton_Domains_CopyText.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.toolStripButton_Domains_CopyText.Name = "toolStripButton_Domains_CopyText";
+			this.toolStripButton_Domains_CopyText.Size = new System.Drawing.Size(76, 22);
+			this.toolStripButton_Domains_CopyText.Text = "复制文本";
+			this.toolStripButton_Domains_CopyText.Click += new System.EventHandler(this.toolStripButton_Domains_CopyText_Click);
+			// 
 			// listView_Domains
 			// 
 			this.listView_Domains.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -1009,7 +1024,7 @@
             this.toolStripMenuItem2,
             this.ToolStripMenuItem_Domains_CopyText});
 			this.contextMenuStrip_Domains.Name = "contextMenuStrip_Domains";
-			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(181, 208);
+			this.contextMenuStrip_Domains.Size = new System.Drawing.Size(170, 186);
 			// 
 			// ToolStripMenuItem_Domains_Add
 			// 
@@ -1072,6 +1087,21 @@
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Size = new System.Drawing.Size(169, 22);
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Text = "禁止更新 IPv6";
 			this.ToolStripMenuItem_Domains_IPv6_Disable.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_IPv6_Disable_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(166, 6);
+			// 
+			// ToolStripMenuItem_Domains_CopyText
+			// 
+			this.ToolStripMenuItem_Domains_CopyText.Enabled = false;
+			this.ToolStripMenuItem_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
+			this.ToolStripMenuItem_Domains_CopyText.Name = "ToolStripMenuItem_Domains_CopyText";
+			this.ToolStripMenuItem_Domains_CopyText.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.ToolStripMenuItem_Domains_CopyText.Size = new System.Drawing.Size(169, 22);
+			this.ToolStripMenuItem_Domains_CopyText.Text = "复制文本";
+			this.ToolStripMenuItem_Domains_CopyText.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_CopyText_Click);
 			// 
 			// listView_Logs
 			// 
@@ -1866,36 +1896,6 @@
 			this.label_Settings_Preview__Update_Type.TabIndex = 0;
 			this.label_Settings_Preview__Update_Type.Text = "更新方式：";
 			// 
-			// ToolStripMenuItem_Domains_CopyText
-			// 
-			this.ToolStripMenuItem_Domains_CopyText.Enabled = false;
-			this.ToolStripMenuItem_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
-			this.ToolStripMenuItem_Domains_CopyText.Name = "ToolStripMenuItem_Domains_CopyText";
-			this.ToolStripMenuItem_Domains_CopyText.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.ToolStripMenuItem_Domains_CopyText.Size = new System.Drawing.Size(180, 22);
-			this.ToolStripMenuItem_Domains_CopyText.Text = "复制文本";
-			this.ToolStripMenuItem_Domains_CopyText.Click += new System.EventHandler(this.ToolStripMenuItem_Domains_CopyText_Click);
-			// 
-			// toolStripMenuItem2
-			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(166, 6);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-			// 
-			// toolStripButton_Domains_CopyText
-			// 
-			this.toolStripButton_Domains_CopyText.Enabled = false;
-			this.toolStripButton_Domains_CopyText.Image = global::ddns_tool.res_Main.Copy;
-			this.toolStripButton_Domains_CopyText.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.toolStripButton_Domains_CopyText.Name = "toolStripButton_Domains_CopyText";
-			this.toolStripButton_Domains_CopyText.Size = new System.Drawing.Size(76, 22);
-			this.toolStripButton_Domains_CopyText.Text = "复制文本";
-			this.toolStripButton_Domains_CopyText.Click += new System.EventHandler(this.toolStripButton_Domains_CopyText_Click);
-			// 
 			// frm_MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1909,7 +1909,7 @@
 			this.Controls.Add(this.button_Update);
 			this.Name = "frm_MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "AcgDev DDNS Tool v0.02";
+			this.Text = "AcgDev DDNS Tool v0.03";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.frm_MainForm_Load);
 			this.contextMenuStrip_NotifyIcon.ResumeLayout(false);
