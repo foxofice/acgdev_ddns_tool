@@ -102,15 +102,20 @@ namespace ddns_tool
 
 				//【设置 IP】
 				radioButton_Settings_IPv6__From_URL.Enabled		= enabled;
-				comboBox_Settings_IPv4__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
+				comboBox_Settings_IPv4__From_URL.Enabled		= enabled && radioButton_Settings_IPv4__From_URL.Checked;
 				comboBox_Settings_IPv6__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
 
 				radioButton_Settings_IPv6__Manual.Enabled		= enabled;
-				textBox_Settings_IPv4.ReadOnly					= !enabled || !radioButton_Settings_IPv6__Manual.Checked;
+				textBox_Settings_IPv4.ReadOnly					= !enabled || !radioButton_Settings_IPv4__Manual.Checked;
 				textBox_Settings_IPv6.ReadOnly					= !enabled || !radioButton_Settings_IPv6__Manual.Checked;
 
-				radioButton_Settings_IPv4__Accept_IP.Enabled	= enabled;
-				radioButton_Settings_IPv6__Accept_IP.Enabled	= enabled;
+				if(enabled)
+					UpdateUI_radioButton_Settings_IP__Accept_IP();
+				else
+				{
+					radioButton_Settings_IPv4__Accept_IP.Enabled	= false;
+					radioButton_Settings_IPv6__Accept_IP.Enabled	= false;
+				}
 
 				//【安全设置】
 				textBox_Security_Godaddy__Key.ReadOnly			= !enabled;
@@ -1183,9 +1188,9 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void radioButton_Settings_IPv4__CheckedChanged(object sender, EventArgs e)
 		{
-			CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
-
-			if(radioButton_Settings_IPv4__Manual.Checked)
+			if(radioButton_Settings_IPv4__From_URL.Checked)
+				CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+			else if(radioButton_Settings_IPv4__Manual.Checked)
 				CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Manual_IP;
 			else if(radioButton_Settings_IPv4__Accept_IP.Checked)
 				CONFIG.SET_IP.m_s_type_IPv4 = CONFIG.e_IP_Get_Type.Server_Accept_IP;
@@ -1221,9 +1226,9 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void radioButton_Settings_IPv6__CheckedChanged(object sender, EventArgs e)
 		{
-			CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
-
-			if(radioButton_Settings_IPv6__Manual.Checked)
+			if(radioButton_Settings_IPv6__From_URL.Checked)
+				CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Get_IP_From_URL;
+			else if(radioButton_Settings_IPv6__Manual.Checked)
 				CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Manual_IP;
 			else if(radioButton_Settings_IPv6__Accept_IP.Checked)
 				CONFIG.SET_IP.m_s_type_IPv6 = CONFIG.e_IP_Get_Type.Server_Accept_IP;
@@ -2226,15 +2231,21 @@ namespace ddns_tool
 				// IP变动时，弹出提示窗口
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Popup)
 				{
-					m_IP_Change_Popup.set_domains(IP_change_domains);
-					FORMS.active_form(m_IP_Change_Popup);
+					invoke(() =>
+					{
+						m_IP_Change_Popup.set_domains(IP_change_domains);
+						FORMS.active_form(m_IP_Change_Popup);
+					});
 				}
 
 				// IP变动时，播放音乐
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Play_Sound)
 				{
-					SOUND.Stop();
-					SOUND.Play(CONFIG.UPDATE_ACTION.m_s_IP_Change_Sound_Path);
+					invoke(() =>
+					{
+						SOUND.Stop();
+						SOUND.Play(CONFIG.UPDATE_ACTION.m_s_IP_Change_Sound_Path);
+					});
 				}
 
 				invoke(update_All_LVI__Domain);

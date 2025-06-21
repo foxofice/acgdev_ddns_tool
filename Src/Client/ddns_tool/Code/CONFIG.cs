@@ -29,11 +29,11 @@ namespace ddns_tool
 			RemoteServer_AutoPing,				// 自动 ping 服务器
 
 			//【设置 IP】
-			SetIP_type_IPv4,					// IPv4 获取方式（1 = 通过互联网获取公网 IP、2 = 手动指定 IP、3 = Server 接受连接的客户端 IP）
+			SetIP_type_IPv4,					// IPv4 获取方式（0 = 通过互联网获取公网 IP、1 = 手动指定 IP、2 = Server 接受连接的客户端 IP）
 			SetIP_get_ipv4_URL,					// 检查公网 IPv4 的 URL
 			SetIP_IPv4,							// 设置的 IPv4/上次的 IPv4
 
-			SetIP_type_IPv6,					// IPv6 获取方式（1 = 通过互联网获取公网 IP、2 = 手动指定 IP、3 = Server 接受连接的客户端 IP）
+			SetIP_type_IPv6,					// IPv6 获取方式（0 = 通过互联网获取公网 IP、1 = 手动指定 IP、2 = Server 接受连接的客户端 IP）
 			SetIP_get_ipv6_URL,					// 检查公网 IPv6 的 URL
 			SetIP_IPv6,							// 设置的 IPv6/上次的 IPv6
 
@@ -769,7 +769,7 @@ namespace ddns_tool
 
 			//====================【设置 IP】====================(Start)
 			// IPv4 获取方式
-			sb.AppendLine("// IPv4 获取方式（0 = 通过互联网获取公网 IP、2 = 手动设置 IP、3 = Server 接受连接的客户端 IP）");
+			sb.AppendLine("// IPv4 获取方式（0 = 通过互联网获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）");
 			sb.AppendLine($"{e_Header.SetIP_type_IPv4}: {(int)SET_IP.m_s_type_IPv4}");
 			sb.AppendLine();
 
@@ -784,7 +784,7 @@ namespace ddns_tool
 			sb.AppendLine();
 
 			// IPv6 获取方式
-			sb.AppendLine("// IPv6 获取方式（0 = 通过互联网获取公网 IP、2 = 手动设置 IP、3 = Server 接受连接的客户端 IP）");
+			sb.AppendLine("// IPv6 获取方式（0 = 通过互联网获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）");
 			sb.AppendLine($"{e_Header.SetIP_type_IPv6}: {(int)SET_IP.m_s_type_IPv6}");
 			sb.AppendLine();
 
