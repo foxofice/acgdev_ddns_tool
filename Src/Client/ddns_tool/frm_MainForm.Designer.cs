@@ -182,6 +182,7 @@
 			timer_Save_Config = new System.Windows.Forms.Timer(components);
 			timer_Update = new System.Windows.Forms.Timer(components);
 			timer_Ping = new System.Windows.Forms.Timer(components);
+			timer_Save_Log = new System.Windows.Forms.Timer(components);
 			groupBox_Domains.SuspendLayout();
 			contextMenuStrip_Domains.SuspendLayout();
 			toolStrip_Domains.SuspendLayout();
@@ -807,11 +808,11 @@
 			// 
 			tabPage_Set_IP.Controls.Add(groupBox_Set_IPv6);
 			tabPage_Set_IP.Controls.Add(groupBox_Set_IPv4);
-			tabPage_Set_IP.Location = new Point(4, 22);
+			tabPage_Set_IP.Location = new Point(4, 26);
 			tabPage_Set_IP.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Set_IP.Name = "tabPage_Set_IP";
 			tabPage_Set_IP.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Set_IP.Size = new Size(532, 270);
+			tabPage_Set_IP.Size = new Size(532, 266);
 			tabPage_Set_IP.TabIndex = 1;
 			tabPage_Set_IP.Text = "设置 IP";
 			tabPage_Set_IP.UseVisualStyleBackColor = true;
@@ -966,11 +967,11 @@
 			tabPage_Security.Controls.Add(button_Security_Del);
 			tabPage_Security.Controls.Add(button_Security_Add);
 			tabPage_Security.Controls.Add(listView_Security);
-			tabPage_Security.Location = new Point(4, 22);
+			tabPage_Security.Location = new Point(4, 26);
 			tabPage_Security.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Security.Name = "tabPage_Security";
 			tabPage_Security.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Security.Size = new Size(532, 270);
+			tabPage_Security.Size = new Size(532, 266);
 			tabPage_Security.TabIndex = 2;
 			tabPage_Security.Text = "安全设置";
 			tabPage_Security.UseVisualStyleBackColor = true;
@@ -1313,11 +1314,11 @@
 			tabPage_Update_Action.Controls.Add(numericUpDown_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_UpdateIP);
-			tabPage_Update_Action.Location = new Point(4, 22);
+			tabPage_Update_Action.Location = new Point(4, 26);
 			tabPage_Update_Action.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Update_Action.Name = "tabPage_Update_Action";
 			tabPage_Update_Action.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Update_Action.Size = new Size(532, 270);
+			tabPage_Update_Action.Size = new Size(532, 266);
 			tabPage_Update_Action.TabIndex = 3;
 			tabPage_Update_Action.Text = "更新操作";
 			tabPage_Update_Action.UseVisualStyleBackColor = true;
@@ -1501,11 +1502,11 @@
 			tabPage_Fix_hosts.Controls.Add(textBox_Fix_hosts__Path);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Content);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Path);
-			tabPage_Fix_hosts.Location = new Point(4, 22);
+			tabPage_Fix_hosts.Location = new Point(4, 26);
 			tabPage_Fix_hosts.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Fix_hosts.Name = "tabPage_Fix_hosts";
 			tabPage_Fix_hosts.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Fix_hosts.Size = new Size(532, 270);
+			tabPage_Fix_hosts.Size = new Size(532, 266);
 			tabPage_Fix_hosts.TabIndex = 4;
 			tabPage_Fix_hosts.Text = "修正 hosts";
 			tabPage_Fix_hosts.UseVisualStyleBackColor = true;
@@ -1824,6 +1825,12 @@
 			timer_Ping.Interval = 1000;
 			timer_Ping.Tick += timer_Ping_Tick;
 			// 
+			// timer_Save_Log
+			// 
+			timer_Save_Log.Enabled = true;
+			timer_Save_Log.Interval = 3000;
+			timer_Save_Log.Tick += timer_Save_Log_Tick;
+			// 
 			// frm_MainForm
 			// 
 			AutoScaleDimensions = new SizeF(6F, 12F);
@@ -2048,5 +2055,6 @@
 		private ToolStripMenuItem ToolStripMenuItem_Security_Add;
 		private ToolStripMenuItem ToolStripMenuItem__Security_Del;
 		internal TextBox textBox_Action_Custom_DNS_List;
+		private System.Windows.Forms.Timer timer_Save_Log;
 	}
 }

@@ -33,6 +33,8 @@ namespace ddns_tool
 
 		bool							m_login_server_done		= false;		// 已成功登录 Server
 
+		int								m_next_save_log_idx		= 0;			// 下一个保存日志的索引
+
 		// (url, 支持IPv4, 支持IPv6)
 		List<(string m_url, bool m_IPv4, bool m_IPv6)>	m_get_ip_url_List = new List<(string, bool, bool)>
 		{
@@ -491,6 +493,41 @@ namespace ddns_tool
 			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote && CONFIG.REMOTE_SERVER.m_s_auto_ping)
 				ddns_tool_CLR.CLR.send_Ping();
 		}
+
+		/*==============================================================
+		 * 保存日志
+		 *==============================================================*/
+		private void timer_Save_Log_Tick(object sender, EventArgs e)
+		{
+			if(!CONFIG.LOG.m_s_Save_To_File)
+				return;
+
+			if(m_next_save_log_idx < 0)
+				m_next_save_log_idx = 0;
+
+			if(m_next_save_log_idx < listView_Logs.Items.Count)
+			{
+				string log_filename = $"Logs\\{DateTime.Now.ToString("yyyy-MM-dd")}.txt";
+				string dir = Path.GetDirectoryName(log_filename)!;
+				if(!Directory.Exists(dir))
+					Directory.CreateDirectory(dir);
+
+				List<string> lines = new(listView_Logs.Items.Count - m_next_save_log_idx + 1);
+
+				for(int i=m_next_save_log_idx; i<listView_Logs.Items.Count; ++i)
+				{
+					ListViewItem LVI = listView_Logs.Items[i];
+
+					string line = string.Format("{0:s}\t{1:s}",
+												LVI.SubItems[(int)e_Column_Log.Time].Text,
+												LVI.SubItems[(int)e_Column_Log.Log].Text);
+					lines.Add(line);
+				}	// for
+
+				File.AppendAllLines(log_filename, lines);
+				m_next_save_log_idx = listView_Logs.Items.Count;
+			}
+		}
 		#endregion
 
 		#region 托盘图标
@@ -916,6 +953,12 @@ namespace ddns_tool
 				listView_Logs.Items.Add(LVI);
 
 				LVI.EnsureVisible();
+
+				while(listView_Logs.Items.Count > CONFIG.LOG.m_s_MaxLines)
+				{
+					listView_Logs.Items.RemoveAt(0);
+					--m_next_save_log_idx;
+				}	// while
 			});
 		}
 
