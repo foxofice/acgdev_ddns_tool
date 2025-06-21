@@ -1,34 +1,16 @@
-ï»¿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Media;
 using System.Net;
-using System.Security.Permissions;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace ddns_tool
 {
 	public partial class frm_MainForm : Form
 	{
-		public frm_MainForm()
-		{
-			InitializeComponent();
-
-			m_s_Mainform = this;
-		}
-
+		#region ÀàĞÍ/±äÁ¿
 		enum e_Column_Domains
 		{
 			Domain,
-			Type,	// [Godaddy] TTL = 600ï¼›[dynv6] è‡ªåŠ¨IPv4, è‡ªåŠ¨IPv6ï¼›[dynu] TTL = 600, ID = 12345678
+			Type,	// [Godaddy] TTL = 600£»[dynv6] ×Ô¶¯IPv4, ×Ô¶¯IPv6£»[dynu] TTL = 600, ID = 12345678
 			Profile,
 			current_IPv4,
 			current_IPv6,
@@ -41,21 +23,18 @@ namespace ddns_tool
 			Log,
 		};
 
-		internal const string			STR_TRUE				= "âˆš";
-		internal const string			STR_FALSE				= "Ã—";
+		internal static frm_MainForm	m_s_Mainform			= null!;
+		internal frm_IP_Change_Popup	m_IP_Change_Popup		= new();
 
-		internal static frm_MainForm	m_s_Mainform			= null;
-		internal frm_IP_Change_Popup	m_IP_Change_Popup		= new frm_IP_Change_Popup();
+		bool							m_exiting				= false;		// ÊÇ·ñÕıÔÚÍË³ö
 
-		bool							m_exiting				= false;		// æ˜¯å¦æ­£åœ¨é€€å‡º
+		DateTime						m_can_auto_update_time	= DateTime.Now;	// ¿ÉÒÔ×Ô¶¯Ö´ĞĞ¸üĞÂµÄÊ±¼ä
+		bool							m_is_updating			= false;		// ÊÇ·ñÕıÔÚÖ´ĞĞ¸üĞÂ
 
-		DateTime						m_can_auto_update_time	= DateTime.Now;	// å¯ä»¥è‡ªåŠ¨æ‰§è¡Œæ›´æ–°çš„æ—¶é—´
-		bool							m_is_updating			= false;		// æ˜¯å¦æ­£åœ¨æ‰§è¡Œæ›´æ–°
+		bool							m_login_server_done		= false;		// ÒÑ³É¹¦µÇÂ¼ Server
 
-		bool							m_login_server_done		= false;		// å·²æˆåŠŸç™»å½• Server
-
-		// (url, æ”¯æŒIPv4, æ”¯æŒIPv6)
-		List<(string m_url, bool m_IPv4, bool m_IPv6)>	m_get_ip_url_List	= new List<(string, bool, bool)>
+		// (url, Ö§³ÖIPv4, Ö§³ÖIPv6)
+		List<(string m_url, bool m_IPv4, bool m_IPv6)>	m_get_ip_url_List = new List<(string, bool, bool)>
 		{
 			// m_url,							m_IPv4,	m_IPv6
 			("https://icanhazip.com",			true,	true),
@@ -75,11 +54,13 @@ namespace ddns_tool
 			("https://4.ipw.cn",				true,	false),
 			("https://6.ipw.cn",				false,	true),
 		};
+		#endregion
 
+		#region º¯Êı
 		/*==============================================================
-		 * åŸŸå -> LVI
+		 * ÓòÃû -> LVI
 		 *==============================================================*/
-		internal ListViewItem find_LVI__Domain(string domain_name)
+		internal ListViewItem? find_LVI__Domain(string domain_name)
 		{
 			foreach(ListViewItem LVI in listView_Domains.Items)
 			{
@@ -91,7 +72,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ‰§è¡Œå§”æ‰˜
+		 * Ö´ĞĞÎ¯ÍĞ
 		 *==============================================================*/
 		public void invoke(Action func)
 		{
@@ -102,22 +83,22 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é”å®šæ§ä»¶ï¼ˆUI çº¿ç¨‹å®‰å…¨ï¼‰
+		 * Ëø¶¨¿Ø¼ş£¨UI Ïß³Ì°²È«£©
 		 *==============================================================*/
 		void lock_controls(bool enabled)
 		{
 			invoke(() =>
 			{
-				//ã€æ›´æ–°æ–¹å¼ã€‘
+				//¡¾¸üĞÂ·½Ê½¡¿
 				radioButton_Settings_Type__Local.Enabled		= enabled;
 				radioButton_Settings_Type__Remote.Enabled		= enabled;
 
-				// è¿œç¨‹ Server è®¾ç½®
+				// Ô¶³Ì Server ÉèÖÃ
 				textBox_Settings_RemoteServer__Addr.ReadOnly	= !enabled || !radioButton_Settings_Type__Remote.Checked;
 				textBox_Settings_RemoteServer__User.ReadOnly	= !enabled || !radioButton_Settings_Type__Remote.Checked;
 				textBox_Settings_RemoteServer__Pwd.ReadOnly		= !enabled || !radioButton_Settings_Type__Remote.Checked;
 
-				//ã€è®¾ç½® IPã€‘
+				//¡¾ÉèÖÃ IP¡¿
 				radioButton_Settings_IPv6__From_URL.Enabled		= enabled;
 				comboBox_Settings_IPv4__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
 				comboBox_Settings_IPv6__From_URL.Enabled		= enabled && radioButton_Settings_IPv6__From_URL.Checked;
@@ -129,7 +110,7 @@ namespace ddns_tool
 				radioButton_Settings_IPv4__Accept_IP.Enabled	= enabled;
 				radioButton_Settings_IPv6__Accept_IP.Enabled	= enabled;
 
-				//ã€å®‰å…¨è®¾ç½®ã€‘
+				//¡¾°²È«ÉèÖÃ¡¿
 				textBox_Security_Godaddy__Key.ReadOnly			= !enabled;
 				textBox_Security_Godaddy__Secret.ReadOnly		= !enabled;
 
@@ -137,7 +118,7 @@ namespace ddns_tool
 
 				textBox_Security_dynu__API_Key.ReadOnly			= !enabled;
 
-				//ã€æ›´æ–°æ“ä½œã€‘
+				//¡¾¸üĞÂ²Ù×÷¡¿
 				checkBox_Action_UpdateIP.Enabled				= enabled;
 				checkBox_Action_DNS_Lookup_First.Enabled		= enabled;
 				checkBox_Action_Use_Custom_DNS.Enabled			= enabled;
@@ -150,18 +131,19 @@ namespace ddns_tool
 				textBox_Action_IP_Change_PlaySound.ReadOnly		= !enabled || !checkBox_Action_IP_Change_PlaySound.Checked;
 				button_Action_IP_Change_PlaySound.Enabled		= enabled;
 
-				//ã€åŸŸååˆ—è¡¨ã€‘
+				//¡¾ÓòÃûÁĞ±í¡¿
 				toolStrip_Domains.Enabled						= enabled;
 
-				//ã€æ—¥å¿—è®°å½•ã€‘
+				//¡¾ÈÕÖ¾¼ÇÂ¼¡¿
 				numericUpDown_Logs_MaxLines.Enabled				= enabled;
 
-				//ï¼ˆä¸»ç•Œé¢ï¼‰
+				//£¨Ö÷½çÃæ£©
 				button_Update.Enabled							= enabled;
 			});
 		}
+		#endregion
 
-		#region å°åŒ…äº‹ä»¶
+		#region ·â°üÊÂ¼ş
 		internal class EVENTS
 		{
 			/*==============================================================
@@ -169,7 +151,7 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void OnConnected(string ip, ushort port)
 			{
-				m_s_Mainform.add_log($"è¿æ¥åˆ° Server æˆåŠŸ (client = {ip}:{port})", Color.Green);
+				m_s_Mainform.add_log($"Á¬½Óµ½ Server ³É¹¦ (client = {ip}:{port})", Color.Green);
 			}
 
 			/*==============================================================
@@ -177,7 +159,7 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void OnDisconnecting()
 			{
-				m_s_Mainform.add_log("å·²æ–­å¼€ Server çš„è¿æ¥");
+				m_s_Mainform.add_log("ÒÑ¶Ï¿ª Server µÄÁ¬½Ó");
 				m_s_Mainform.update__done();
 
 				m_s_Mainform.invoke(() =>
@@ -215,7 +197,7 @@ namespace ddns_tool
 				{
 					m_s_Mainform.m_login_server_done = true;
 
-					m_s_Mainform.add_log("ç™»å½•æœåŠ¡å™¨æˆåŠŸ", Color.Green);
+					m_s_Mainform.add_log("µÇÂ¼·şÎñÆ÷³É¹¦", Color.Green);
 
 					ddns_tool_CLR.CLR.send_Update_Domains(	CONFIG.m_s_domains_list,
 															CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First,
@@ -224,7 +206,7 @@ namespace ddns_tool
 				}
 				else
 				{
-					m_s_Mainform.add_log("[Error] ç™»å½•æœåŠ¡å™¨å¤±è´¥", Color.Red);
+					m_s_Mainform.add_log("[Error] µÇÂ¼·şÎñÆ÷Ê§°Ü", Color.Red);
 
 					ddns_tool_CLR.CLR.DisConnect();
 				}
@@ -237,7 +219,7 @@ namespace ddns_tool
 			{
 				foreach(ddns_lib.c_Domain res in domains)
 				{
-					ddns_lib.c_Domain domain = CONFIG.find_domain(res.m_domain);
+					ddns_lib.c_Domain? domain = CONFIG.find_domain(res.m_domain);
 
 					if(domain == null)
 						continue;
@@ -266,18 +248,18 @@ namespace ddns_tool
 			{
 				m_s_Mainform.invoke(() =>
 				{
-					ListViewItem LVI = m_s_Mainform.find_LVI__Domain(domain);
+					ListViewItem? LVI = m_s_Mainform.find_LVI__Domain(domain);
 
 					if(LVI != null)
 					{
 						switch(progress)
 						{
 						case ddns_lib.e_Progress.None:			LVI.SubItems[(int)e_Column_Domains.Status].Text = "";			break;
-						case ddns_lib.e_Progress.Starting:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "å¼€å§‹æ›´æ–°";	break;
-						case ddns_lib.e_Progress.DNS_Lookup:	LVI.SubItems[(int)e_Column_Domains.Status].Text = "åŸŸåè§£æ";	break;
-						case ddns_lib.e_Progress.Updating:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "æ­£åœ¨æ›´æ–°";	break;
-						case ddns_lib.e_Progress.Done:			LVI.SubItems[(int)e_Column_Domains.Status].Text = "æ›´æ–°å®Œæˆ";	break;
-						case ddns_lib.e_Progress.Failed:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "æ›´æ–°å¤±è´¥";	break;
+						case ddns_lib.e_Progress.Starting:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "¿ªÊ¼¸üĞÂ";	break;
+						case ddns_lib.e_Progress.DNS_Lookup:	LVI.SubItems[(int)e_Column_Domains.Status].Text = "ÓòÃû½âÎö";	break;
+						case ddns_lib.e_Progress.Updating:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "ÕıÔÚ¸üĞÂ";	break;
+						case ddns_lib.e_Progress.Done:			LVI.SubItems[(int)e_Column_Domains.Status].Text = "¸üĞÂÍê³É";	break;
+						case ddns_lib.e_Progress.Failed:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "¸üĞÂÊ§°Ü";	break;
 						}	// switch
 
 						LVI.SubItems[(int)e_Column_Domains.Status].ForeColor = (progress == ddns_lib.e_Progress.Failed) ? Color.Red : Color.Black;
@@ -289,7 +271,7 @@ namespace ddns_tool
 
 		#region LVI.Tag
 		/*==============================================================
-		 * è®¾ç½®/è·å– LVI.Tagï¼ˆDomainï¼‰
+		 * ÉèÖÃ/»ñÈ¡ LVI.Tag£¨Domain£©
 		 *==============================================================*/
 		void Set_LVI_Tag__Domain(ListViewItem LVI, ddns_lib.c_Domain domain)
 		{
@@ -298,11 +280,11 @@ namespace ddns_tool
 		//--------------------------------------------------
 		ddns_lib.c_Domain Get_LVI_Tag__Domain(ListViewItem LVI)
 		{
-			return (ddns_lib.c_Domain)LVI.Tag;
+			return (ddns_lib.c_Domain)LVI.Tag!;
 		}
 
 		/*==============================================================
-		 * è®¾ç½®/è·å– LVI.Tagï¼ˆSecurity_Profileï¼‰
+		 * ÉèÖÃ/»ñÈ¡ LVI.Tag£¨Security_Profile£©
 		 *==============================================================*/
 		void Set_LVI_Tag__Security_Profile(ListViewItem LVI, ddns_lib.c_Security_Profile profile)
 		{
@@ -311,27 +293,31 @@ namespace ddns_tool
 		//--------------------------------------------------
 		ddns_lib.c_Security_Profile Get_LVI_Tag__Security_Profile(ListViewItem LVI)
 		{
-			return (ddns_lib.c_Security_Profile)LVI.Tag;
+			return (ddns_lib.c_Security_Profile)LVI.Tag!;
 		}
 		#endregion
 
-		#region Winform äº‹ä»¶
+		public frm_MainForm()
+		{
+			InitializeComponent();
+
+			m_s_Mainform = this;
+		}
+
+		#region Winform ÊÂ¼ş
 		/*==============================================================
-		 * çª—å£åŠ è½½/çª—å£å…³é—­
+		 * ´°¿Ú¼ÓÔØ/´°¿Ú¹Ø±Õ
 		 *==============================================================*/
 		private void frm_MainForm_Load(object sender, EventArgs e)
 		{
-			this.Icon				= Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule.FileName);
+			this.Icon				= Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName);
 			notifyIcon_Main.Icon	= this.Icon;
-
 			notifyIcon_Main.Text	= this.Text;
 
-			ServicePointManager.DefaultConnectionLimit = 1000;
-
-			// åˆå§‹åŒ– DDNS_CLR
+			// ³õÊ¼»¯ DDNS_CLR
 			ddns_tool_CLR.CLR.DoInit();
 
-			// è®¾ç½®å›è°ƒå‡½æ•°
+			// ÉèÖÃ»Øµ÷º¯Êı
 			ddns_tool_CLR.CLR.Event_OnConnected					+= EVENTS.OnConnected;
 			ddns_tool_CLR.CLR.Event_OnDisconnecting				+= EVENTS.OnDisconnecting;
 			ddns_tool_CLR.CLR.Event_Recv_Ping					+= EVENTS.Recv_Ping;
@@ -344,30 +330,30 @@ namespace ddns_tool
 
 			CONFIG.read_config();
 
-			//==================== æ›´æ–° UI ====================(Start)
-			//ã€åŸŸååˆ—è¡¨ã€‘
+			//==================== ¸üĞÂ UI ====================(Start)
+			//¡¾ÓòÃûÁĞ±í¡¿
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 				add_LVI__Domain(domain);
 
-			//ã€æ—¥å¿—è®°å½•ã€‘
-			numericUpDown_Logs_MaxLines.Value				= CONFIG.LOG.m_s_MaxLines;
-			checkBox_Logs__Save_To_File.Checked				= CONFIG.LOG.m_s_Save_To_File;
+			//¡¾ÈÕÖ¾¼ÇÂ¼¡¿
+			numericUpDown_Logs_MaxLines.Value	= CONFIG.LOG.m_s_MaxLines;
+			checkBox_Logs__Save_To_File.Checked	= CONFIG.LOG.m_s_Save_To_File;
 
-			//ã€æ›´æ–°æ–¹å¼ã€‘
+			//¡¾¸üĞÂ·½Ê½¡¿
 			switch(CONFIG.m_s_update_type)
 			{
 			case CONFIG.e_Update_Type.Local:	radioButton_Settings_Type__Local.Checked	= true;	break;
 			case CONFIG.e_Update_Type.Remote:	radioButton_Settings_Type__Remote.Checked	= true;	break;
 			}	// switch
 
-			// è¿œç¨‹ Server è®¾ç½®
+			// Ô¶³Ì Server ÉèÖÃ
 			textBox_Settings_RemoteServer__Addr.Text		= CONFIG.REMOTE_SERVER.m_s_addr;
 			textBox_Settings_RemoteServer__User.Text		= CONFIG.REMOTE_SERVER.m_s_user;
 			textBox_Settings_RemoteServer__Pwd.Text			= CONFIG.REMOTE_SERVER.m_s_pwd;
 			checkBox_Settings_RemoteServer__Pwd.Checked		= CONFIG.REMOTE_SERVER.m_s_show_pwd;
 			checkBox_Settings_RemoteServer__Ping.Checked	= CONFIG.REMOTE_SERVER.m_s_auto_ping;
 
-			//ã€è®¾ç½® IPã€‘
+			//¡¾ÉèÖÃ IP¡¿
 			foreach(var get_ip_url in m_get_ip_url_List)
 			{
 				if(get_ip_url.m_IPv4)
@@ -395,39 +381,39 @@ namespace ddns_tool
 			if(CONFIG.SET_IP.m_s_Get_IPv6_URL.Length == 0)
 				comboBox_Settings_IPv6__From_URL.SelectedIndex = 0;
 
-			//ã€å®‰å…¨è®¾ç½®ã€‘
+			//¡¾°²È«ÉèÖÃ¡¿
 			foreach(ddns_lib.c_Security_Profile profile in CONFIG.SECURITY.m_s_profiles)
 			{
-				ListViewItem LVI = new ListViewItem(profile.m_Name);
+				ListViewItem LVI = new(profile.m_Name);
 				listView_Security.Items.Add(LVI);
 
 				Set_LVI_Tag__Security_Profile(LVI, profile);
 			}	// for
 
-			//ã€æ›´æ–°æ“ä½œã€‘
+			//¡¾¸üĞÂ²Ù×÷¡¿
 			checkBox_Action_UpdateIP.Checked				= CONFIG.UPDATE_ACTION.m_s_UpdateIP;
 
-			// è‡ªåŠ¨æ›´æ–°
+			// ×Ô¶¯¸üĞÂ
 			checkBox_Action_AutoAction_Interval.Checked		= CONFIG.ACTION.m_s_AutoAction;
 			numericUpDown_Action_AutoAction_Interval.Value	= CONFIG.ACTION.m_s_AutoAction_interval;
 
-			// å…ˆè§£æåŸŸå
+			// ÏÈ½âÎöÓòÃû
 			checkBox_Action_DNS_Lookup_First.Checked		= CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First;
 
-			// è‡ªå®šä¹‰ DNS æœåŠ¡å™¨
+			// ×Ô¶¨Òå DNS ·şÎñÆ÷
 			checkBox_Action_Use_Custom_DNS.Checked			= CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS;
 			textBox_Action_Custom_DNS_List.Lines			= CONFIG.UPDATE_ACTION.m_s_Custom_DNS_List.ToArray();
 
-			// è‡ªåŠ¨æ›´æ–°è¶…æ—¶ï¼ˆå•ä½ï¼šç§’ã€‚0 = æ— é™ç­‰å¾…ï¼‰
+			// ×Ô¶¯¸üĞÂ³¬Ê±£¨µ¥Î»£ºÃë¡£0 = ÎŞÏŞµÈ´ı£©
 			numericUpDown_Action_Timeout.Value				= CONFIG.UPDATE_ACTION.m_s_Timeout;
 
-			// IPå˜åŠ¨æ—¶ï¼Œå¼¹å‡ºæç¤ºçª—å£
+			// IP±ä¶¯Ê±£¬µ¯³öÌáÊ¾´°¿Ú
 			checkBox_Action_IP_Change_Popup.Checked			= CONFIG.UPDATE_ACTION.m_s_IP_Change_Popup;
 
-			// IPå˜åŠ¨æ—¶ï¼Œæ’­æ”¾éŸ³ä¹
+			// IP±ä¶¯Ê±£¬²¥·ÅÒôÀÖ
 			checkBox_Action_IP_Change_PlaySound.Checked		= CONFIG.UPDATE_ACTION.m_s_IP_Change_Play_Sound;
 			textBox_Action_IP_Change_PlaySound.Text			= CONFIG.UPDATE_ACTION.m_s_IP_Change_Sound_Path;
-			//==================== æ›´æ–° UI ====================(End)
+			//==================== ¸üĞÂ UI ====================(End)
 			CONFIG.m_s_dirty = false;
 
 			set_next_Auto_Update_Time();
@@ -455,13 +441,13 @@ namespace ddns_tool
 			{
 				CONFIG.save_config();
 
-				// æ¸…ç† DDNS_CLR
+				// ÇåÀí DDNS_CLR
 				ddns_tool_CLR.CLR.DoFinal();
 			}
 		}
 
 		/*==============================================================
-		 * å®˜ç½‘
+		 * ¹ÙÍø
 		 *==============================================================*/
 		private void linkLabel_WebSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
@@ -477,9 +463,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region è®¡æ—¶å™¨
+		#region ¼ÆÊ±Æ÷
 		/*==============================================================
-		 * ä¿å­˜é…ç½®æ–‡ä»¶
+		 * ±£´æÅäÖÃÎÄ¼ş
 		 *==============================================================*/
 		private void timer_Save_Config_Tick(object sender, EventArgs e)
 		{
@@ -487,7 +473,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ›´æ–° IP
+		 * ¸üĞÂ IP
 		 *==============================================================*/
 		private void timer_Update_Tick(object sender, EventArgs e)
 		{
@@ -507,9 +493,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region æ‰˜ç›˜å›¾æ ‡
+		#region ÍĞÅÌÍ¼±ê
 		/*==============================================================
-		 * åŒå‡»æ‰˜ç›˜å›¾æ ‡
+		 * Ë«»÷ÍĞÅÌÍ¼±ê
 		 *==============================================================*/
 		private void notifyIcon_Main_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
@@ -519,9 +505,9 @@ namespace ddns_tool
 				FORMS.active_form(this);
 		}
 		#endregion
-		#region æ‰˜ç›˜å›¾æ ‡ - ä¸Šä¸‹æ–‡èœå•
+		#region ÍĞÅÌÍ¼±ê - ÉÏÏÂÎÄ²Ëµ¥
 		/*==============================================================
-		 * æ‰“å¼€
+		 * ´ò¿ª
 		 *==============================================================*/
 		private void ToolStripMenuItem_Open_Click(object sender, EventArgs e)
 		{
@@ -529,11 +515,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€€å‡ºç¨‹åº
+		 * ÍË³ö³ÌĞò
 		 *==============================================================*/
 		private void ToolStripMenuItem_Exit_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	"æ˜¯å¦é€€å‡ºç¨‹åºï¼Ÿ",
+			if(MessageBox.Show(	"ÊÇ·ñÍË³ö³ÌĞò£¿",
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -548,17 +534,17 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region åŸŸååˆ—è¡¨
+		#region ÓòÃûÁĞ±í
 		/*==============================================================
-		 * æ›´æ–° LVI
+		 * ¸üĞÂ LVI
 		 *==============================================================*/
 		void update_LVI__Domain(ListViewItem LVI)
 		{
-			ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+			ddns_lib.c_Domain domain	= Get_LVI_Tag__Domain(LVI);
 
 			LVI.SubItems[(int)e_Column_Domains.Domain].Text	= domain.m_domain;
 
-			StringBuilder sb_type = new StringBuilder();
+			StringBuilder sb_type = new();
 
 			sb_type.Append($"[{domain.m_type}]");
 
@@ -571,14 +557,14 @@ namespace ddns_tool
 
 			case ddns_lib.e_DomainType.dynv6:
 				if(domain.m_dynv6__Auto_IPv4)
-					sb_type.Append(" è‡ªåŠ¨IPv4");
+					sb_type.Append(" ×Ô¶¯IPv4");
 
 				if(domain.m_dynv6__Auto_IPv6)
 				{
 					if(domain.m_dynv6__Auto_IPv4)
 						sb_type.Append("+IPv6");
 					else
-						sb_type.Append(" è‡ªåŠ¨IPv6");
+						sb_type.Append(" ×Ô¶¯IPv6");
 				}
 				break;
 
@@ -601,42 +587,42 @@ namespace ddns_tool
 
 			if(domain.IPv4.m_enabled)
 			{
-				LVSI_IPv4.Font		= new Font(LVSI_IPv4.Font, LVSI_IPv4.Font.Style & ~FontStyle.Strikeout);
+				LVSI_IPv4.Font		= new(LVSI_IPv4.Font, LVSI_IPv4.Font.Style & ~FontStyle.Strikeout);
 				LVSI_IPv4.BackColor	= Color.White;
 			}
 			else
 			{
-				LVSI_IPv4.Font		= new Font(LVSI_IPv4.Font, LVSI_IPv4.Font.Style | FontStyle.Strikeout);
+				LVSI_IPv4.Font		= new(LVSI_IPv4.Font, LVSI_IPv4.Font.Style | FontStyle.Strikeout);
 				LVSI_IPv4.BackColor	= Color.Gray;
 			}
 
 			if(domain.IPv6.m_enabled)
 			{
-				LVSI_IPv6.Font		= new Font(LVSI_IPv6.Font, LVSI_IPv6.Font.Style & ~FontStyle.Strikeout);
+				LVSI_IPv6.Font		= new(LVSI_IPv6.Font, LVSI_IPv6.Font.Style & ~FontStyle.Strikeout);
 				LVSI_IPv6.BackColor	= Color.White;
 			}
 			else
 			{
-				LVSI_IPv6.Font		= new Font(LVSI_IPv6.Font, LVSI_IPv6.Font.Style | FontStyle.Strikeout);
+				LVSI_IPv6.Font		= new(LVSI_IPv6.Font, LVSI_IPv6.Font.Style | FontStyle.Strikeout);
 				LVSI_IPv6.BackColor	= Color.Gray;
 			}
 		}
 
 		/*==============================================================
-		 * æ›´æ–°æ‰€æœ‰ LVI
+		 * ¸üĞÂËùÓĞ LVI
 		 *==============================================================*/
 		void update_All_LVI__Domain()
 		{
-			foreach(ListViewItem  LVI in listView_Domains.Items)
+			foreach(ListViewItem LVI in listView_Domains.Items)
 				update_LVI__Domain(LVI);
 		}
 
 		/*==============================================================
-		 * æ·»åŠ  LVI
+		 * Ìí¼Ó LVI
 		 *==============================================================*/
 		void add_LVI__Domain(ddns_lib.c_Domain domain)
 		{
-			ListViewItem LVI = new ListViewItem();
+			ListViewItem LVI = new();
 
 			while(LVI.SubItems.Count < listView_Domains.Columns.Count)
 				LVI.SubItems.Add("");
@@ -651,7 +637,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ä¿®æ”¹åŸŸå
+		 * ĞŞ¸ÄÓòÃû
 		 *==============================================================*/
 		void edit_domain()
 		{
@@ -662,7 +648,7 @@ namespace ddns_tool
 
 			ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
 
-			frm_Domain dlg = new frm_Domain(domain);
+			frm_Domain dlg = new(domain);
 
 			if(dlg.ShowDialog() == DialogResult.OK)
 			{
@@ -679,7 +665,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€‰æ‹©é¡¹æ”¹å˜
+		 * Ñ¡ÔñÏî¸Ä±ä
 		 *==============================================================*/
 		private void listView_Domains_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -701,33 +687,33 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è°ƒæ•´åˆ—å®½
+		 * µ÷ÕûÁĞ¿í
 		 *==============================================================*/
 		private void listView_Domains_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 198, 60, 102, 273, 66 };
+			int[] widths = { 0, 198, 60, 102, 273, 66 };
 
-			for(int i=0; i<widths.Length; ++i)
-				listView_Domains.Columns[i + 1].Width = widths[i];
+			for(int i = 1; i < widths.Length; ++i)
+				listView_Domains.Columns[i].Width = widths[i];
 
 			columnHeader_Domains_Domain.Width = listView_Domains.Width - 21 - widths.Sum();
 		}
 
 		/*==============================================================
-		 * åŒå‡»ä¿®æ”¹
+		 * Ë«»÷ĞŞ¸Ä
 		 *==============================================================*/
 		private void listView_Domains_DoubleClick(object sender, EventArgs e)
 		{
 			edit_domain();
 		}
 		#endregion
-		#region åŸŸååˆ—è¡¨ - ä¸Šä¸‹æ–‡èœå•
+		#region ÓòÃûÁĞ±í - ÉÏÏÂÎÄ²Ëµ¥
 		/*==============================================================
-		 * æ·»åŠ 
+		 * Ìí¼Ó
 		 *==============================================================*/
 		private void toolStripButton_Domains_Add_Click(object sender, EventArgs e)
 		{
-			frm_Domain dlg = new frm_Domain();
+			frm_Domain dlg = new();
 
 			if(dlg.ShowDialog() == DialogResult.OK)
 			{
@@ -737,7 +723,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ä¿®æ”¹
+		 * ĞŞ¸Ä
 		 *==============================================================*/
 		private void toolStripButton_Domains_Modify_Click(object sender, EventArgs e)
 		{
@@ -745,11 +731,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * åˆ é™¤
+		 * É¾³ı
 		 *==============================================================*/
 		private void toolStripButton_Domains_Delete_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	$"æ˜¯å¦è¦åˆ é™¤é€‰å®šçš„ {listView_Domains.SelectedItems.Count} æ¡è®°å½•ï¼Ÿ",
+			if(MessageBox.Show(	$"ÊÇ·ñÒªÉ¾³ıÑ¡¶¨µÄ {listView_Domains.SelectedItems.Count} Ìõ¼ÇÂ¼£¿",
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -763,7 +749,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å…è®¸æ›´æ–° IPv4
+		 * ÔÊĞí¸üĞÂ IPv4
 		 *==============================================================*/
 		private void toolStripButton_Domains_IPv4_Enable_Click(object sender, EventArgs e)
 		{
@@ -779,7 +765,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å…è®¸æ›´æ–° IPv6
+		 * ÔÊĞí¸üĞÂ IPv6
 		 *==============================================================*/
 		private void toolStripButton_Domains_IPv6_Enable_Click(object sender, EventArgs e)
 		{
@@ -795,7 +781,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç¦æ­¢æ›´æ–° IPv4
+		 * ½ûÖ¹¸üĞÂ IPv4
 		 *==============================================================*/
 		private void toolStripButton_Domains_IPv4_Disable_Click(object sender, EventArgs e)
 		{
@@ -811,7 +797,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç¦æ­¢æ›´æ–° IPv6
+		 * ½ûÖ¹¸üĞÂ IPv6
 		 *==============================================================*/
 		private void toolStripButton_Domains_IPv6_Disable_Click(object sender, EventArgs e)
 		{
@@ -827,15 +813,15 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å¤åˆ¶æ–‡æœ¬
+		 * ¸´ÖÆÎÄ±¾
 		 *==============================================================*/
 		private void toolStripButton_Domains_CopyText_Click(object sender, EventArgs e)
 		{
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				for(int i=0; i<listView_Domains.Columns.Count; ++i)
+				for(int i = 0; i < listView_Domains.Columns.Count; ++i)
 					sb.Append($"{LVI.SubItems[i].Text}\t");
 
 				sb.AppendLine();
@@ -845,7 +831,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ·»åŠ 
+		 * Ìí¼Ó
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_Add_Click(object sender, EventArgs e)
 		{
@@ -853,7 +839,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ä¿®æ”¹
+		 * ĞŞ¸Ä
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_Modify_Click(object sender, EventArgs e)
 		{
@@ -861,7 +847,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * åˆ é™¤
+		 * É¾³ı
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_Delete_Click(object sender, EventArgs e)
 		{
@@ -869,7 +855,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å…è®¸æ›´æ–° IPv4
+		 * ÔÊĞí¸üĞÂ IPv4
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_IPv4_Enable_Click(object sender, EventArgs e)
 		{
@@ -877,7 +863,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å…è®¸æ›´æ–° IPv6
+		 * ÔÊĞí¸üĞÂ IPv6
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_IPv6_Enable_Click(object sender, EventArgs e)
 		{
@@ -885,7 +871,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç¦æ­¢æ›´æ–° IPv4
+		 * ½ûÖ¹¸üĞÂ IPv4
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_IPv4_Disable_Click(object sender, EventArgs e)
 		{
@@ -893,7 +879,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç¦æ­¢æ›´æ–° IPv6
+		 * ½ûÖ¹¸üĞÂ IPv6
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_IPv6_Disable_Click(object sender, EventArgs e)
 		{
@@ -901,7 +887,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å¤åˆ¶æ–‡æœ¬
+		 * ¸´ÖÆÎÄ±¾
 		 *==============================================================*/
 		private void ToolStripMenuItem_Domains_CopyText_Click(object sender, EventArgs e)
 		{
@@ -909,15 +895,15 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region æ—¥å¿—
+		#region ÈÕÖ¾
 		/*==============================================================
-		 * æ·»åŠ æ—¥å¿—è®°å½•ï¼ˆUI çº¿ç¨‹å®‰å…¨ï¼‰
+		 * Ìí¼ÓÈÕÖ¾¼ÇÂ¼£¨UI Ïß³Ì°²È«£©
 		 *==============================================================*/
 		internal void add_log(string txt, Color c = default)
 		{
 			invoke(() =>
 			{
-				ListViewItem LVI = new ListViewItem();
+				ListViewItem LVI = new();
 
 				while(LVI.SubItems.Count < listView_Logs.Columns.Count)
 					LVI.SubItems.Add("");
@@ -925,7 +911,7 @@ namespace ddns_tool
 				LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("G").Replace("/", ".");
 				LVI.SubItems[(int)e_Column_Log.Log].Text	= txt;
 
-				LVI.ForeColor = c;
+				LVI.ForeColor								= c;
 
 				listView_Logs.Items.Add(LVI);
 
@@ -934,7 +920,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€‰æ‹©é¡¹æ”¹å˜
+		 * Ñ¡ÔñÏî¸Ä±ä
 		 *==============================================================*/
 		private void listView_Logs_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -943,29 +929,20 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è°ƒæ•´åˆ—å®½
+		 * µ÷ÕûÁĞ¿í
 		 *==============================================================*/
 		private void listView_Logs_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 122 };
+			int[] widths = { 122, 0 };
 
-			for(int i=0; i<widths.Length; ++i)
+			for(int i = 0; i < widths.Length - 1; ++i)
 				listView_Logs.Columns[i].Width = widths[i];
 
 			columnHeader_Logs_Log.Width = listView_Logs.Width - 21 - widths.Sum();
 		}
 
 		/*==============================================================
-		 * å°ºå¯¸æ”¹å˜
-		 *==============================================================*/
-		private void listView_Logs_SizeChanged(object sender, EventArgs e)
-		{
-			columnHeader_Logs_Time.Width	= 122;
-			columnHeader_Logs_Log.Width		= listView_Logs.Width - columnHeader_Logs_Time.Width - 21;
-		}
-
-		/*==============================================================
-		 * æ—¥å¿—æœ€å¤§è¡Œæ•°
+		 * ×î´óÏÔÊ¾ĞĞÊı
 		 *==============================================================*/
 		private void numericUpDown_Logs_MaxLines_ValueChanged(object sender, EventArgs e)
 		{
@@ -974,7 +951,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ä¿å­˜åˆ°æ—¥å¿—æ–‡ä»¶
+		 * ±£´æµ½ÈÕÖ¾ÎÄ¼ş
 		 *==============================================================*/
 		private void checkBox_Logs__Save_To_File_CheckedChanged(object sender, EventArgs e)
 		{
@@ -982,16 +959,16 @@ namespace ddns_tool
 			CONFIG.m_s_dirty = true;
 		}
 		#endregion
-		#region æ—¥å¿— - ä¸Šä¸‹æ–‡èœå•
+		#region ÈÕÖ¾ - ÉÏÏÂÎÄ²Ëµ¥
 		/*==============================================================
-		 * å¤åˆ¶æ–‡æœ¬
+		 * ¸´ÖÆÎÄ±¾
 		 *==============================================================*/
 		private void ToolStripMenuItem_Logs_Copy_Click(object sender, EventArgs e)
 		{
 			if(listView_Logs.SelectedItems.Count == 0)
 				return;
 
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 
 			foreach(ListViewItem LVI in listView_Logs.SelectedItems)
 				sb.AppendLine($"{LVI.SubItems[(int)e_Column_Log.Time].Text}\t{LVI.SubItems[(int)e_Column_Log.Log].Text}");
@@ -1000,11 +977,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * åˆ é™¤é€‰å®šè®°å½•
+		 * É¾³ıÑ¡¶¨¼ÇÂ¼
 		 *==============================================================*/
 		private void ToolStripMenuItem_Logs_Delete_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	$"æ˜¯å¦è¦åˆ é™¤é€‰å®šçš„ {listView_Logs.SelectedItems.Count} æ¡è®°å½•ï¼Ÿ",
+			if(MessageBox.Show(	$"ÊÇ·ñÒªÉ¾³ıÑ¡¶¨µÄ {listView_Logs.SelectedItems.Count} Ìõ¼ÇÂ¼£¿",
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -1016,7 +993,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å…¨é€‰
+		 * È«Ñ¡
 		 *==============================================================*/
 		private void ToolStripMenuItem_Logs_SelectAll_Click(object sender, EventArgs e)
 		{
@@ -1025,9 +1002,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region æ›´æ–°æ–¹å¼
+		#region ¸üĞÂ·½Ê½
 		/*==============================================================
-		 * æ›´æ–°æ–¹å¼æ”¹å˜
+		 * ¸üĞÂ·½Ê½¸Ä±ä
 		 *==============================================================*/
 		private void radioButton_Settings_Type__CheckedChanged(object sender, EventArgs e)
 		{
@@ -1045,9 +1022,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region è¿œç¨‹ Server è®¾ç½®
+		#region Ô¶³Ì Server ÉèÖÃ
 		/*==============================================================
-		 * Server åœ°å€/ç«¯å£
+		 * Server µØÖ·/¶Ë¿Ú
 		 *==============================================================*/
 		private void textBox_Settings_RemoteServer__Addr_TextChanged(object sender, EventArgs e)
 		{
@@ -1060,7 +1037,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç™»å½•åˆ° Server çš„ç”¨æˆ·å
+		 * µÇÂ¼µ½ Server µÄÓÃ»§Ãû
 		 *==============================================================*/
 		private void textBox_Settings_RemoteServer__User_TextChanged(object sender, EventArgs e)
 		{
@@ -1069,7 +1046,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * ç™»å½•åˆ° Server çš„å¯†ç 
+		 * µÇÂ¼µ½ Server µÄÃÜÂë
 		 *==============================================================*/
 		private void textBox_Settings_RemoteServer__Pwd_TextChanged(object sender, EventArgs e)
 		{
@@ -1078,7 +1055,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ˜¾ç¤ºå¯†ç 
+		 * ÏÔÊ¾ÃÜÂë
 		 *==============================================================*/
 		private void checkBox_Settings_RemoteServer__Pwd_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1089,7 +1066,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è‡ªåŠ¨ ping æœåŠ¡å™¨
+		 * ×Ô¶¯ ping ·şÎñÆ÷
 		 *==============================================================*/
 		private void checkBox_Settings_RemoteServer__Ping_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1098,9 +1075,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region è®¾ç½® IP
+		#region ÉèÖÃ IP
 		/*==============================================================
-		 * æ›´æ–° UIï¼ˆServer æ¥å—è¿æ¥çš„å®¢æˆ·ç«¯ IPï¼‰
+		 * ¸üĞÂ UI£¨Server ½ÓÊÜÁ¬½ÓµÄ¿Í»§¶Ë IP£©
 		 *==============================================================*/
 		void UpdateUI_radioButton_Settings_IP__Accept_IP()
 		{
@@ -1132,7 +1109,7 @@ namespace ddns_tool
 				return;
 			}
 
-			IPAddress	server_ip;
+			IPAddress?	server_ip;
 			ushort		server_port;
 
 			if(!CONFIG.get_server_ip_port(out server_ip, out server_port))
@@ -1142,7 +1119,7 @@ namespace ddns_tool
 				return;
 			}
 
-			switch(server_ip.AddressFamily)
+			switch(server_ip!.AddressFamily)
 			{
 			case System.Net.Sockets.AddressFamily.InterNetwork:
 				auto_reset_radioButton_IPv6();
@@ -1159,7 +1136,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ”¹å˜ã€è®¾ç½® IPv4ã€‘
+		 * ¸Ä±ä¡¾ÉèÖÃ IPv4¡¿
 		 *==============================================================*/
 		private void radioButton_Settings_IPv4__CheckedChanged(object sender, EventArgs e)
 		{
@@ -1179,7 +1156,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€šè¿‡äº’è”ç½‘è·å–å…¬ç½‘ IPv4
+		 * Í¨¹ı»¥ÁªÍø»ñÈ¡¹«Íø IPv4
 		 *==============================================================*/
 		private void comboBox_Settings_IPv4__From_URL_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -1188,7 +1165,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ‰‹åŠ¨æŒ‡å®š IPv4
+		 * ÊÖ¶¯Ö¸¶¨ IPv4
 		 *==============================================================*/
 		private void textBox_Settings_IPv4_TextChanged(object sender, EventArgs e)
 		{
@@ -1197,7 +1174,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ”¹å˜ã€è®¾ç½® IPv6ã€‘
+		 * ¸Ä±ä¡¾ÉèÖÃ IPv6¡¿
 		 *==============================================================*/
 		private void radioButton_Settings_IPv6__CheckedChanged(object sender, EventArgs e)
 		{
@@ -1217,29 +1194,29 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€šè¿‡äº’è”ç½‘è·å–å…¬ç½‘ IPv6
+		 * Í¨¹ı»¥ÁªÍø»ñÈ¡¹«Íø IPv6
 		 *==============================================================*/
 		private void comboBox_Settings_IPv6__From_URL_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			CONFIG.SET_IP.m_s_Get_IPv6_URL = comboBox_Settings_IPv6__From_URL.Text.Trim();
-			CONFIG.m_s_dirty = true;
+			CONFIG.SET_IP.m_s_Get_IPv6_URL	= comboBox_Settings_IPv6__From_URL.Text.Trim();
+			CONFIG.m_s_dirty				= true;
 		}
 
 		/*==============================================================
-		 * æ‰‹åŠ¨æŒ‡å®š IPv6
+		 * ÊÖ¶¯Ö¸¶¨ IPv6
 		 *==============================================================*/
 		private void textBox_Settings_IPv6_TextChanged(object sender, EventArgs e)
 		{
-			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IPv6.Text.Trim();
-			CONFIG.m_s_dirty = true;
+			CONFIG.SET_IP.m_s_IPv6	= textBox_Settings_IPv6.Text.Trim();
+			CONFIG.m_s_dirty		= true;
 		}
 		#endregion
 
-		#region å®‰å…¨è®¾ç½®
+		#region °²È«ÉèÖÃ
 		/*==============================================================
-		 * è·å–å½“å‰é€‰æ‹©çš„ profile
+		 * »ñÈ¡µ±Ç°Ñ¡ÔñµÄ profile
 		 *==============================================================*/
-		ddns_lib.c_Security_Profile	get_current_security_profile()
+		ddns_lib.c_Security_Profile? get_current_security_profile()
 		{
 			if(listView_Security.SelectedItems.Count == 0)
 				return null;
@@ -1248,14 +1225,14 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * é€‰é¡¹æ”¹å˜
+		 * Ñ¡Ïî¸Ä±ä
 		 *==============================================================*/
 		private void listView_Security_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			button_Security_Del.Enabled				= (listView_Security.SelectedItems.Count > 0);
 			ToolStripMenuItem__Security_Del.Enabled	= button_Security_Del.Enabled;
 
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			bool dirty = CONFIG.m_s_dirty;
 
@@ -1311,7 +1288,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è°ƒæ•´åˆ—å®½
+		 * µ÷ÕûÁĞ¿í
 		 *==============================================================*/
 		private void listView_Security_Resize(object sender, EventArgs e)
 		{
@@ -1319,19 +1296,19 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ·»åŠ 
+		 * Ìí¼Ó
 		 *==============================================================*/
 		private void button_Security_Add_Click(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = new ddns_lib.c_Security_Profile();
+			ddns_lib.c_Security_Profile profile = new();
 			profile.m_Name = $"{CONFIG.SECURITY.m_s_profiles.Count + 1}";
 
 			CONFIG.SECURITY.m_s_profiles.Add(profile);
 
-			ListViewItem LVI = new ListViewItem(profile.m_Name);
+			ListViewItem LVI = new(profile.m_Name);
 			listView_Security.Items.Add(LVI);
 
-			LVI.Selected	= true;
+			LVI.Selected = true;
 			LVI.EnsureVisible();
 
 			Set_LVI_Tag__Security_Profile(LVI, profile);
@@ -1341,15 +1318,15 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * åˆ é™¤
+		 * É¾³ı
 		 *==============================================================*/
 		private void button_Security_Del_Click(object sender, EventArgs e)
 		{
-			if(	MessageBox.Show($"æ˜¯å¦è¦åˆ é™¤ã€Œ{listView_Security.SelectedItems[0].Text}ã€ï¼Ÿ",
+			if(MessageBox.Show(	$"ÊÇ·ñÒªÉ¾³ı¡¸{listView_Security.SelectedItems[0].Text}¡¹£¿",
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
-								MessageBoxDefaultButton.Button2) == DialogResult.No )
+								MessageBoxDefaultButton.Button2 ) == DialogResult.No)
 				return;
 
 			int							idx		= listView_Security.SelectedIndices[0];
@@ -1359,7 +1336,7 @@ namespace ddns_tool
 			CONFIG.SECURITY.m_s_profiles.RemoveAt(idx);
 			listView_Security.Items.RemoveAt(idx);
 
-			// åˆ é™¤åŸŸåçš„ profile
+			// É¾³ıÓòÃûµÄ profile
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 			{
 				if(domain.m_Security_Profile == profile)
@@ -1368,18 +1345,18 @@ namespace ddns_tool
 
 			Update_Settings_Preview__Security();
 
-			// æ›´æ–°åŸŸååˆ—è¡¨
+			// ¸üĞÂÓòÃûÁĞ±í
 			update_All_LVI__Domain();
 
 			CONFIG.m_s_dirty = true;
 		}
 
 		/*==============================================================
-		 * å±æ€§ - é…ç½®çš„åç§°
+		 * ÊôĞÔ - ÅäÖÃµÄÃû³Æ
 		 *==============================================================*/
 		private void textBox_Security__Property__Name_TextChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1387,7 +1364,7 @@ namespace ddns_tool
 			profile.m_Name							= textBox_Security__Property__Name.Text;
 			listView_Security.SelectedItems[0].Text	= textBox_Security__Property__Name.Text;
 
-			// æ›´æ–°åŸŸååˆ—è¡¨
+			// ¸üĞÂÓòÃûÁĞ±í
 			update_All_LVI__Domain();
 
 			if(profile.m_Save_To_Config)
@@ -1395,19 +1372,19 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - API ç½‘å€
+		 * ÊôĞÔ - API ÍøÖ·
 		 *==============================================================*/
 		private void linkLabel_Security__LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			Process.Start((sender as LinkLabel).Text);
+			Process.Start((sender as LinkLabel)!.Text);
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [Godaddy] Key
+		 * ÊôĞÔ - [Godaddy] Key
 		 *==============================================================*/
 		private void textBox_Security_Godaddy__Key_TextChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1419,11 +1396,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [Godaddy] Secret
+		 * ÊôĞÔ - [Godaddy] Secret
 		 *==============================================================*/
 		private void textBox_Security_Godaddy__Secret_TextChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1435,11 +1412,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [Godaddy] æ˜¾ç¤º Key
+		 * ÊôĞÔ - [Godaddy] ÏÔÊ¾ Key
 		 *==============================================================*/
 		private void checkBox_Security_Godaddy__Key_CheckedChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1452,11 +1429,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [Godaddy] æ˜¾ç¤º Secret
+		 * ÊôĞÔ - [Godaddy] ÏÔÊ¾ Secret
 		 *==============================================================*/
 		private void checkBox_Security_Godaddy__Secret_CheckedChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1469,11 +1446,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [dynv6] token
+		 * ÊôĞÔ - [dynv6] token
 		 *==============================================================*/
 		private void textBox_Security_dynv6__token_TextChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1485,11 +1462,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [dynv6] æ˜¾ç¤º token
+		 * ÊôĞÔ - [dynv6] ÏÔÊ¾ token
 		 *==============================================================*/
 		private void checkBox_Security_dynv6__token_CheckedChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1502,11 +1479,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [dynu] API_Key
+		 * ÊôĞÔ - [dynu] API_Key
 		 *==============================================================*/
 		private void textBox_Security_dynu__API_Key_TextChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1518,11 +1495,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - [dynu] æ˜¾ç¤º API_Key
+		 * ÊôĞÔ - [dynu] ÏÔÊ¾ API_Key
 		 *==============================================================*/
 		private void checkBox_Security_dynu__API_Key_CheckedChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1535,11 +1512,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å±æ€§ - ä¿å­˜åˆ° Config æ–‡ä»¶
+		 * ÊôĞÔ - ±£´æµ½ Config ÎÄ¼ş
 		 *==============================================================*/
 		private void checkBox_Security__Save_To_Config_CheckedChanged(object sender, EventArgs e)
 		{
-			ddns_lib.c_Security_Profile profile = get_current_security_profile();
+			ddns_lib.c_Security_Profile? profile = get_current_security_profile();
 
 			if(profile == null)
 				return;
@@ -1549,9 +1526,9 @@ namespace ddns_tool
 			CONFIG.m_s_dirty = true;
 		}
 		#endregion
-		#region å®‰å…¨è®¾ç½® - ä¸Šä¸‹æ–‡èœå•
+		#region °²È«ÉèÖÃ - ÉÏÏÂÎÄ²Ëµ¥
 		/*==============================================================
-		 * æ·»åŠ 
+		 * Ìí¼Ó
 		 *==============================================================*/
 		private void ToolStripMenuItem_Security_Add_Click(object sender, EventArgs e)
 		{
@@ -1559,7 +1536,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * åˆ é™¤
+		 * É¾³ı
 		 *==============================================================*/
 		private void ToolStripMenuItem__Security_Del_Click(object sender, EventArgs e)
 		{
@@ -1567,9 +1544,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region æ›´æ–°æ“ä½œ
+		#region ¸üĞÂ²Ù×÷
 		/*==============================================================
-		 * æ›´æ–°åŸŸåçš„IP
+		 * ¸üĞÂÓòÃûµÄIP
 		 *==============================================================*/
 		private void checkBox_Action_UpdateIP_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1581,21 +1558,21 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è‡ªåŠ¨æ‰§è¡Œæ“ä½œçš„æ—¶é—´é—´éš”ï¼ˆç§’ï¼‰
+		 * ×Ô¶¯Ö´ĞĞ²Ù×÷µÄÊ±¼ä¼ä¸ô£¨Ãë£©
 		 *==============================================================*/
-		private void checkBox_AutoAction_CheckedChanged(object sender, EventArgs e)
+		private void checkBox_Action_AutoAction_Interval_CheckedChanged(object sender, EventArgs e)
 		{
 			numericUpDown_Action_AutoAction_Interval.Enabled	= checkBox_Action_AutoAction_Interval.Checked;
 			timer_Update.Enabled								= checkBox_Action_AutoAction_Interval.Checked;
 
-			CONFIG.ACTION.m_s_AutoAction = checkBox_Action_AutoAction_Interval.Checked;
+			CONFIG.ACTION.m_s_AutoAction						= checkBox_Action_AutoAction_Interval.Checked;
 
 			Update_Settings_Preview__AutoUpdate();
 
 			CONFIG.m_s_dirty = true;
 		}
 		//--------------------------------------------------
-		private void numericUpDown_AutoUpdate_Interval_ValueChanged(object sender, EventArgs e)
+		private void numericUpDown_Action_AutoAction_Interval_ValueChanged(object sender, EventArgs e)
 		{
 			CONFIG.ACTION.m_s_AutoAction_interval = (uint)numericUpDown_Action_AutoAction_Interval.Value;
 
@@ -1605,7 +1582,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * IPå˜åŠ¨æ—¶ï¼Œæ‰æ‰§è¡Œæ›´æ–°ï¼ˆå…ˆè§£æåŸŸåï¼‰
+		 * IP±ä¶¯Ê±£¬²ÅÖ´ĞĞ¸üĞÂ£¨ÏÈ½âÎöÓòÃû£©
 		 *==============================================================*/
 		private void checkBox_Action_DNS_Lookup_First_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1617,13 +1594,13 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è®¾å®šè§£æåŸŸåçš„DNSæœåŠ¡å™¨
+		 * Éè¶¨½âÎöÓòÃûµÄDNS·şÎñÆ÷
 		 *==============================================================*/
 		private void checkBox_Action_Use_Custom_DNS_CheckedChanged(object sender, EventArgs e)
 		{
 			textBox_Action_Custom_DNS_List.ReadOnly	= !checkBox_Action_Use_Custom_DNS.Checked;
 
-			CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS = checkBox_Action_Use_Custom_DNS.Checked;
+			CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS	= checkBox_Action_Use_Custom_DNS.Checked;
 
 			Update_Settings_Preview__DNS_Server();
 
@@ -1631,7 +1608,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * DNSæœåŠ¡å™¨åˆ—è¡¨
+		 * DNS·şÎñÆ÷ÁĞ±í
 		 *==============================================================*/
 		private void textBox_Action_Custom_DNS_List_TextChanged(object sender, EventArgs e)
 		{
@@ -1644,7 +1621,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è‡ªåŠ¨æ›´æ–°è¶…æ—¶ï¼ˆå•ä½ï¼šç§’ã€‚0 = æ— é™ç­‰å¾…ï¼‰
+		 * ×Ô¶¯¸üĞÂ³¬Ê±£¨µ¥Î»£ºÃë¡£0 = ÎŞÏŞµÈ´ı£©
 		 *==============================================================*/
 		private void numericUpDown_Action_Timeout_ValueChanged(object sender, EventArgs e)
 		{
@@ -1656,7 +1633,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * IPå˜åŠ¨æ—¶ï¼Œå¼¹å‡ºæç¤ºçª—å£
+		 * IP±ä¶¯Ê±£¬µ¯³öÌáÊ¾´°¿Ú
 		 *==============================================================*/
 		private void checkBox_Action_IP_Change_Popup_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1665,7 +1642,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * IPå˜åŠ¨æ—¶ï¼Œæ’­æ”¾éŸ³ä¹
+		 * IP±ä¶¯Ê±£¬²¥·ÅÒôÀÖ
 		 *==============================================================*/
 		private void checkBox_Action_IP_Change_PlaySound_CheckedChanged(object sender, EventArgs e)
 		{
@@ -1681,12 +1658,15 @@ namespace ddns_tool
 		//--------------------------------------------------
 		private void button_Action_IP_Change_PlaySound_Click(object sender, EventArgs e)
 		{
-			OpenFileDialog dlg = new OpenFileDialog();
+			OpenFileDialog dlg = new();
 
-			string dir = Path.GetDirectoryName(textBox_Action_IP_Change_PlaySound.Text);
+			string? dir = Path.GetDirectoryName(textBox_Action_IP_Change_PlaySound.Text);
+
+			if(dir == null)
+				dir = "";
 
 			dlg.InitialDirectory	= Path.GetFullPath(Directory.Exists(dir) ? dir : "Sound");
-			dlg.Filter				= "éŸ³é¢‘æ–‡ä»¶ (*.wav;*.mid;*.mp3)|*.wav;*.mid;*.mp3|æ‰€æœ‰æ–‡ä»¶ (*.*)|*.*";
+			dlg.Filter				= "ÒôÆµÎÄ¼ş (*.wav;*.mid;*.mp3)|*.wav;*.mid;*.mp3|ËùÓĞÎÄ¼ş (*.*)|*.*";
 			dlg.RestoreDirectory	= true;
 
 			if(dlg.ShowDialog() == DialogResult.OK)
@@ -1699,9 +1679,9 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region ä¿®æ­£ hosts
+		#region ĞŞÕı hosts
 		/*==============================================================
-		 * æ‰“å¼€ç›®å½•
+		 * ´ò¿ªÄ¿Â¼
 		 *==============================================================*/
 		private void button_Fix_hosts__Path_Browser_Click(object sender, EventArgs e)
 		{
@@ -1710,14 +1690,14 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region é¢„è§ˆè®¾ç½®
+		#region Ô¤ÀÀÉèÖÃ
 		/*==============================================================
-		 * æ›´æ–°æ–¹å¼
+		 * ¸üĞÂ·½Ê½
 		 *==============================================================*/
 		void Update_Settings_Preview__Update_Type()
 		{
 			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local)
-				label_Settings_Preview__Update_Type_Val.Text = "æœ¬åœ°æ›´æ–°ï¼ˆç›´è¿ï¼‰";
+				label_Settings_Preview__Update_Type_Val.Text = "±¾µØ¸üĞÂ£¨Ö±Á¬£©";
 			else
 				label_Settings_Preview__Update_Type_Val.Text = CONFIG.REMOTE_SERVER.m_s_addr;
 		}
@@ -1731,89 +1711,89 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è®¾ç½® IPv4
+		 * ÉèÖÃ IPv4
 		 *==============================================================*/
 		void Update_Settings_Preview__Set_IPv4()
 		{
 			switch(CONFIG.SET_IP.m_s_type_IPv4)
 			{
 			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
-				label_Settings_Preview__Set_IPv4_Val.Text = "é€šè¿‡ URL è·å–";
+				label_Settings_Preview__Set_IPv4_Val.Text = "Í¨¹ı URL »ñÈ¡";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Manual_IP:
-				label_Settings_Preview__Set_IPv4_Val.Text = "æ‰‹åŠ¨æŒ‡å®š IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = "ÊÖ¶¯Ö¸¶¨ IP";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
-				label_Settings_Preview__Set_IPv4_Val.Text = "Server æ¥å—è¿æ¥çš„ IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = "Server ½ÓÊÜÁ¬½ÓµÄ IP";
 				break;
 			}	// switch
 		}
 
 		/*==============================================================
-		 * è®¾ç½® IPv6
+		 * ÉèÖÃ IPv6
 		 *==============================================================*/
 		void Update_Settings_Preview__Set_IPv6()
 		{
 			switch(CONFIG.SET_IP.m_s_type_IPv6)
 			{
 			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
-				label_Settings_Preview__Set_IPv6_Val.Text = "é€šè¿‡ URL è·å–";
+				label_Settings_Preview__Set_IPv6_Val.Text = "Í¨¹ı URL »ñÈ¡";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Manual_IP:
-				label_Settings_Preview__Set_IPv6_Val.Text = "æ‰‹åŠ¨æŒ‡å®š IP";
+				label_Settings_Preview__Set_IPv6_Val.Text = "ÊÖ¶¯Ö¸¶¨ IP";
 				break;
 
 			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
-				label_Settings_Preview__Set_IPv6_Val.Text = "Server æ¥å—è¿æ¥çš„ IP";
+				label_Settings_Preview__Set_IPv6_Val.Text = "Server ½ÓÊÜÁ¬½ÓµÄ IP";
 				break;
 			}	// switch
 		}
 
 		/*==============================================================
-		 * å®‰å…¨è®¾ç½®
+		 * °²È«ÉèÖÃ
 		 *==============================================================*/
 		void Update_Settings_Preview__Security()
 		{
-			label_Settings_Preview__Security_Val.Text = $"{CONFIG.SECURITY.m_s_profiles.Count} ä¸ªé…ç½®æ–‡ä»¶";
+			label_Settings_Preview__Security_Val.Text = $"{CONFIG.SECURITY.m_s_profiles.Count} ¸öÅäÖÃÎÄ¼ş";
 		}
 
 		/*==============================================================
-		 * æ›´æ–°åŸŸå IP
+		 * ¸üĞÂÓòÃû IP
 		 *==============================================================*/
 		void Update_Settings_Preview__UpdateIP()
 		{
-			label_Settings_Preview__Action_UpdateIP_Val.Text = CONFIG.UPDATE_ACTION.m_s_UpdateIP ? STR_TRUE : STR_FALSE;
+			label_Settings_Preview__Action_UpdateIP_Val.Text = CONFIG.UPDATE_ACTION.m_s_UpdateIP ? COMMON.STR_TRUE : COMMON.STR_FALSE;
 		}
 
 		/*==============================================================
-		 * è‡ªåŠ¨æ›´æ–°
+		 * ×Ô¶¯¸üĞÂ
 		 *==============================================================*/
 		void Update_Settings_Preview__AutoUpdate()
 		{
-			label_Settings_Preview__Action_AutoUpdate_Val.Text = CONFIG.ACTION.m_s_AutoAction ? $"æ¯ {CONFIG.ACTION.m_s_AutoAction_interval}s" : STR_FALSE;
+			label_Settings_Preview__Action_AutoUpdate_Val.Text = CONFIG.ACTION.m_s_AutoAction ? $"Ã¿ {CONFIG.ACTION.m_s_AutoAction_interval}s" : COMMON.STR_FALSE;
 		}
 
 		/*==============================================================
-		 * å…ˆè§£æåŸŸå
+		 * ÏÈ½âÎöÓòÃû
 		 *==============================================================*/
 		void Update_Settings_Preview__DNS_Lookup_First()
 		{
-			label_Settings_Preview__DNS_Lookup_First_Val.Text = CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First ? STR_TRUE : STR_FALSE;
+			label_Settings_Preview__DNS_Lookup_First_Val.Text = CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First ? COMMON.STR_TRUE : COMMON.STR_FALSE;
 		}
 
 		/*==============================================================
-		 * DNS æœåŠ¡å™¨
+		 * DNS ·şÎñÆ÷
 		 *==============================================================*/
 		void Update_Settings_Preview__DNS_Server()
 		{
-			label_Settings_Preview__DNS_Server_Val.Text = CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS ? "è‡ªå®šä¹‰" : "ç³»ç»Ÿé»˜è®¤";
+			label_Settings_Preview__DNS_Server_Val.Text = CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS ? "×Ô¶¨Òå" : "ÏµÍ³Ä¬ÈÏ";
 		}
 
 		/*==============================================================
-		 * æ›´æ–°è¶…æ—¶
+		 * ¸üĞÂ³¬Ê±
 		 *==============================================================*/
 		void Update_Settings_Preview__timeout()
 		{
@@ -1821,14 +1801,14 @@ namespace ddns_tool
 		}
 		#endregion
 
-		#region æ›´æ–°
-		// å…¨éƒ¨å¾…æ›´æ–°çš„åŸŸåæ•°é‡
+		#region ¸üĞÂ
+		// È«²¿´ı¸üĞÂµÄÓòÃûÊıÁ¿
 		int				m_all_domains_for_update	= 0;
 
-		List<string>	m_DNS_List					=  new List<string>();
+		List<string>	m_DNS_List					= new();
 
 		/*==============================================================
-		 * æ‰§è¡Œæ›´æ–°æ“ä½œ
+		 * Ö´ĞĞ¸üĞÂ²Ù×÷
 		 *==============================================================*/
 		private void button_Update_Click(object sender, EventArgs e)
 		{
@@ -1836,17 +1816,17 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * è®¾ç½®ä¸‹æ¬¡è‡ªåŠ¨æ›´æ–°çš„æ—¶é—´
+		 * ÉèÖÃÏÂ´Î×Ô¶¯¸üĞÂµÄÊ±¼ä
 		 *==============================================================*/
 		void set_next_Auto_Update_Time()
 		{
 			m_can_auto_update_time = DateTime.Now.AddSeconds((int)numericUpDown_Action_AutoAction_Interval.Value);
 
-			add_log($"ä¸‹æ¬¡è‡ªåŠ¨æ›´æ–°æ—¶é—´ï¼š{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
+			add_log($"ÏÂ´Î×Ô¶¯¸üĞÂÊ±¼ä£º{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
 		}
 
 		/*==============================================================
-		 * å¼€å§‹æ›´æ–° A/AAAA è®°å½•
+		 * ¿ªÊ¼¸üĞÂ A/AAAA ¼ÇÂ¼
 		 *==============================================================*/
 		void update__start_update()
 		{
@@ -1856,25 +1836,25 @@ namespace ddns_tool
 			m_is_updating = true;
 			lock_controls(false);
 
-			Thread th = new Thread(update__do_update);
+			Thread th = new(update__do_update);
 			th.Start();
 		}
 
 		class c_SetIP_th
 		{
 			internal CONFIG.e_IP_Get_Type				m_type;
-			internal ComboBox							m_ComboBox;
-			internal string								m_exe_Arguments;
+			internal required ComboBox					m_ComboBox;
+			internal required string					m_exe_Arguments;
 			internal System.Net.Sockets.AddressFamily	m_af;
-			internal string								m_ip_type;
-			internal TextBox							m_textBox_Settings_IP;
+			internal required string					m_ip_type;
+			internal required TextBox					m_textBox_Settings_IP;
 
 			internal bool								m_get_ip_ok	= false;
-			internal Thread								m_Thread	= null;
+			internal Thread								m_Thread	= null!;
 		};
 
 		/*==============================================================
-		 * è®¾ç½®å³å°†æ›´æ–°çš„ IP åœ°å€
+		 * ÉèÖÃ¼´½«¸üĞÂµÄ IP µØÖ·
 		 *==============================================================*/
 		bool update__Set_IP()
 		{
@@ -1897,7 +1877,7 @@ namespace ddns_tool
 				new c_SetIP_th { m_type = CONFIG.SET_IP.m_s_type_IPv6,	m_ComboBox = comboBox_Settings_IPv6__From_URL,	m_exe_Arguments = "",		m_af = System.Net.Sockets.AddressFamily.InterNetworkV6,	m_ip_type = "IPv6",	m_textBox_Settings_IP = textBox_Settings_IPv6,	},
 			};
 
-			// è·å– IP
+			// »ñÈ¡ IP
 			foreach(var th in threads)
 			{
 				if(th.m_type != CONFIG.e_IP_Get_Type.Get_IP_From_URL)
@@ -1914,16 +1894,16 @@ namespace ddns_tool
 				const string k_GET_IP_EXE = "get_ip_from_URL.exe";
 				if(!File.Exists(k_GET_IP_EXE))
 				{
-					add_log($"[Error] æ‰¾ä¸åˆ° {k_GET_IP_EXE}", Color.Red);
+					add_log($"[Error] ÕÒ²»µ½ {k_GET_IP_EXE}", Color.Red);
 					return false;
 				}
 
-				add_log($"æ­£åœ¨è·å–å½“å‰å…¬ç½‘ {th.m_ip_type} åœ°å€â€¦â€¦");
+				add_log($"ÕıÔÚ»ñÈ¡µ±Ç°¹«Íø {th.m_ip_type} µØÖ·¡­¡­");
 
-				// ç”±äº ServicePointManager ç¼“å­˜é—®é¢˜ï¼Œåœ¨åº”ç”¨ç¨‹åºç”Ÿå‘½å‘¨æœŸæ— æ³•åˆ‡æ¢ IP åœ°å€æ—ï¼Œè¿™é‡Œä½¿ç”¨å¤–éƒ¨è¿›ç¨‹è·å– IP
-				th.m_Thread = new Thread(() =>
+				// ÓÉÓÚ ServicePointManager »º´æÎÊÌâ£¬ÔÚÓ¦ÓÃ³ÌĞòÉúÃüÖÜÆÚÎŞ·¨ÇĞ»» IP µØÖ·×å£¬ÕâÀïÊ¹ÓÃÍâ²¿½ø³Ì»ñÈ¡ IP
+				th.m_Thread = new(() =>
 				{
-					ProcessStartInfo psi = new ProcessStartInfo();
+					ProcessStartInfo psi = new();
 					psi.FileName				= k_GET_IP_EXE;
 					psi.Arguments				= url + th.m_exe_Arguments;
 					psi.RedirectStandardOutput	= true;
@@ -1931,7 +1911,7 @@ namespace ddns_tool
 					psi.UseShellExecute			= false;
 					psi.CreateNoWindow			= true;
 
-					Process p = Process.Start(psi);
+					Process p = Process.Start(psi)!;
 
 					StreamReader reader		= p.StandardOutput;
 					StreamReader reader_err	= p.StandardError;
@@ -1939,13 +1919,13 @@ namespace ddns_tool
 					p.WaitForExit();
 					p.Close();
 
-					string ip = reader.ReadLine();
+					string? ip = reader.ReadLine();
 
 					if(	!string.IsNullOrEmpty(ip)					&&
-						IPAddress.TryParse(ip, out IPAddress addr)	&&
+						IPAddress.TryParse(ip, out IPAddress? addr)	&&
 						addr.AddressFamily == th.m_af )
 					{
-						add_log($"é€šè¿‡äº’è”ç½‘è·å–å…¬ç½‘ {th.m_ip_type} æˆåŠŸ ({ip})");
+						add_log($"Í¨¹ı»¥ÁªÍø»ñÈ¡¹«Íø {th.m_ip_type} ³É¹¦ ({ip})");
 						th.m_get_ip_ok = true;
 
 						invoke(() =>
@@ -1956,11 +1936,11 @@ namespace ddns_tool
 					else
 					{
 						ip = "";
-						add_log($"[Error] é€šè¿‡äº’è”ç½‘è·å–å…¬ç½‘ {th.m_ip_type} å¤±è´¥ï¼ˆ{psi.FileName} {psi.Arguments}ï¼‰", Color.Red);
+						add_log($"[Error] Í¨¹ı»¥ÁªÍø»ñÈ¡¹«Íø {th.m_ip_type} Ê§°Ü£¨{psi.FileName} {psi.Arguments}£©", Color.Red);
 
-						string str_err = reader_err.ReadLine();
+						string? str_err = reader_err.ReadLine();
 						if(!string.IsNullOrEmpty(str_err))
-							add_log($"[Error] {str_err}ï¼ˆ{psi.FileName} {psi.Arguments}ï¼‰", Color.Red);
+							add_log($"[Error] {str_err}£¨{psi.FileName} {psi.Arguments}£©", Color.Red);
 					}
 
 					if(th.m_af == System.Net.Sockets.AddressFamily.InterNetwork)
@@ -1993,11 +1973,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * æ‰§è¡Œæ›´æ–°
+		 * Ö´ĞĞ¸üĞÂ
 		 *==============================================================*/
 		void update__do_update()
 		{
-			// è®¾ç½®å³å°†æ›´æ–°çš„ IP åœ°å€
+			// ÉèÖÃ¼´½«¸üĞÂµÄ IP µØÖ·
 			if(!update__Set_IP())
 			{
 				update__done();
@@ -2006,7 +1986,7 @@ namespace ddns_tool
 
 			m_all_domains_for_update = 0;
 
-			// æ›´æ–° IP
+			// ¸üĞÂ IP
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 			{
 				if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
@@ -2047,7 +2027,7 @@ namespace ddns_tool
 					break;
 
 				case CONFIG.e_Update_Type.Remote:
-					// è‡ªåŠ¨è¿æ¥åˆ°æœåŠ¡å™¨
+					// ×Ô¶¯Á¬½Óµ½·şÎñÆ÷
 					if(!ddns_tool_CLR.CLR.is_connected())
 					{
 						void reset_domains_status()
@@ -2063,33 +2043,33 @@ namespace ddns_tool
 							update__done();
 						}
 
-						IPAddress	server_ip;
+						IPAddress?	server_ip;
 						ushort		server_port;
 
 						if(!CONFIG.get_server_ip_port(out server_ip, out server_port))
 						{
 							if(server_ip == null)
 							{
-								add_log("[Error] Server åœ°å€/ç«¯å£ é”™è¯¯", Color.Red);
+								add_log("[Error] Server µØÖ·/¶Ë¿Ú ´íÎó", Color.Red);
 								reset_domains_status();
 								return;
 							}
 
 							if(server_port == 0)
 							{
-								add_log("[Error] Server ç«¯å£é”™è¯¯", Color.Red);
+								add_log("[Error] Server ¶Ë¿Ú´íÎó", Color.Red);
 								reset_domains_status();
 								return;
 							}
 						}
 
-						bool res = ddns_tool_CLR.CLR.Connect(	server_ip.ToString(),
+						bool res = ddns_tool_CLR.CLR.Connect(	server_ip!.ToString(),
 																server_port,
 																CONFIG.REMOTE_SERVER.m_s_user,
 																CONFIG.REMOTE_SERVER.m_s_pwd );
 						if(!res)
 						{
-							add_log($"[Error] è¿æ¥åˆ°è¿œç¨‹æœåŠ¡å™¨ ({CONFIG.REMOTE_SERVER.m_s_addr}) å¤±è´¥", Color.Red);
+							add_log($"[Error] Á¬½Óµ½Ô¶³Ì·şÎñÆ÷ ({CONFIG.REMOTE_SERVER.m_s_addr}) Ê§°Ü", Color.Red);
 							reset_domains_status();
 							return;
 						}
@@ -2114,19 +2094,19 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * å®Œæˆæ›´æ–° A/AAAA è®°å½•
+		 * Íê³É¸üĞÂ A/AAAA ¼ÇÂ¼
 		 *==============================================================*/
 		void update__done()
 		{
 			int failed_count	= 0;
 			int skip_count		= 0;
 
-			// æ˜¯å¦å·²æ›´æ–°å½“å‰ IPï¼ˆä»…ã€Œè¿œç¨‹æ›´æ–°ã€ï¼‰
+			// ÊÇ·ñÒÑ¸üĞÂµ±Ç° IP£¨½ö¡¸Ô¶³Ì¸üĞÂ¡¹£©
 			bool update_current_IPv4_remote = false;
 			bool update_current_IPv6_remote = false;
 
-			// IP å‘ç”Ÿå˜åŒ–çš„åŸŸå
-			List<ddns_lib.c_Domain> IP_change_domains = new List<ddns_lib.c_Domain>();
+			// IP ·¢Éú±ä»¯µÄÓòÃû
+			List<ddns_lib.c_Domain> IP_change_domains = new();
 
 			foreach(ddns_lib.c_Domain domain in CONFIG.m_s_domains_list)
 			{
@@ -2144,10 +2124,10 @@ namespace ddns_tool
 					EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Failed);
 
 					if(domain.IPv4.m_err_msg.Length > 0)
-						add_log($"[Error] {domain.m_domain} : æ›´æ–° IPv4 å¤±è´¥ï¼ˆ{domain.IPv4.m_err_msg}ï¼‰", Color.Red);
+						add_log($"[Error] {domain.m_domain} : ¸üĞÂ IPv4 Ê§°Ü£¨{domain.IPv4.m_err_msg}£©", Color.Red);
 
 					if(domain.IPv6.m_err_msg.Length > 0)
-						add_log($"[Error] {domain.m_domain} : æ›´æ–° IPv6 å¤±è´¥ï¼ˆ{domain.IPv6.m_err_msg}ï¼‰", Color.Red);
+						add_log($"[Error] {domain.m_domain} : ¸üĞÂ IPv6 Ê§°Ü£¨{domain.IPv6.m_err_msg}£©", Color.Red);
 				}
 				else
 				{
@@ -2156,7 +2136,7 @@ namespace ddns_tool
 					if(	(domain.IPv4.m_enabled && !domain.IPv4.m_same_ip)	||
 						(domain.IPv6.m_enabled && !domain.IPv6.m_same_ip) )
 					{
-						add_log($"{domain.m_domain} : æ›´æ–°æˆåŠŸã€‚IPv4 = {domain.IPv4.m_current_IP}, IPv6 = {domain.IPv6.m_current_IP}", Color.Green);
+						add_log($"{domain.m_domain} : ¸üĞÂ³É¹¦¡£IPv4 = {domain.IPv4.m_current_IP}, IPv6 = {domain.IPv6.m_current_IP}", Color.Green);
 
 						if(!update_current_IPv4_remote)
 						{
@@ -2195,19 +2175,19 @@ namespace ddns_tool
 				}
 			}	// for
 
-			add_log($"{IP_change_domains.Count} æˆåŠŸï¼Œ{failed_count} å¤±è´¥ï¼Œ{skip_count} å·²è·³è¿‡ï¼Œ{m_all_domains_for_update} æ€»è®¡",
+			add_log($"{IP_change_domains.Count} ³É¹¦£¬{failed_count} Ê§°Ü£¬{skip_count} ÒÑÌø¹ı£¬{m_all_domains_for_update} ×Ü¼Æ",
 					(failed_count == 0) ? Color.DarkOrange : Color.Red);
 
 			if(IP_change_domains.Count > 0)
 			{
-				// IPå˜åŠ¨æ—¶ï¼Œå¼¹å‡ºæç¤ºçª—å£
+				// IP±ä¶¯Ê±£¬µ¯³öÌáÊ¾´°¿Ú
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Popup)
 				{
 					m_IP_Change_Popup.set_domains(IP_change_domains);
 					FORMS.active_form(m_IP_Change_Popup);
 				}
 
-				// IPå˜åŠ¨æ—¶ï¼Œæ’­æ”¾éŸ³ä¹
+				// IP±ä¶¯Ê±£¬²¥·ÅÒôÀÖ
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Play_Sound)
 				{
 					SOUND.Stop();
@@ -2218,7 +2198,7 @@ namespace ddns_tool
 				CONFIG.m_s_dirty = true;
 			}
 
-			// è®¾ç½®ä¸‹æ¬¡è‡ªåŠ¨æ›´æ–°çš„æ—¶é—´
+			// ÉèÖÃÏÂ´Î×Ô¶¯¸üĞÂµÄÊ±¼ä
 			set_next_Auto_Update_Time();
 
 			lock_controls(true);

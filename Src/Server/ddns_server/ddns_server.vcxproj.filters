@@ -84,4 +84,7 @@
       <Filter>conf</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="copy_dlls.cmd" />
+  </ItemGroup>
 </Project>

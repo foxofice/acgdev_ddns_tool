@@ -32,15 +32,6 @@ void Add_Log(String ^txt, Color /*c*/)
  *==============================================================*/
 void DoInit()
 {
-	/*
-		纯 c++ 的执行程序调用 .net 时，ServicePointManager.SecurityProtocol 可能并没有正确进行设置，
-		当纯 c++ 项目设置成 clr 支持时，项目可能正确进行了设置，所以能解决问题（请求被中止: 未能创建 SSL/TLS 安全通道。），
-		所以必须加上这行代码
-	*/
-	ServicePointManager::SecurityProtocol		= SecurityProtocolType::Tls13;
-
-	ServicePointManager::DefaultConnectionLimit	= 1000;
-
 	ddns_lib::LIB::EVENTS::Event_On_AddLog += gcnew ddns_lib::LIB::EVENTS::e_Add_Log(&Add_Log);
 }
 

@@ -5,7 +5,7 @@
 using namespace System;
 using namespace System::Collections::Generic;
 
-namespace ddns_tool_CLR
+namespace ddns_lib_CLR
 {
 
 public ref class c_DNS_Lookup_Result
@@ -25,4 +25,4 @@ public:
 	static bool	DNS_Lookup(String ^dns_server, String ^domain, __out c_DNS_Lookup_Result ^result);
 };
 
-}	// namespace ddns_tool_CLR
+}	// namespace ddns_lib_CLR

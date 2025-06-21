@@ -2,31 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace get_ip_from_URL
 {
-	internal class c_WebClient_ipv4 : WebClient
+	internal class c_HttpClient_ipv4
 	{
-		protected override WebRequest GetWebRequest(Uri address)
+		private readonly HttpClient	m_httpClient;
+
+		internal c_HttpClient_ipv4()
 		{
-			HttpWebRequest request = (HttpWebRequest)base.GetWebRequest(address);
-			request.ServicePoint.BindIPEndPointDelegate = new BindIPEndPoint(BindIPEndPointCallback);
-			return request;
+			var handler = new SocketsHttpHandler
+			{
+				ConnectCallback = async (context, cancellationToken) =>
+				{
+					IPAddress[] addresses = await Dns.GetHostAddressesAsync(context.DnsEndPoint.Host, cancellationToken);
+					IPAddress? ipv4Address = Array.Find(addresses, ip => ip.AddressFamily == AddressFamily.InterNetwork);
+					if(ipv4Address == null)
+						throw new InvalidOperationException("No IPv4 address available");
+
+					Socket socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+					await socket.ConnectAsync(new IPEndPoint(ipv4Address, context.DnsEndPoint.Port), cancellationToken);
+					return new NetworkStream(socket, ownsSocket: true);
+				}
+			};
+
+			m_httpClient = new(handler, disposeHandler: true);
 		}
 
-		private IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEndPoint, int retryCount)
+		internal async Task<string> GetStringAsync(string url, CancellationToken cancellationToken = default)
 		{
-			if(remoteEndPoint.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-			{
-				// 强制使用 IPv4
-				return new IPEndPoint(IPAddress.Any, 0);
-			}
-			else
-			{
-				throw new InvalidOperationException("No IPv4 address available");
-			}
+			return await m_httpClient.GetStringAsync(url, cancellationToken);
 		}
-	};
+	}
 }	// namespace get_ip_from_URL

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Drawing;
 using System.Linq;
 using System.Net;
@@ -107,8 +108,8 @@ namespace ddns_lib
 		public string				m_domain			= "";
 		public e_DomainType			m_type				= e_DomainType.Godaddy;
 
-		public c_AddressFamily		IPv4				= new c_AddressFamily();
-		public c_AddressFamily		IPv6				= new c_AddressFamily();
+		public c_AddressFamily		IPv4				= new();
+		public c_AddressFamily		IPv6				= new();
 
 		// Godaddy
 		public int					m_Godaddy__TTL		= 0;		// <=0 表示省略
@@ -122,7 +123,7 @@ namespace ddns_lib
 		public int					m_dynu__TTL			= 0;		// <=0 表示省略
 
 		// 安全信息
-		public c_Security_Profile	m_Security_Profile	= null;
+		public c_Security_Profile?	m_Security_Profile	= null;
 	};
 
 	public class LIB
@@ -130,7 +131,7 @@ namespace ddns_lib
 		public class EVENTS
 		{
 			public delegate void e_Add_Log(string txt, Color c);
-			public static event e_Add_Log Event_On_AddLog = null;
+			public static event e_Add_Log? Event_On_AddLog = null;
 
 			public static void Add_Log(string txt, Color c)
 			{
@@ -139,7 +140,7 @@ namespace ddns_lib
 			}
 
 			public delegate void e_Set_Progress(string domain, e_Progress progress);
-			public static event e_Set_Progress Event_Set_Progress = null;
+			public static event e_Set_Progress? Event_Set_Progress = null;
 
 			public static void Set_Progress(string domain, e_Progress progress)
 			{
@@ -148,14 +149,16 @@ namespace ddns_lib
 			}
 		};
 
+		private static SocketsHttpHandler	m_s_HttpHandler	= new SocketsHttpHandler();
+
 		class c_DNS_Lookup_af
 		{
-			internal bool						m_same_ip	= false;
-			internal AddressFamily				m_af;
-			internal c_Domain.c_AddressFamily	m_af_vars;
-			internal string						m_af_name;
-			internal string						m_error_msg	= "";
-			internal List<string>				m_ip_list	= null;
+			internal bool								m_same_ip	= false;
+			internal AddressFamily						m_af;
+			internal required c_Domain.c_AddressFamily	m_domain_af;
+			internal required string					m_af_name;
+			internal string								m_error_msg	= "";
+			internal List<string>?						m_ip_list	= null;
 		};
 
 		/// <summary>解析域名</summary>
@@ -174,8 +177,8 @@ namespace ddns_lib
 
 			var af_list = new c_DNS_Lookup_af[]
 			{
-				new c_DNS_Lookup_af { m_af = AddressFamily.InterNetwork,	m_af_vars = domain.IPv4,	m_af_name = "IPv4" },
-				new c_DNS_Lookup_af { m_af = AddressFamily.InterNetworkV6,	m_af_vars = domain.IPv6,	m_af_name = "IPv6" },
+				new c_DNS_Lookup_af { m_af = AddressFamily.InterNetwork,	m_domain_af = domain.IPv4,	m_af_name = "IPv4" },
+				new c_DNS_Lookup_af { m_af = AddressFamily.InterNetworkV6,	m_domain_af = domain.IPv6,	m_af_name = "IPv6" },
 			};
 
 			if(DNS_Server.Length == 0)
@@ -194,9 +197,9 @@ namespace ddns_lib
 							{
 								if(!af.m_same_ip)	// 只判断第一个 IP
 								{
-									af.m_af_vars.m_current_IP = ip.ToString();
+									af.m_domain_af.m_current_IP = ip.ToString();
 
-									if(IPAddress.TryParse(af.m_af_vars.m_input_IP, out IPAddress input_IP) && ip.Equals(input_IP))
+									if(IPAddress.TryParse(af.m_domain_af.m_input_IP, out IPAddress? input_IP) && ip.Equals(input_IP))
 										af.m_same_ip = true;
 								}
 
@@ -213,8 +216,8 @@ namespace ddns_lib
 			}
 			else
 			{
-				ddns_tool_CLR.c_DNS_Lookup_Result result = new ddns_tool_CLR.c_DNS_Lookup_Result();
-				bool res = ddns_tool_CLR.CLR.DNS_Lookup(DNS_Server, domain.m_domain, result);
+				ddns_lib_CLR.c_DNS_Lookup_Result result = new();
+				bool res = ddns_lib_CLR.CLR.DNS_Lookup(DNS_Server, domain.m_domain, result);
 
 				if(!res)
 				{
@@ -238,13 +241,13 @@ namespace ddns_lib
 					if(af.m_error_msg.Length > 0)
 						EVENTS.Add_Log($"[Warning] {domain.m_domain} : DNS_Lookup({af.m_af_name}) {af.m_error_msg}", Color.DarkOrange);
 
-					foreach(string ip in af.m_ip_list)
+					foreach(string ip in af.m_ip_list!)
 					{
-						if(IPAddress.TryParse(ip, out IPAddress ip_addr))
+						if(IPAddress.TryParse(ip, out IPAddress? ip_addr))
 						{
-							af.m_af_vars.m_current_IP = ip.ToString();
+							af.m_domain_af.m_current_IP = ip.ToString();
 
-							if(IPAddress.TryParse(af.m_af_vars.m_input_IP, out IPAddress input_IP) && ip_addr.Equals(input_IP))
+							if(IPAddress.TryParse(af.m_domain_af.m_input_IP, out IPAddress? input_IP) && ip_addr.Equals(input_IP))
 							{
 								af.m_same_ip = true;
 								break;
@@ -270,7 +273,7 @@ namespace ddns_lib
 			if(ip.Length == 0)
 				return false;
 
-			if(!IPAddress.TryParse(ip, out IPAddress address))
+			if(!IPAddress.TryParse(ip, out IPAddress? address))
 			{
 				EVENTS.Add_Log($"[Error] {domain} : 无效的 IP 格式（{ip}）", Color.Red);
 				return false;
@@ -298,9 +301,9 @@ namespace ddns_lib
 
 		class c_update_domain_Godaddy_setting
 		{
-			internal bool						m_update;
-			internal c_Domain.c_AddressFamily	m_af_vars;
-			internal string						m_record_type;
+			internal bool								m_update;
+			internal required c_Domain.c_AddressFamily	m_domain_af;
+			internal required string					m_record_type;
 		};
 
 		/// <summary>更新域名（Godaddy）</summary>
@@ -309,20 +312,20 @@ namespace ddns_lib
 		/// <param name="update_ipv6">是否更新 ipv6</param>
 		static void update_domain_Godaddy(c_Domain domain, bool update_ipv4, bool update_ipv6)
 		{
-			var settings = new c_update_domain_Godaddy_setting[]
+			c_update_domain_Godaddy_setting[] settings = new[]
 			{
-				new c_update_domain_Godaddy_setting { m_update = update_ipv4,	m_af_vars = domain.IPv4,	m_record_type = "A" },
-				new c_update_domain_Godaddy_setting { m_update = update_ipv6,	m_af_vars = domain.IPv6,	m_record_type = "AAAA" },
+				new c_update_domain_Godaddy_setting { m_update = update_ipv4,	m_domain_af = domain.IPv4,	m_record_type = "A" },
+				new c_update_domain_Godaddy_setting { m_update = update_ipv6,	m_domain_af = domain.IPv6,	m_record_type = "AAAA" },
 			};
 
 			string name			= domain.m_domain.Substring(0, domain.m_domain.IndexOf('.'));
 			string root_donmain	= domain.m_domain.Substring(domain.m_domain.IndexOf('.') + 1);
 
-			HttpClient client = new HttpClient();
+			HttpClient client = new(m_s_HttpHandler);
 
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			client.DefaultRequestHeaders.TryAddWithoutValidation(	"Authorization",
-																	$"sso-key {domain.m_Security_Profile.m_Godaddy__Key}:{domain.m_Security_Profile.m_Godaddy__Secret}" );
+																	$"sso-key {domain.m_Security_Profile!.m_Godaddy__Key}:{domain.m_Security_Profile.m_Godaddy__Secret}" );
 
 			for(int i=0; i<settings.Length; ++i)
 			{
@@ -331,16 +334,16 @@ namespace ddns_lib
 				if(!setting.m_update)
 					continue;
 
-				if(!check_IP(setting.m_af_vars.m_input_IP, domain.m_domain, i == 1))
+				if(!check_IP(setting.m_domain_af.m_input_IP, domain.m_domain, i == 1))
 					continue;
 
-				StringBuilder sb_json = new StringBuilder();
+				StringBuilder sb_json = new();
 
 				sb_json.Append("[\n");
 				sb_json.Append("{\n");
 				sb_json.Append($"	\"name\":\"{name}\",\n");
 				sb_json.Append($"	\"type\":\"{setting.m_record_type}\",\n");
-				sb_json.Append($"	\"data\":\"{setting.m_af_vars.m_input_IP}\"");
+				sb_json.Append($"	\"data\":\"{setting.m_domain_af.m_input_IP}\"");
 
 				if(domain.m_Godaddy__TTL > 0)
 				{
@@ -352,7 +355,7 @@ namespace ddns_lib
 				sb_json.Append("]");
 
 				string			url	= $"https://api.godaddy.com/v1/domains/{root_donmain}/records/{setting.m_record_type}/{name}";
-				StringContent	sc	= new StringContent(sb_json.ToString(), Encoding.UTF8, "application/json");
+				StringContent	sc	= new(sb_json.ToString(), Encoding.UTF8, "application/json");
 
 				EVENTS.Add_Log($"连接到 {url}", Color.Black);
 				EVENTS.Add_Log($"正在更新 {domain} 的「{setting.m_record_type} 记录」……", Color.Black);
@@ -363,23 +366,23 @@ namespace ddns_lib
 
 					if(response.IsSuccessStatusCode)
 					{
-						setting.m_af_vars.m_current_IP	= setting.m_af_vars.m_input_IP;
-						setting.m_af_vars.m_err_msg		= "";
+						setting.m_domain_af.m_current_IP	= setting.m_domain_af.m_input_IP;
+						setting.m_domain_af.m_err_msg		= "";
 
-						EVENTS.Add_Log(	$"{domain.m_domain} : 更新「{setting.m_record_type} 记录」成功（{setting.m_af_vars.m_input_IP}）",
+						EVENTS.Add_Log(	$"{domain.m_domain} : 更新「{setting.m_record_type} 记录」成功（{setting.m_domain_af.m_input_IP}）",
 										Color.Green );
 					}
 					else
 					{
 						string err_msg = response.Content.ReadAsStringAsync().Result;
 
-						setting.m_af_vars.m_err_msg = err_msg;
+						setting.m_domain_af.m_err_msg = err_msg;
 
 						EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s} 记录」失败（{2:s}）[ip = {3:s}, StatusCode = {4:s}，ReasonPhrase = {5:s}]",
 														domain.m_domain,
 														setting.m_record_type,
 														err_msg,
-														setting.m_af_vars.m_input_IP,
+														setting.m_domain_af.m_input_IP,
 														response.StatusCode.ToString(),
 														response.ReasonPhrase ),
 										Color.Red );
@@ -387,27 +390,27 @@ namespace ddns_lib
 				}
 				catch(Exception ex)
 				{
-					string err_msg = ex.InnerException.Message;
+					string err_msg = (ex.InnerException == null) ? "" : ex.InnerException.Message;
 
-					setting.m_af_vars.m_err_msg = err_msg;
+					setting.m_domain_af.m_err_msg = err_msg;
 
 					EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s}记录」失败（{2:s}）[ip = {3:s}]",
 													domain.m_domain,
 													setting.m_record_type,
 													err_msg,
-													setting.m_af_vars.m_input_IP ),
+													setting.m_domain_af.m_input_IP ),
 									Color.Red );
 				}
-			}	// for
+			}   // for
 		}
 
 		class c_update_domain_dynv6_setting
 		{
-			internal bool						m_update;
-			internal c_Domain.c_AddressFamily	m_af_vars;
-			internal bool						m_auto;
-			internal string						m_record_type;
-			internal string						m_af_name;
+			internal bool								m_update;
+			internal required c_Domain.c_AddressFamily	m_domain_af;
+			internal bool								m_auto;
+			internal required string					m_record_type;
+			internal required string					m_af_name;
 		};
 
 		/// <summary>更新域名（dynv6）</summary>
@@ -419,12 +422,12 @@ namespace ddns_lib
 			// https://ipv4.dynv6.com/api/update?zone=xxx.dynv6.net&ipv4=auto&token=...
 			// https://ipv6.dynv6.com/api/update?zone=xxx.dynv6.net&ipv6=auto&token=...
 
-			WebClient wc = new WebClient();
+			HttpClient client = new(m_s_HttpHandler);
 
-			var settings = new c_update_domain_dynv6_setting[]
+			c_update_domain_dynv6_setting[] settings = new[]
 			{
-				new c_update_domain_dynv6_setting { m_update = update_ipv4,	m_af_vars = domain.IPv4,	m_auto = domain.m_dynv6__Auto_IPv4,	m_record_type = "A",	m_af_name = "ipv4" },
-				new c_update_domain_dynv6_setting { m_update = update_ipv6,	m_af_vars = domain.IPv6,	m_auto = domain.m_dynv6__Auto_IPv6,	m_record_type = "AAAA",	m_af_name = "ipv6" },
+				new c_update_domain_dynv6_setting { m_update = update_ipv4,	m_domain_af = domain.IPv4,	m_auto = domain.m_dynv6__Auto_IPv4,	m_record_type = "A",	m_af_name = "ipv4" },
+				new c_update_domain_dynv6_setting { m_update = update_ipv6,	m_domain_af = domain.IPv6,	m_auto = domain.m_dynv6__Auto_IPv6,	m_record_type = "AAAA",	m_af_name = "ipv6" },
 			};
 
 			for(int i=0; i<settings.Length; ++i)
@@ -438,7 +441,7 @@ namespace ddns_lib
 
 				if(!setting.m_auto)
 				{
-					ip = setting.m_af_vars.m_input_IP;
+					ip = setting.m_domain_af.m_input_IP;
 
 					if(!check_IP(ip, domain.m_domain, i == 1))
 						return;
@@ -448,14 +451,14 @@ namespace ddns_lib
 											setting.m_af_name,
 											domain.m_domain,
 											ip,
-											domain.m_Security_Profile.m_dynv6__token );
+											domain.m_Security_Profile!.m_dynv6__token );
 
 				try
 				{
-					string str = wc.DownloadString(url);
+					string str = client.GetStringAsync(url).GetAwaiter().GetResult();
 
 					if(!setting.m_auto)
-						setting.m_af_vars.m_current_IP = ip;
+						setting.m_domain_af.m_current_IP = ip;
 
 					EVENTS.Add_Log($"{domain.m_domain} ({setting.m_af_name}) : 网站返回更新结果：{str}", Color.Black);
 				}
@@ -465,7 +468,7 @@ namespace ddns_lib
 													domain.m_domain,
 													setting.m_af_name,
 													setting.m_record_type,
-													ex.InnerException.Message,
+													(ex.InnerException == null) ? "" : ex.InnerException.Message,
 													ip ),
 									Color.Red );
 				}
@@ -483,11 +486,11 @@ namespace ddns_lib
 			if(!update_ipv4 && !update_ipv6)
 				return;
 
-			HttpClient client = new HttpClient();
+			HttpClient client = new(m_s_HttpHandler);
 
 			// 请求头
 			client.DefaultRequestHeaders.Add("accept", "application/json");
-			client.DefaultRequestHeaders.Add("API-Key", $"{domain.m_Security_Profile.m_dynu__API_Key}");
+			client.DefaultRequestHeaders.Add("API-Key", $"{domain.m_Security_Profile!.m_dynu__API_Key}");
 
 			// 先获取 <域名ID>
 			// curl -X GET "https://api.dynu.com/v2/dns/getroot/acgdev.ddnsfree.com" -H "accept: application/json" -H "API-Key: 123456789"
@@ -520,7 +523,7 @@ namespace ddns_lib
 			if(!check_IP(domain.IPv6.m_input_IP, domain.m_domain, true))
 				return;
 
-			StringBuilder sb_json = new StringBuilder();
+			StringBuilder sb_json = new();
 
 			sb_json.Append("{\n");
 			sb_json.Append($"	\"name\":\"{domain.m_domain}\"\n");
@@ -544,7 +547,7 @@ namespace ddns_lib
 
 			// curl：curl -X POST "https://api.dynu.com/v2/dns/<域名ID>" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"name\":\"acgdev.ddnsfree.com\",\"ipv4Address\":\"127.0.0.1\",\"ttl\":90,\"ipv4\":true}" -H "API-Key: 123456789"
 			string			url	= $"https://api.dynu.com/v2/dns/{domain.m_dynu__ID}";
-			StringContent	sc	= new StringContent(sb_json.ToString(), Encoding.UTF8, "application/json");
+			StringContent	sc	= new(sb_json.ToString(), Encoding.UTF8, "application/json");
 
 			string all_record_type	= "";
 			string all_ip			= "";
@@ -610,7 +613,7 @@ namespace ddns_lib
 			}
 			catch(Exception ex)
 			{
-				string err_msg = ex.InnerException.Message;
+				string err_msg = (ex.InnerException == null) ? "" : ex.InnerException.Message;
 
 				if(update_ipv4)
 					domain.IPv4.m_err_msg = err_msg;
@@ -633,10 +636,13 @@ namespace ddns_lib
 		 *==============================================================*/
 		public static void update_domains(	List<c_Domain>	domains,
 											bool			DNS_Lookup_First,		// IP变动时，先解析域名再执行更新
-											List<string>	DNS_Server_List	= null,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
+											List<string>?	DNS_Server_List	= null,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
 											int				timeout			= 15 * 1000 )
 		{
-			List<Thread> threads = new List<Thread>();
+			//m_s_HttpHandler.MaxConnectionsPerServer = 1000;
+			//m_s_HttpHandler.SslOptions.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13;
+
+			List<Thread> threads = new();
 
 			if(DNS_Server_List == null)
 				DNS_Server_List = new List<string> { "" };
@@ -646,9 +652,9 @@ namespace ddns_lib
 				if(!domains[i].IPv4.m_enabled && !domains[i].IPv6.m_enabled)
 					continue;
 
-				Thread th = new Thread((object o) =>
+				Thread th = new((object? o) =>
 				{
-					c_Domain domain = (c_Domain)o;
+					c_Domain domain = (c_Domain)o!;
 
 					domain.IPv4.m_same_ip = false;
 					domain.IPv6.m_same_ip = false;

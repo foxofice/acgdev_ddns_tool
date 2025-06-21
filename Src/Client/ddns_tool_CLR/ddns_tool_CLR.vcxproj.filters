@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="ddns_tool_CLR.h" />
-    <ClInclude Include="Packet\DDNS_Server\packet.h">
-      <Filter>Packet\DDNS_Server</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="ddns_tool_CLR.cpp" />
     <ClCompile Include="imports.cpp" />
     <ClCompile Include="Packet\DDNS_Server\packet_ddns_server_parse.cpp">
@@ -17,11 +11,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ddns_tool_CLR.h" />
+    <ClInclude Include="Packet\DDNS_Server\packet.h">
+      <Filter>Packet\DDNS_Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <Filter Include="Packet">
-      <UniqueIdentifier>{ec6529d4-8628-4c0b-bc0a-62752e1db164}</UniqueIdentifier>
+      <UniqueIdentifier>{f29392a5-9937-434e-bdee-4bfeba31b1f1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Packet\DDNS_Server">
-      <UniqueIdentifier>{08909182-9049-48fa-a398-f443425898ed}</UniqueIdentifier>
+      <UniqueIdentifier>{58c1ebb6-0706-42df-9725-8a61456f418f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

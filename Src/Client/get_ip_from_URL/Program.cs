@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace get_ip_from_URL
 {
@@ -33,7 +27,7 @@ namespace get_ip_from_URL
 		{
 			if(args.Length == 0)
 			{
-				string filename = Path.GetFileName(Process.GetCurrentProcess().MainModule.FileName);
+				string filename = Path.GetFileName(Process.GetCurrentProcess().MainModule!.FileName);
 
 				Console.Error.WriteLine($"{filename} <url> [\"{V4_FLAG}\"]");
 				return 1;
@@ -42,11 +36,11 @@ namespace get_ip_from_URL
 			string	url			= args[0];
 			bool	use_ipv4	= (args.Length >= 2) && (string.Compare(args[1], V4_FLAG, true) == 0);
 
-			WebClient wc = use_ipv4 ? new c_WebClient_ipv4() : new WebClient();
+			var task = use_ipv4 ? new c_HttpClient_ipv4().GetStringAsync(url) : new HttpClient().GetStringAsync(url);
 
 			try
 			{
-				Console.WriteLine(wc.DownloadString(url));
+				Console.WriteLine(task.GetAwaiter().GetResult());
 			}
 			catch(Exception ex)
 			{

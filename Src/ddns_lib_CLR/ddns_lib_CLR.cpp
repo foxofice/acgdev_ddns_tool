@@ -2,7 +2,7 @@
 
 #include "ddns_lib_CLR.h"
 
-namespace ddns_tool_CLR
+namespace ddns_lib_CLR
 {
 
 /*==============================================================
@@ -42,4 +42,4 @@ bool CLR::DNS_Lookup(String ^dns_server, String ^domain, __out c_DNS_Lookup_Resu
 	return res;
 }
 
-}	// namespace ddns_tool_CLR
+}	// namespace ddns_lib_CLR

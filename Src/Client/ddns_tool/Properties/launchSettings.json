@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ddns_tool": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

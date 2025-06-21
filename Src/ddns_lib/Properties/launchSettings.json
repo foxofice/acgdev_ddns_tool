@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ddns_lib": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

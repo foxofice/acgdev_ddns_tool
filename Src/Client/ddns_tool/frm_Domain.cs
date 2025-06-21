@@ -12,17 +12,17 @@ namespace ddns_tool
 {
 	public partial class frm_Domain : Form
 	{
-		internal ddns_lib.c_Domain	m_domain	= new ddns_lib.c_Domain();
+		internal ddns_lib.c_Domain	m_domain	= new();
 		bool						m_add		= false;	// true = 添加、false = 修改
 
-		List<TabPage>				m_TabPages	= new List<TabPage>();
+		List<TabPage>				m_TabPages	= new();
 
 		/*==============================================================
 		 * 构造函数
 		 *
 		 * domain	- 初始化数据
 		 *==============================================================*/
-		public frm_Domain(ddns_lib.c_Domain domain = null)
+		public frm_Domain(ddns_lib.c_Domain? domain = null)
 		{
 			InitializeComponent();
 
@@ -88,7 +88,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		void update_OK_UI()
 		{
-			button_OK.Enabled =	(textBox_Domain.Text.Trim().Length > 0) &&
+			button_OK.Enabled =	(textBox_Domain.Text.Trim().Length > 0)	&&
 								(comboBox_Type.SelectedIndex >= 0)		&&
 								(comboBox_Security_Profile.SelectedIndex >= 0);
 		}
@@ -110,10 +110,10 @@ namespace ddns_tool
 			}
 
 			//========== 初始化 UI ==========(Start)
-			for(int i=0; i<(int)ddns_lib.e_DomainType.MAX; ++i)
+			for(int i = 0; i < (int)ddns_lib.e_DomainType.MAX; ++i)
 				comboBox_Type.Items.Add(((ddns_lib.e_DomainType)i).ToString());
 
-			for(int i=0; i<CONFIG.SECURITY.m_s_profiles.Count; ++i)
+			for(int i = 0; i < CONFIG.SECURITY.m_s_profiles.Count; ++i)
 			{
 				ddns_lib.c_Security_Profile profile = CONFIG.SECURITY.m_s_profiles[i];
 				comboBox_Security_Profile.Items.Add(profile.m_Name);
@@ -181,7 +181,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void button_OK_Click(object sender, EventArgs e)
 		{
-			ddns_lib.c_Domain domain = CONFIG.find_domain(textBox_Domain.Text);
+			ddns_lib.c_Domain? domain = CONFIG.find_domain(textBox_Domain.Text);
 
 			if(domain != null)
 			{

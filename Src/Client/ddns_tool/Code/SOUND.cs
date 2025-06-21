@@ -10,7 +10,7 @@ namespace ddns_tool
 	internal class SOUND
 	{
 		[DllImport("winmm.dll")]
-		private static extern long mciSendString(string command, StringBuilder returnValue, int returnLength, IntPtr winHandle);
+		private static extern long mciSendString(string command, StringBuilder? returnValue, int returnLength, IntPtr winHandle);
 
 		/*==============================================================
 		 * 播放

@@ -14,8 +14,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		internal static string GetRelativePath(string fromPath, string toPath)
 		{
-			Uri fromUri	= new Uri(fromPath);
-			Uri toUri	= new Uri(toPath);
+			Uri fromUri	= new(fromPath);
+			Uri toUri	= new(toPath);
 
 			if(fromUri.Scheme != toUri.Scheme)
 				return toPath;

@@ -61,6 +61,9 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\..\3rdParty\nnn\libs\$(Platform)\$(Configuration);..\..\..\bin\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy_dlls.cmd $(Configuration) $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -72,6 +75,9 @@
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>..\..\..\3rdParty\nnn\libs\$(Platform)\$(Configuration);..\..\..\bin\$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>copy_dlls.cmd $(Configuration) $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Config\Config.cpp" />
@@ -99,7 +105,12 @@
     <ClInclude Include="Socket\Socket.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="conf\ddns_server.txt" />
+    <Text Include="conf\ddns_server.txt">
+      <DeploymentContent>false</DeploymentContent>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="copy_dlls.cmd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

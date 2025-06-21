@@ -128,7 +128,7 @@ namespace ddns_tool
 		//【安全设置】
 		internal class SECURITY
 		{
-			internal static List<ddns_lib.c_Security_Profile>	m_s_profiles	= new List<ddns_lib.c_Security_Profile>();
+			internal static List<ddns_lib.c_Security_Profile>	m_s_profiles	= new();
 		};
 
 		//【更新操作】
@@ -137,7 +137,7 @@ namespace ddns_tool
 			internal static bool			m_s_UpdateIP				= true;						// 更新域名的 IP
 			internal static bool			m_s_DNS_Lookup_First		= true;						// 先解析域名
 			internal static bool			m_s_Use_Custom_DNS			= true;						// 是否使用自定义 DNS 服务器
-			internal static List<string>	m_s_Custom_DNS_List			= new List<string>();		// 自定义 DNS 服务器列表
+			internal static List<string>	m_s_Custom_DNS_List			= new();					// 自定义 DNS 服务器列表
 			internal static int				m_s_Timeout					= 15;						// 自动更新超时（单位：秒。0 = 无限等待）
 			internal static bool			m_s_IP_Change_Popup			= false;					// IP变动时，弹出提示窗口
 			internal static bool			m_s_IP_Change_Play_Sound	= false;					// IP变动时，播放音乐
@@ -159,12 +159,12 @@ namespace ddns_tool
 		};
 
 		//【域名列表】
-		internal static List<ddns_lib.c_Domain>	m_s_domains_list	= new List<ddns_lib.c_Domain>();
+		internal static List<ddns_lib.c_Domain>	m_s_domains_list	= new();
 
 		/*==============================================================
 		 * 查找设定的域名记录
 		 *==============================================================*/
-		internal static ddns_lib.c_Domain find_domain(string domain_name)
+		internal static ddns_lib.c_Domain? find_domain(string domain_name)
 		{
 			foreach(ddns_lib.c_Domain domain in m_s_domains_list)
 			{
@@ -187,7 +187,7 @@ namespace ddns_tool
 		/*==============================================================
 		 * 获取 Server 的 IP/Port
 		 *==============================================================*/
-		internal static bool get_server_ip_port(out IPAddress server_ip, out ushort server_port)
+		internal static bool get_server_ip_port(out IPAddress? server_ip, out ushort server_port)
 		{
 			server_ip	= null;
 			server_port	= 0;
@@ -239,7 +239,7 @@ namespace ddns_tool
 			SECURITY.m_s_profiles.Clear();
 
 			// c_Domain -> profile_index
-			Dictionary<ddns_lib.c_Domain, int> domains_profile_index = new Dictionary<ddns_lib.c_Domain, int>();
+			Dictionary<ddns_lib.c_Domain, int> domains_profile_index = new();
 
 			string[] lines = File.ReadAllLines(conf_file, Encoding.UTF8);
 
@@ -374,7 +374,7 @@ namespace ddns_tool
 
 						if(SECURITY.m_s_profiles.Count < profile_idx + 1)
 						{
-							profile = new ddns_lib.c_Security_Profile();
+							profile = new();
 							SECURITY.m_s_profiles.Add(profile);
 						}
 						else
@@ -590,7 +590,7 @@ namespace ddns_tool
 
 						if(m_s_domains_list.Count < domain_idx + 1)
 						{
-							domain = new ddns_lib.c_Domain();
+							domain = new();
 							m_s_domains_list.Add(domain);
 						}
 						else
@@ -722,7 +722,7 @@ namespace ddns_tool
 			if(!m_s_dirty)
 				return;
 
-			StringBuilder sb = new StringBuilder();
+			StringBuilder sb = new();
 
 			//====================【更新方式】====================(Start)
 			sb.Append("// 更新方式（");
@@ -929,7 +929,7 @@ namespace ddns_tool
 				sb.AppendLine($"{e_Header.Domain__IPv6_Enabled.ToString().Replace("__", $"[{i}].")}: {domain.IPv6.m_enabled}");
 
 				// profile_idx
-				sb.AppendLine($"{e_Header.Domain__profile_idx.ToString().Replace("__", $"[{i}].")}: {SECURITY.m_s_profiles.IndexOf(domain.m_Security_Profile)}");
+				sb.AppendLine($"{e_Header.Domain__profile_idx.ToString().Replace("__", $"[{i}].")}: {SECURITY.m_s_profiles.IndexOf(domain.m_Security_Profile!)}");
 
 				// Current_IPv4
 				sb.AppendLine($"{e_Header.Domain__Current_IPv4.ToString().Replace("__", $"[{i}].")}: {domain.IPv4.m_current_IP}");

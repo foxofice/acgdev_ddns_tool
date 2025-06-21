@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "../../../3rdParty/nnn/Src/nnnSocketClient/nnnSocketClient.h"
 #include "../../../3rdParty/nnn/Src/nnnCLR/nnnCLR.h"
 #include "../../Server/Common/s_AES_KeyIV.h"
 
