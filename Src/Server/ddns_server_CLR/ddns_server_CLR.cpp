@@ -79,9 +79,11 @@ void update_domains(__inout std::vector<struct s_Domain>	&domains,
 
 		NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_current_IP,	domain.IPv4.m_current_IP);
 		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv4->m_err_msg,	domain.IPv4.m_err_msg);
+		domain.IPv4.m_same_ip	= gc_domain->IPv4->m_same_ip;
 
 		NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_current_IP,	domain.IPv6.m_current_IP);
 		NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv6->m_err_msg,	domain.IPv6.m_err_msg);
+		domain.IPv6.m_same_ip	= gc_domain->IPv6->m_same_ip;
 	}	// for
 }
 

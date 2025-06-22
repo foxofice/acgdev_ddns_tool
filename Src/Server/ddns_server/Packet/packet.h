@@ -66,9 +66,11 @@ void	send_Login_Result(struct NNN::Socket::s_SessionData *sd, es_Result result);
 			<domain_len>.B <domain>.?B(char*)
 
 			<current_IPv4_len>.B <current_IPv4>.?B(char*)
+			<same_ipv4>.bool
 			<err_msg_IPv4_len>.USHORT <err_msg_IPv4>.?B(WCHAR*)
 
 			<current_IPv6_len>.B <current_IPv6>.?B(char*)
+			<same_ipv6>.bool
 			<err_msg_IPv6_len>.USHORT <err_msg_IPv6>.?B(WCHAR*)
 		}*
 	}

@@ -39,16 +39,9 @@ struct s_Domain
 		char	m_input_IP[46]		= {};
 		char	m_current_IP[46]	= {};
 		bool	m_enabled			= true;	// 是否允许 IP 更新
+		bool	m_same_ip			= true;	// 最后一次更新的 IP 是否跟解析的 IP 相同
 		WCHAR	m_err_msg[1024]		= {};
-	} IPv4;
-
-	struct
-	{
-		char	m_input_IP[46]		= {};
-		char	m_current_IP[46]	= {};
-		bool	m_enabled			= true;	// 是否允许 IP 更新
-		WCHAR	m_err_msg[1024]		= {};
-	} IPv6;
+	} IPv4, IPv6;
 
 	// Godaddy
 	struct

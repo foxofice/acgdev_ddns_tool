@@ -175,6 +175,9 @@ void send_Update_Domains_Result(struct NNN::Socket::s_SessionData	*sd,
 		// current_IPv4
 		bw_aes.write_array(domain.IPv4.m_current_IP, current_IPv4_len);
 
+		// same_ipv4
+		bw_aes.write<bool>(domain.IPv4.m_same_ip);
+
 		// err_msg_IPv4_len
 		USHORT err_msg_IPv4_len = (USHORT)wcslen(domain.IPv4.m_err_msg) * sizeof(WCHAR);
 
@@ -190,6 +193,9 @@ void send_Update_Domains_Result(struct NNN::Socket::s_SessionData	*sd,
 
 		// current_IPv6
 		bw_aes.write_array(domain.IPv6.m_current_IP, current_IPv6_len);
+
+		// same_ipv6
+		bw_aes.write<bool>(domain.IPv6.m_same_ip);
 
 		// err_msg_IPv6_len
 		USHORT err_msg_IPv6_len = (USHORT)wcslen(domain.IPv6.m_err_msg) * sizeof(WCHAR);

@@ -165,6 +165,9 @@ es_Parse_Result recv_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*s
 		CopyMemory(domain.IPv4.m_current_IP, current_IPv4, current_IPv4_len);
 		domain.IPv4.m_current_IP[current_IPv4_len] = '\0';
 
+		// same_ipv4
+		domain.IPv4.m_same_ip = br_data.read<bool>();
+
 		// err_msg_IPv4_len
 		USHORT err_msg_IPv4_len = br_data.read<USHORT>();
 
@@ -179,6 +182,9 @@ es_Parse_Result recv_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*s
 
 		CopyMemory(domain.IPv6.m_current_IP, current_IPv6, current_IPv6_len);
 		domain.IPv6.m_current_IP[current_IPv6_len] = '\0';
+
+		// same_ipv6
+		domain.IPv6.m_same_ip = br_data.read<bool>();
 
 		// err_msg_IPv6_len
 		USHORT err_msg_IPv6_len = br_data.read<USHORT>();

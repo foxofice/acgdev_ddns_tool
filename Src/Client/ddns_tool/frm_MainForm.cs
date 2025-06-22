@@ -232,9 +232,12 @@ namespace ddns_tool
 						continue;
 
 					domain.IPv4.m_current_IP	= res.IPv4.m_current_IP;
-					domain.IPv6.m_current_IP	= res.IPv6.m_current_IP;
 					domain.IPv4.m_err_msg		= res.IPv4.m_err_msg;
+					domain.IPv4.m_same_ip		= res.IPv4.m_same_ip;
+
+					domain.IPv6.m_current_IP	= res.IPv6.m_current_IP;
 					domain.IPv6.m_err_msg		= res.IPv6.m_err_msg;
+					domain.IPv6.m_same_ip		= res.IPv6.m_same_ip;
 				}	// for
 
 				m_s_Mainform.update__done();
@@ -2149,9 +2152,9 @@ namespace ddns_tool
 			int failed_count	= 0;
 			int skip_count		= 0;
 
-			// 是否已更新当前 IP（仅「远程更新」）
-			bool update_current_IPv4_remote = false;
-			bool update_current_IPv6_remote = false;
+			// Server 接受连接的客户端 IP
+			string remote_accept_ipv4 = "";
+			string remote_accept_ipv6 = "";
 
 			// IP 发生变化的域名
 			List<ddns_lib.c_Domain> IP_change_domains = new();
@@ -2161,8 +2164,10 @@ namespace ddns_tool
 				if(!domain.IPv4.m_enabled && !domain.IPv6.m_enabled)
 					continue;
 
-				if(	(domain.IPv4.m_enabled && !domain.IPv4.m_same_ip)	||
-					(domain.IPv6.m_enabled && !domain.IPv6.m_same_ip) )
+				bool updated_IPv4 = (domain.IPv4.m_enabled && !domain.IPv4.m_same_ip);
+				bool updated_IPv6 = (domain.IPv6.m_enabled && !domain.IPv6.m_same_ip);
+
+				if(updated_IPv4 || updated_IPv6)
 					IP_change_domains.Add(domain);
 
 				if(domain.IPv4.m_err_msg.Length > 0 || domain.IPv6.m_err_msg.Length > 0)
@@ -2181,40 +2186,38 @@ namespace ddns_tool
 				{
 					EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Done);
 
-					if(	(domain.IPv4.m_enabled && !domain.IPv4.m_same_ip)	||
-						(domain.IPv6.m_enabled && !domain.IPv6.m_same_ip) )
+					if(updated_IPv4 || updated_IPv6)
 					{
 						add_log($"{domain.m_domain} : 更新成功。IPv4 = {domain.IPv4.m_current_IP}, IPv6 = {domain.IPv6.m_current_IP}", Color.Green);
 
-						if(!update_current_IPv4_remote)
+						if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote)
 						{
-							if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
-								CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP )
+							if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP && updated_IPv4)
 							{
-								update_current_IPv4_remote = true;
-
-								CONFIG.SET_IP.m_s_IPv4	= domain.IPv4.m_current_IP;
-
-								invoke(() =>
+								if(remote_accept_ipv4.Length == 0)
 								{
-									textBox_Settings_IPv4.Text	= domain.IPv4.m_current_IP;
-								});
+									remote_accept_ipv4		= domain.IPv4.m_current_IP;
+									CONFIG.SET_IP.m_s_IPv4	= domain.IPv4.m_current_IP;
+
+									invoke(() =>
+									{
+										textBox_Settings_IPv4.Text	= domain.IPv4.m_current_IP;
+									});
+								}
 							}
-						}
 
-						if(!update_current_IPv6_remote)
-						{
-							if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
-								CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP )
+							if(CONFIG.SET_IP.m_s_type_IPv6 == CONFIG.e_IP_Get_Type.Server_Accept_IP && updated_IPv6)
 							{
-								update_current_IPv6_remote = true;
-
-								CONFIG.SET_IP.m_s_IPv6	= domain.IPv6.m_current_IP;
-
-								invoke(() =>
+								if(remote_accept_ipv6.Length == 0)
 								{
-									textBox_Settings_IPv6.Text	= domain.IPv6.m_current_IP;
-								});
+									remote_accept_ipv6		= domain.IPv6.m_current_IP;
+									CONFIG.SET_IP.m_s_IPv6	= domain.IPv6.m_current_IP;
+
+									invoke(() =>
+									{
+										textBox_Settings_IPv6.Text	= domain.IPv6.m_current_IP;
+									});
+								}
 							}
 						}
 					}

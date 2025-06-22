@@ -53,11 +53,13 @@ inline ddns_lib::c_Domain^ make_domain(	const struct s_Domain			&domain,
 	gc_domain->IPv4->m_input_IP		= gcnew System::String(domain.IPv4.m_input_IP);
 	gc_domain->IPv4->m_current_IP	= gcnew System::String(domain.IPv4.m_current_IP);
 	gc_domain->IPv4->m_enabled		= domain.IPv4.m_enabled;
+	gc_domain->IPv4->m_same_ip		= domain.IPv4.m_same_ip;
 	gc_domain->IPv4->m_err_msg		= gcnew System::String(domain.IPv4.m_err_msg);
 
 	gc_domain->IPv6->m_input_IP		= gcnew System::String(domain.IPv6.m_input_IP);
 	gc_domain->IPv6->m_current_IP	= gcnew System::String(domain.IPv6.m_current_IP);
 	gc_domain->IPv6->m_enabled		= domain.IPv6.m_enabled;
+	gc_domain->IPv6->m_same_ip		= domain.IPv6.m_same_ip;
 	gc_domain->IPv6->m_err_msg		= gcnew System::String(domain.IPv6.m_err_msg);
 
 	gc_domain->m_Godaddy__TTL		= domain.GODADDY.m_TTL;
@@ -86,11 +88,13 @@ inline void make_Domain(__in ddns_lib::c_Domain			^gc_domain,
 	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_input_IP,	domain.IPv4.m_input_IP);
 	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv4->m_current_IP,	domain.IPv4.m_current_IP);
 	domain.IPv4.m_enabled		= gc_domain->IPv4->m_enabled;
+	domain.IPv4.m_same_ip		= gc_domain->IPv4->m_same_ip;
 	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv4->m_err_msg,	domain.IPv4.m_err_msg);
 
 	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_input_IP,	domain.IPv6.m_input_IP);
 	NNN::CLR::TO_CPP::String_to_char(gc_domain->IPv6->m_current_IP,	domain.IPv6.m_current_IP);
 	domain.IPv6.m_enabled		= gc_domain->IPv6->m_enabled;
+	domain.IPv6.m_same_ip		= gc_domain->IPv6->m_same_ip;
 	NNN::CLR::TO_CPP::String_to_wchar(gc_domain->IPv6->m_err_msg,	domain.IPv6.m_err_msg);
 
 	domain.GODADDY.m_TTL		= gc_domain->m_Godaddy__TTL;
