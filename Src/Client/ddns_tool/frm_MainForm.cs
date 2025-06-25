@@ -537,7 +537,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void frm_MainForm_Load(object sender, EventArgs e)
 		{
-			this.Icon				= Icon.ExtractAssociatedIcon(Process.GetCurrentProcess().MainModule!.FileName);
+			this.Icon				= IMAGE.get_exe_icon();
 			notifyIcon_Main.Icon	= this.Icon;
 			notifyIcon_Main.Text	= this.Text;
 

@@ -22,7 +22,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void frm_IP_Change_Popup_Load(object sender, EventArgs e)
 		{
-			this.Icon = res_Main.logo;
+			this.Icon = IMAGE.get_exe_icon();
 
 			update_language_text();
 		}
