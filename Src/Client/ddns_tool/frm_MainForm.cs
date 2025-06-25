@@ -1106,12 +1106,31 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void toolStripButton_Domains_CopyText_Click(object sender, EventArgs e)
 		{
+			// 计算每列的最大宽度
+			int[] max_column_width = new int[listView_Domains.Columns.Count - 1];
+
+			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
+			{
+				for(int i=0; i<listView_Domains.Columns.Count - 1; ++i)
+				{
+					int length = LVI.SubItems[i].Text.Length;
+					if(max_column_width[i] < length)
+						max_column_width[i] = length;
+				}	// for
+			}	// for
+
+			// 输出内容
 			StringBuilder sb = new();
 
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				for(int i = 0; i < listView_Domains.Columns.Count; ++i)
-					sb.Append($"{LVI.SubItems[i].Text}\t");
+				for(int i=0; i<listView_Domains.Columns.Count - 1; ++i)
+				{
+					if(i == listView_Domains.Columns.Count - 2)
+						sb.Append(LVI.SubItems[i].Text);
+					else
+						sb.Append(LVI.SubItems[i].Text.PadRight(max_column_width[i] + 2));	// 至少两个空格
+				}	// for
 
 				sb.AppendLine();
 			}	// for

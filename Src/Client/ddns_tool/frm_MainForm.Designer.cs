@@ -230,8 +230,8 @@
 			groupBox_Domains.Margin = new Padding(3, 2, 3, 2);
 			groupBox_Domains.Name = "groupBox_Domains";
 			groupBox_Domains.Padding = new Padding(3, 2, 3, 2);
-			groupBox_Domains.Size = new Size(910, 155);
-			groupBox_Domains.TabIndex = 0;
+			groupBox_Domains.Size = new Size(934, 155);
+			groupBox_Domains.TabIndex = 2;
 			groupBox_Domains.TabStop = false;
 			groupBox_Domains.Text = "【域名列表】";
 			// 
@@ -245,8 +245,8 @@
 			listView_Domains.Location = new Point(3, 41);
 			listView_Domains.Margin = new Padding(3, 2, 3, 2);
 			listView_Domains.Name = "listView_Domains";
-			listView_Domains.Size = new Size(904, 112);
-			listView_Domains.TabIndex = 1;
+			listView_Domains.Size = new Size(928, 112);
+			listView_Domains.TabIndex = 4;
 			listView_Domains.UseCompatibleStateImageBehavior = false;
 			listView_Domains.View = View.Details;
 			listView_Domains.SelectedIndexChanged += listView_Domains_SelectedIndexChanged;
@@ -280,7 +280,7 @@
 			// columnHeader_Domains_Status
 			// 
 			columnHeader_Domains_Status.Text = "状态";
-			columnHeader_Domains_Status.Width = 66;
+			columnHeader_Domains_Status.Width = 90;
 			// 
 			// contextMenuStrip_Domains
 			// 
@@ -372,8 +372,8 @@
 			toolStrip_Domains.Items.AddRange(new ToolStripItem[] { toolStripButton_Domains_Add, toolStripButton_Domains_Modify, toolStripButton_Domains_Delete, toolStripButton_Domains_IPv4_Enable, toolStripButton_Domains_IPv6_Enable, toolStripButton_Domains_IPv4_Disable, toolStripButton_Domains_IPv6_Disable, toolStripSeparator1, toolStripButton_Domains_CopyText });
 			toolStrip_Domains.Location = new Point(3, 16);
 			toolStrip_Domains.Name = "toolStrip_Domains";
-			toolStrip_Domains.Size = new Size(904, 25);
-			toolStrip_Domains.TabIndex = 0;
+			toolStrip_Domains.Size = new Size(928, 25);
+			toolStrip_Domains.TabIndex = 3;
 			toolStrip_Domains.Text = "域名列表";
 			// 
 			// toolStripButton_Domains_Add
@@ -476,7 +476,7 @@
 			// splitContainer_Main.Panel2
 			// 
 			splitContainer_Main.Panel2.Controls.Add(groupBox_Logs);
-			splitContainer_Main.Size = new Size(910, 470);
+			splitContainer_Main.Size = new Size(934, 470);
 			splitContainer_Main.SplitterDistance = 155;
 			splitContainer_Main.SplitterWidth = 3;
 			splitContainer_Main.TabIndex = 1;
@@ -493,8 +493,8 @@
 			groupBox_Logs.Margin = new Padding(3, 2, 3, 2);
 			groupBox_Logs.Name = "groupBox_Logs";
 			groupBox_Logs.Padding = new Padding(3, 2, 3, 2);
-			groupBox_Logs.Size = new Size(910, 312);
-			groupBox_Logs.TabIndex = 0;
+			groupBox_Logs.Size = new Size(934, 312);
+			groupBox_Logs.TabIndex = 10;
 			groupBox_Logs.TabStop = false;
 			groupBox_Logs.Text = "【日志记录】";
 			// 
@@ -504,11 +504,11 @@
 			checkBox_Logs__Save_To_File.AutoSize = true;
 			checkBox_Logs__Save_To_File.Checked = true;
 			checkBox_Logs__Save_To_File.CheckState = CheckState.Checked;
-			checkBox_Logs__Save_To_File.Location = new Point(796, 292);
+			checkBox_Logs__Save_To_File.Location = new Point(820, 292);
 			checkBox_Logs__Save_To_File.Margin = new Padding(3, 2, 3, 2);
 			checkBox_Logs__Save_To_File.Name = "checkBox_Logs__Save_To_File";
 			checkBox_Logs__Save_To_File.Size = new Size(108, 16);
-			checkBox_Logs__Save_To_File.TabIndex = 3;
+			checkBox_Logs__Save_To_File.TabIndex = 14;
 			checkBox_Logs__Save_To_File.Text = "保存到日志文件";
 			checkBox_Logs__Save_To_File.UseVisualStyleBackColor = true;
 			checkBox_Logs__Save_To_File.CheckedChanged += checkBox_Logs__Save_To_File_CheckedChanged;
@@ -521,7 +521,7 @@
 			numericUpDown_Logs_MaxLines.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
 			numericUpDown_Logs_MaxLines.Name = "numericUpDown_Logs_MaxLines";
 			numericUpDown_Logs_MaxLines.Size = new Size(60, 21);
-			numericUpDown_Logs_MaxLines.TabIndex = 2;
+			numericUpDown_Logs_MaxLines.TabIndex = 13;
 			numericUpDown_Logs_MaxLines.TextAlign = HorizontalAlignment.Center;
 			numericUpDown_Logs_MaxLines.Value = new decimal(new int[] { 10000, 0, 0, 0 });
 			numericUpDown_Logs_MaxLines.ValueChanged += numericUpDown_Logs_MaxLines_ValueChanged;
@@ -533,7 +533,7 @@
 			label_Logs_MaxLines.Location = new Point(6, 289);
 			label_Logs_MaxLines.Name = "label_Logs_MaxLines";
 			label_Logs_MaxLines.Size = new Size(89, 12);
-			label_Logs_MaxLines.TabIndex = 1;
+			label_Logs_MaxLines.TabIndex = 12;
 			label_Logs_MaxLines.Text = "最大显示行数：";
 			// 
 			// listView_Logs
@@ -546,8 +546,8 @@
 			listView_Logs.Location = new Point(3, 16);
 			listView_Logs.Margin = new Padding(3, 2, 3, 2);
 			listView_Logs.Name = "listView_Logs";
-			listView_Logs.Size = new Size(904, 267);
-			listView_Logs.TabIndex = 0;
+			listView_Logs.Size = new Size(928, 267);
+			listView_Logs.TabIndex = 11;
 			listView_Logs.UseCompatibleStateImageBehavior = false;
 			listView_Logs.View = View.Details;
 			listView_Logs.SelectedIndexChanged += listView_Logs_SelectedIndexChanged;
@@ -561,7 +561,7 @@
 			// columnHeader_Logs_Log
 			// 
 			columnHeader_Logs_Log.Text = "日志";
-			columnHeader_Logs_Log.Width = 761;
+			columnHeader_Logs_Log.Width = 785;
 			// 
 			// contextMenuStrip_Logs
 			// 
@@ -671,7 +671,7 @@
 			tabControl_Main.Name = "tabControl_Main";
 			tabControl_Main.SelectedIndex = 0;
 			tabControl_Main.Size = new Size(540, 296);
-			tabControl_Main.TabIndex = 5;
+			tabControl_Main.TabIndex = 100;
 			// 
 			// tabPage_Update_Type
 			// 
@@ -703,7 +703,7 @@
 			groupBox_Settings_RemoteServer.Location = new Point(6, 49);
 			groupBox_Settings_RemoteServer.Name = "groupBox_Settings_RemoteServer";
 			groupBox_Settings_RemoteServer.Size = new Size(520, 128);
-			groupBox_Settings_RemoteServer.TabIndex = 2;
+			groupBox_Settings_RemoteServer.TabIndex = 103;
 			groupBox_Settings_RemoteServer.TabStop = false;
 			groupBox_Settings_RemoteServer.Text = "远程 Server 设置";
 			// 
@@ -715,7 +715,7 @@
 			checkBox_Settings_RemoteServer__Ping.Location = new Point(227, 103);
 			checkBox_Settings_RemoteServer__Ping.Name = "checkBox_Settings_RemoteServer__Ping";
 			checkBox_Settings_RemoteServer__Ping.Size = new Size(120, 16);
-			checkBox_Settings_RemoteServer__Ping.TabIndex = 3;
+			checkBox_Settings_RemoteServer__Ping.TabIndex = 113;
 			checkBox_Settings_RemoteServer__Ping.Text = "自动 ping 服务器";
 			checkBox_Settings_RemoteServer__Ping.UseVisualStyleBackColor = true;
 			checkBox_Settings_RemoteServer__Ping.CheckedChanged += checkBox_Settings_RemoteServer__Ping_CheckedChanged;
@@ -727,7 +727,7 @@
 			checkBox_Settings_RemoteServer__Pwd.Location = new Point(466, 76);
 			checkBox_Settings_RemoteServer__Pwd.Name = "checkBox_Settings_RemoteServer__Pwd";
 			checkBox_Settings_RemoteServer__Pwd.Size = new Size(48, 16);
-			checkBox_Settings_RemoteServer__Pwd.TabIndex = 2;
+			checkBox_Settings_RemoteServer__Pwd.TabIndex = 110;
 			checkBox_Settings_RemoteServer__Pwd.Text = "显示";
 			checkBox_Settings_RemoteServer__Pwd.UseVisualStyleBackColor = true;
 			checkBox_Settings_RemoteServer__Pwd.CheckedChanged += checkBox_Settings_RemoteServer__Pwd_CheckedChanged;
@@ -740,7 +740,7 @@
 			textBox_Settings_RemoteServer__Pwd.PasswordChar = '*';
 			textBox_Settings_RemoteServer__Pwd.ReadOnly = true;
 			textBox_Settings_RemoteServer__Pwd.Size = new Size(299, 21);
-			textBox_Settings_RemoteServer__Pwd.TabIndex = 1;
+			textBox_Settings_RemoteServer__Pwd.TabIndex = 109;
 			textBox_Settings_RemoteServer__Pwd.TextChanged += textBox_Settings_RemoteServer__Pwd_TextChanged;
 			// 
 			// textBox_Settings_RemoteServer__Ping
@@ -750,7 +750,7 @@
 			textBox_Settings_RemoteServer__Ping.Name = "textBox_Settings_RemoteServer__Ping";
 			textBox_Settings_RemoteServer__Ping.ReadOnly = true;
 			textBox_Settings_RemoteServer__Ping.Size = new Size(63, 21);
-			textBox_Settings_RemoteServer__Ping.TabIndex = 1;
+			textBox_Settings_RemoteServer__Ping.TabIndex = 112;
 			// 
 			// textBox_Settings_RemoteServer__User
 			// 
@@ -759,7 +759,7 @@
 			textBox_Settings_RemoteServer__User.Name = "textBox_Settings_RemoteServer__User";
 			textBox_Settings_RemoteServer__User.ReadOnly = true;
 			textBox_Settings_RemoteServer__User.Size = new Size(299, 21);
-			textBox_Settings_RemoteServer__User.TabIndex = 1;
+			textBox_Settings_RemoteServer__User.TabIndex = 107;
 			textBox_Settings_RemoteServer__User.TextChanged += textBox_Settings_RemoteServer__User_TextChanged;
 			// 
 			// textBox_Settings_RemoteServer__Addr
@@ -769,7 +769,7 @@
 			textBox_Settings_RemoteServer__Addr.Name = "textBox_Settings_RemoteServer__Addr";
 			textBox_Settings_RemoteServer__Addr.ReadOnly = true;
 			textBox_Settings_RemoteServer__Addr.Size = new Size(353, 21);
-			textBox_Settings_RemoteServer__Addr.TabIndex = 1;
+			textBox_Settings_RemoteServer__Addr.TabIndex = 105;
 			textBox_Settings_RemoteServer__Addr.Text = "127.0.0.1:3333";
 			textBox_Settings_RemoteServer__Addr.TextChanged += textBox_Settings_RemoteServer__Addr_TextChanged;
 			// 
@@ -779,7 +779,7 @@
 			label_Settings_RemoteServer__Ping.Location = new Point(6, 104);
 			label_Settings_RemoteServer__Ping.Name = "label_Settings_RemoteServer__Ping";
 			label_Settings_RemoteServer__Ping.Size = new Size(89, 12);
-			label_Settings_RemoteServer__Ping.TabIndex = 0;
+			label_Settings_RemoteServer__Ping.TabIndex = 111;
 			label_Settings_RemoteServer__Ping.Text = "Ping 值 (ms)：";
 			// 
 			// label_Settings_RemoteServer__Pwd
@@ -788,7 +788,7 @@
 			label_Settings_RemoteServer__Pwd.Location = new Point(6, 77);
 			label_Settings_RemoteServer__Pwd.Name = "label_Settings_RemoteServer__Pwd";
 			label_Settings_RemoteServer__Pwd.Size = new Size(137, 12);
-			label_Settings_RemoteServer__Pwd.TabIndex = 0;
+			label_Settings_RemoteServer__Pwd.TabIndex = 108;
 			label_Settings_RemoteServer__Pwd.Text = "登录到 Server 的密码：";
 			// 
 			// label_Settings_RemoteServer__User
@@ -797,7 +797,7 @@
 			label_Settings_RemoteServer__User.Location = new Point(6, 50);
 			label_Settings_RemoteServer__User.Name = "label_Settings_RemoteServer__User";
 			label_Settings_RemoteServer__User.Size = new Size(149, 12);
-			label_Settings_RemoteServer__User.TabIndex = 0;
+			label_Settings_RemoteServer__User.TabIndex = 106;
 			label_Settings_RemoteServer__User.Text = "登录到 Server 的用户名：";
 			// 
 			// label_Settings_RemoteServer__Addr
@@ -806,7 +806,7 @@
 			label_Settings_RemoteServer__Addr.Location = new Point(6, 23);
 			label_Settings_RemoteServer__Addr.Name = "label_Settings_RemoteServer__Addr";
 			label_Settings_RemoteServer__Addr.Size = new Size(113, 12);
-			label_Settings_RemoteServer__Addr.TabIndex = 0;
+			label_Settings_RemoteServer__Addr.TabIndex = 104;
 			label_Settings_RemoteServer__Addr.Text = "Server 地址/端口：";
 			// 
 			// radioButton_Settings_Type__Remote
@@ -815,7 +815,7 @@
 			radioButton_Settings_Type__Remote.Location = new Point(6, 27);
 			radioButton_Settings_Type__Remote.Name = "radioButton_Settings_Type__Remote";
 			radioButton_Settings_Type__Remote.Size = new Size(227, 16);
-			radioButton_Settings_Type__Remote.TabIndex = 1;
+			radioButton_Settings_Type__Remote.TabIndex = 102;
 			radioButton_Settings_Type__Remote.Text = "远程更新（由远程 Server 执行更新）";
 			radioButton_Settings_Type__Remote.UseVisualStyleBackColor = true;
 			radioButton_Settings_Type__Remote.CheckedChanged += radioButton_Settings_Type__CheckedChanged;
@@ -827,7 +827,7 @@
 			radioButton_Settings_Type__Local.Location = new Point(6, 5);
 			radioButton_Settings_Type__Local.Name = "radioButton_Settings_Type__Local";
 			radioButton_Settings_Type__Local.Size = new Size(119, 16);
-			radioButton_Settings_Type__Local.TabIndex = 0;
+			radioButton_Settings_Type__Local.TabIndex = 101;
 			radioButton_Settings_Type__Local.TabStop = true;
 			radioButton_Settings_Type__Local.Text = "本地更新（直连）";
 			radioButton_Settings_Type__Local.UseVisualStyleBackColor = true;
@@ -837,11 +837,11 @@
 			// 
 			tabPage_Set_IP.Controls.Add(groupBox_Set_IPv6);
 			tabPage_Set_IP.Controls.Add(groupBox_Set_IPv4);
-			tabPage_Set_IP.Location = new Point(4, 26);
+			tabPage_Set_IP.Location = new Point(4, 22);
 			tabPage_Set_IP.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Set_IP.Name = "tabPage_Set_IP";
 			tabPage_Set_IP.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Set_IP.Size = new Size(532, 266);
+			tabPage_Set_IP.Size = new Size(532, 270);
 			tabPage_Set_IP.TabIndex = 1;
 			tabPage_Set_IP.Text = "设置 IP";
 			tabPage_Set_IP.UseVisualStyleBackColor = true;
@@ -857,7 +857,7 @@
 			groupBox_Set_IPv6.Location = new Point(6, 106);
 			groupBox_Set_IPv6.Name = "groupBox_Set_IPv6";
 			groupBox_Set_IPv6.Size = new Size(520, 95);
-			groupBox_Set_IPv6.TabIndex = 1;
+			groupBox_Set_IPv6.TabIndex = 207;
 			groupBox_Set_IPv6.TabStop = false;
 			groupBox_Set_IPv6.Text = "IPv6";
 			// 
@@ -868,7 +868,7 @@
 			textBox_Settings_IPv6.Name = "textBox_Settings_IPv6";
 			textBox_Settings_IPv6.ReadOnly = true;
 			textBox_Settings_IPv6.Size = new Size(323, 21);
-			textBox_Settings_IPv6.TabIndex = 3;
+			textBox_Settings_IPv6.TabIndex = 211;
 			textBox_Settings_IPv6.TextChanged += textBox_Settings_IPv6_TextChanged;
 			// 
 			// radioButton_Settings_IPv6__Accept_IP
@@ -877,7 +877,7 @@
 			radioButton_Settings_IPv6__Accept_IP.Location = new Point(6, 73);
 			radioButton_Settings_IPv6__Accept_IP.Name = "radioButton_Settings_IPv6__Accept_IP";
 			radioButton_Settings_IPv6__Accept_IP.Size = new Size(191, 16);
-			radioButton_Settings_IPv6__Accept_IP.TabIndex = 2;
+			radioButton_Settings_IPv6__Accept_IP.TabIndex = 212;
 			radioButton_Settings_IPv6__Accept_IP.TabStop = true;
 			radioButton_Settings_IPv6__Accept_IP.Text = "Server 接受连接的客户端 IPv6";
 			radioButton_Settings_IPv6__Accept_IP.UseVisualStyleBackColor = true;
@@ -890,7 +890,7 @@
 			radioButton_Settings_IPv6__From_URL.Location = new Point(6, 21);
 			radioButton_Settings_IPv6__From_URL.Name = "radioButton_Settings_IPv6__From_URL";
 			radioButton_Settings_IPv6__From_URL.Size = new Size(155, 16);
-			radioButton_Settings_IPv6__From_URL.TabIndex = 0;
+			radioButton_Settings_IPv6__From_URL.TabIndex = 208;
 			radioButton_Settings_IPv6__From_URL.TabStop = true;
 			radioButton_Settings_IPv6__From_URL.Text = "通过 URL 获取公网 IPv6";
 			radioButton_Settings_IPv6__From_URL.UseVisualStyleBackColor = true;
@@ -902,7 +902,7 @@
 			radioButton_Settings_IPv6__Manual.Location = new Point(6, 47);
 			radioButton_Settings_IPv6__Manual.Name = "radioButton_Settings_IPv6__Manual";
 			radioButton_Settings_IPv6__Manual.Size = new Size(101, 16);
-			radioButton_Settings_IPv6__Manual.TabIndex = 2;
+			radioButton_Settings_IPv6__Manual.TabIndex = 210;
 			radioButton_Settings_IPv6__Manual.TabStop = true;
 			radioButton_Settings_IPv6__Manual.Text = "手动指定 IPv6";
 			radioButton_Settings_IPv6__Manual.UseVisualStyleBackColor = true;
@@ -915,7 +915,7 @@
 			comboBox_Settings_IPv6__From_URL.Location = new Point(191, 20);
 			comboBox_Settings_IPv6__From_URL.Name = "comboBox_Settings_IPv6__From_URL";
 			comboBox_Settings_IPv6__From_URL.Size = new Size(323, 20);
-			comboBox_Settings_IPv6__From_URL.TabIndex = 1;
+			comboBox_Settings_IPv6__From_URL.TabIndex = 209;
 			comboBox_Settings_IPv6__From_URL.SelectedIndexChanged += comboBox_Settings_IPv6__From_URL_SelectedIndexChanged;
 			// 
 			// groupBox_Set_IPv4
@@ -929,7 +929,7 @@
 			groupBox_Set_IPv4.Location = new Point(6, 5);
 			groupBox_Set_IPv4.Name = "groupBox_Set_IPv4";
 			groupBox_Set_IPv4.Size = new Size(520, 95);
-			groupBox_Set_IPv4.TabIndex = 0;
+			groupBox_Set_IPv4.TabIndex = 201;
 			groupBox_Set_IPv4.TabStop = false;
 			groupBox_Set_IPv4.Text = "IPv4";
 			// 
@@ -940,7 +940,7 @@
 			textBox_Settings_IPv4.Name = "textBox_Settings_IPv4";
 			textBox_Settings_IPv4.ReadOnly = true;
 			textBox_Settings_IPv4.Size = new Size(323, 21);
-			textBox_Settings_IPv4.TabIndex = 3;
+			textBox_Settings_IPv4.TabIndex = 205;
 			textBox_Settings_IPv4.TextChanged += textBox_Settings_IPv4_TextChanged;
 			// 
 			// radioButton_Settings_IPv4__Accept_IP
@@ -949,7 +949,7 @@
 			radioButton_Settings_IPv4__Accept_IP.Location = new Point(6, 73);
 			radioButton_Settings_IPv4__Accept_IP.Name = "radioButton_Settings_IPv4__Accept_IP";
 			radioButton_Settings_IPv4__Accept_IP.Size = new Size(191, 16);
-			radioButton_Settings_IPv4__Accept_IP.TabIndex = 2;
+			radioButton_Settings_IPv4__Accept_IP.TabIndex = 206;
 			radioButton_Settings_IPv4__Accept_IP.TabStop = true;
 			radioButton_Settings_IPv4__Accept_IP.Text = "Server 接受连接的客户端 IPv4";
 			radioButton_Settings_IPv4__Accept_IP.UseVisualStyleBackColor = true;
@@ -961,7 +961,7 @@
 			radioButton_Settings_IPv4__Manual.Location = new Point(6, 47);
 			radioButton_Settings_IPv4__Manual.Name = "radioButton_Settings_IPv4__Manual";
 			radioButton_Settings_IPv4__Manual.Size = new Size(101, 16);
-			radioButton_Settings_IPv4__Manual.TabIndex = 2;
+			radioButton_Settings_IPv4__Manual.TabIndex = 204;
 			radioButton_Settings_IPv4__Manual.TabStop = true;
 			radioButton_Settings_IPv4__Manual.Text = "手动指定 IPv4";
 			radioButton_Settings_IPv4__Manual.UseVisualStyleBackColor = true;
@@ -974,7 +974,7 @@
 			comboBox_Settings_IPv4__From_URL.Location = new Point(191, 20);
 			comboBox_Settings_IPv4__From_URL.Name = "comboBox_Settings_IPv4__From_URL";
 			comboBox_Settings_IPv4__From_URL.Size = new Size(323, 20);
-			comboBox_Settings_IPv4__From_URL.TabIndex = 1;
+			comboBox_Settings_IPv4__From_URL.TabIndex = 203;
 			comboBox_Settings_IPv4__From_URL.SelectedIndexChanged += comboBox_Settings_IPv4__From_URL_SelectedIndexChanged;
 			// 
 			// radioButton_Settings_IPv4__From_URL
@@ -984,7 +984,7 @@
 			radioButton_Settings_IPv4__From_URL.Location = new Point(6, 21);
 			radioButton_Settings_IPv4__From_URL.Name = "radioButton_Settings_IPv4__From_URL";
 			radioButton_Settings_IPv4__From_URL.Size = new Size(155, 16);
-			radioButton_Settings_IPv4__From_URL.TabIndex = 0;
+			radioButton_Settings_IPv4__From_URL.TabIndex = 202;
 			radioButton_Settings_IPv4__From_URL.TabStop = true;
 			radioButton_Settings_IPv4__From_URL.Text = "通过 URL 获取公网 IPv4";
 			radioButton_Settings_IPv4__From_URL.UseVisualStyleBackColor = true;
@@ -996,11 +996,11 @@
 			tabPage_Security.Controls.Add(button_Security_Del);
 			tabPage_Security.Controls.Add(button_Security_Add);
 			tabPage_Security.Controls.Add(listView_Security);
-			tabPage_Security.Location = new Point(4, 26);
+			tabPage_Security.Location = new Point(4, 22);
 			tabPage_Security.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Security.Name = "tabPage_Security";
 			tabPage_Security.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Security.Size = new Size(532, 266);
+			tabPage_Security.Size = new Size(532, 270);
 			tabPage_Security.TabIndex = 2;
 			tabPage_Security.Text = "安全设置";
 			tabPage_Security.UseVisualStyleBackColor = true;
@@ -1015,7 +1015,7 @@
 			groupBox_Security__Property.Location = new Point(164, 5);
 			groupBox_Security__Property.Name = "groupBox_Security__Property";
 			groupBox_Security__Property.Size = new Size(362, 172);
-			groupBox_Security__Property.TabIndex = 2;
+			groupBox_Security__Property.TabIndex = 304;
 			groupBox_Security__Property.TabStop = false;
 			groupBox_Security__Property.Text = "属性";
 			// 
@@ -1027,7 +1027,7 @@
 			checkBox_Security__Save_To_Config.Location = new Point(6, 150);
 			checkBox_Security__Save_To_Config.Name = "checkBox_Security__Save_To_Config";
 			checkBox_Security__Save_To_Config.Size = new Size(132, 16);
-			checkBox_Security__Save_To_Config.TabIndex = 3;
+			checkBox_Security__Save_To_Config.TabIndex = 350;
 			checkBox_Security__Save_To_Config.Text = "保存到 Config 文件";
 			checkBox_Security__Save_To_Config.UseVisualStyleBackColor = true;
 			checkBox_Security__Save_To_Config.CheckedChanged += checkBox_Security__Save_To_Config_CheckedChanged;
@@ -1042,7 +1042,7 @@
 			tabControl_Security__Property.Name = "tabControl_Security__Property";
 			tabControl_Security__Property.SelectedIndex = 0;
 			tabControl_Security__Property.Size = new Size(350, 97);
-			tabControl_Security__Property.TabIndex = 2;
+			tabControl_Security__Property.TabIndex = 307;
 			// 
 			// tabPage_Security__Godaddy
 			// 
@@ -1068,7 +1068,7 @@
 			checkBox_Security_Godaddy__Secret.Location = new Point(288, 47);
 			checkBox_Security_Godaddy__Secret.Name = "checkBox_Security_Godaddy__Secret";
 			checkBox_Security_Godaddy__Secret.Size = new Size(48, 16);
-			checkBox_Security_Godaddy__Secret.TabIndex = 3;
+			checkBox_Security_Godaddy__Secret.TabIndex = 314;
 			checkBox_Security_Godaddy__Secret.Text = "显示";
 			checkBox_Security_Godaddy__Secret.UseVisualStyleBackColor = true;
 			checkBox_Security_Godaddy__Secret.CheckedChanged += checkBox_Security_Godaddy__Secret_CheckedChanged;
@@ -1080,7 +1080,7 @@
 			checkBox_Security_Godaddy__Key.Location = new Point(288, 20);
 			checkBox_Security_Godaddy__Key.Name = "checkBox_Security_Godaddy__Key";
 			checkBox_Security_Godaddy__Key.Size = new Size(48, 16);
-			checkBox_Security_Godaddy__Key.TabIndex = 3;
+			checkBox_Security_Godaddy__Key.TabIndex = 311;
 			checkBox_Security_Godaddy__Key.Text = "显示";
 			checkBox_Security_Godaddy__Key.UseVisualStyleBackColor = true;
 			checkBox_Security_Godaddy__Key.CheckedChanged += checkBox_Security_Godaddy__Key_CheckedChanged;
@@ -1092,7 +1092,7 @@
 			textBox_Security_Godaddy__Secret.Name = "textBox_Security_Godaddy__Secret";
 			textBox_Security_Godaddy__Secret.PasswordChar = '*';
 			textBox_Security_Godaddy__Secret.Size = new Size(211, 21);
-			textBox_Security_Godaddy__Secret.TabIndex = 2;
+			textBox_Security_Godaddy__Secret.TabIndex = 313;
 			textBox_Security_Godaddy__Secret.TextChanged += textBox_Security_Godaddy__Secret_TextChanged;
 			// 
 			// textBox_Security_Godaddy__Key
@@ -1102,7 +1102,7 @@
 			textBox_Security_Godaddy__Key.Name = "textBox_Security_Godaddy__Key";
 			textBox_Security_Godaddy__Key.PasswordChar = '*';
 			textBox_Security_Godaddy__Key.Size = new Size(211, 21);
-			textBox_Security_Godaddy__Key.TabIndex = 2;
+			textBox_Security_Godaddy__Key.TabIndex = 310;
 			textBox_Security_Godaddy__Key.TextChanged += textBox_Security_Godaddy__Key_TextChanged;
 			// 
 			// label_Security_Godaddy__Secret
@@ -1111,7 +1111,7 @@
 			label_Security_Godaddy__Secret.Location = new Point(6, 48);
 			label_Security_Godaddy__Secret.Name = "label_Security_Godaddy__Secret";
 			label_Security_Godaddy__Secret.Size = new Size(53, 12);
-			label_Security_Godaddy__Secret.TabIndex = 1;
+			label_Security_Godaddy__Secret.TabIndex = 312;
 			label_Security_Godaddy__Secret.Text = "Secret：";
 			// 
 			// label_Security_Godaddy__Key
@@ -1120,7 +1120,7 @@
 			label_Security_Godaddy__Key.Location = new Point(6, 21);
 			label_Security_Godaddy__Key.Name = "label_Security_Godaddy__Key";
 			label_Security_Godaddy__Key.Size = new Size(35, 12);
-			label_Security_Godaddy__Key.TabIndex = 1;
+			label_Security_Godaddy__Key.TabIndex = 309;
 			label_Security_Godaddy__Key.Text = "Key：";
 			// 
 			// linkLabel_Security_Godaddy__API
@@ -1129,7 +1129,7 @@
 			linkLabel_Security_Godaddy__API.Location = new Point(6, 3);
 			linkLabel_Security_Godaddy__API.Name = "linkLabel_Security_Godaddy__API";
 			linkLabel_Security_Godaddy__API.Size = new Size(185, 12);
-			linkLabel_Security_Godaddy__API.TabIndex = 0;
+			linkLabel_Security_Godaddy__API.TabIndex = 308;
 			linkLabel_Security_Godaddy__API.TabStop = true;
 			linkLabel_Security_Godaddy__API.Text = "https://developer.godaddy.com/";
 			linkLabel_Security_Godaddy__API.LinkClicked += linkLabel_Security__LinkClicked;
@@ -1155,7 +1155,7 @@
 			checkBox_Security_dynv6__token.Location = new Point(288, 20);
 			checkBox_Security_dynv6__token.Name = "checkBox_Security_dynv6__token";
 			checkBox_Security_dynv6__token.Size = new Size(48, 16);
-			checkBox_Security_dynv6__token.TabIndex = 4;
+			checkBox_Security_dynv6__token.TabIndex = 318;
 			checkBox_Security_dynv6__token.Text = "显示";
 			checkBox_Security_dynv6__token.UseVisualStyleBackColor = true;
 			checkBox_Security_dynv6__token.CheckedChanged += checkBox_Security_dynv6__token_CheckedChanged;
@@ -1167,7 +1167,7 @@
 			textBox_Security_dynv6__token.Name = "textBox_Security_dynv6__token";
 			textBox_Security_dynv6__token.PasswordChar = '*';
 			textBox_Security_dynv6__token.Size = new Size(211, 21);
-			textBox_Security_dynv6__token.TabIndex = 3;
+			textBox_Security_dynv6__token.TabIndex = 317;
 			textBox_Security_dynv6__token.TextChanged += textBox_Security_dynv6__token_TextChanged;
 			// 
 			// label_Security_dynv6__token
@@ -1176,7 +1176,7 @@
 			label_Security_dynv6__token.Location = new Point(6, 21);
 			label_Security_dynv6__token.Name = "label_Security_dynv6__token";
 			label_Security_dynv6__token.Size = new Size(47, 12);
-			label_Security_dynv6__token.TabIndex = 1;
+			label_Security_dynv6__token.TabIndex = 316;
 			label_Security_dynv6__token.Text = "token：";
 			// 
 			// linkLabel_Security_dynv6__API
@@ -1185,7 +1185,7 @@
 			linkLabel_Security_dynv6__API.Location = new Point(6, 3);
 			linkLabel_Security_dynv6__API.Name = "linkLabel_Security_dynv6__API";
 			linkLabel_Security_dynv6__API.Size = new Size(167, 12);
-			linkLabel_Security_dynv6__API.TabIndex = 0;
+			linkLabel_Security_dynv6__API.TabIndex = 315;
 			linkLabel_Security_dynv6__API.TabStop = true;
 			linkLabel_Security_dynv6__API.Text = "https://dynv6.com/docs/apis";
 			linkLabel_Security_dynv6__API.LinkClicked += linkLabel_Security__LinkClicked;
@@ -1211,7 +1211,7 @@
 			checkBox_Security_dynu__API_Key.Location = new Point(288, 20);
 			checkBox_Security_dynu__API_Key.Name = "checkBox_Security_dynu__API_Key";
 			checkBox_Security_dynu__API_Key.Size = new Size(48, 16);
-			checkBox_Security_dynu__API_Key.TabIndex = 5;
+			checkBox_Security_dynu__API_Key.TabIndex = 322;
 			checkBox_Security_dynu__API_Key.Text = "显示";
 			checkBox_Security_dynu__API_Key.UseVisualStyleBackColor = true;
 			checkBox_Security_dynu__API_Key.CheckedChanged += checkBox_Security_dynu__API_Key_CheckedChanged;
@@ -1223,7 +1223,7 @@
 			textBox_Security_dynu__API_Key.Name = "textBox_Security_dynu__API_Key";
 			textBox_Security_dynu__API_Key.PasswordChar = '*';
 			textBox_Security_dynu__API_Key.Size = new Size(211, 21);
-			textBox_Security_dynu__API_Key.TabIndex = 4;
+			textBox_Security_dynu__API_Key.TabIndex = 321;
 			textBox_Security_dynu__API_Key.TextChanged += textBox_Security_dynu__API_Key_TextChanged;
 			// 
 			// label_Security_dynu__API_Key
@@ -1232,7 +1232,7 @@
 			label_Security_dynu__API_Key.Location = new Point(6, 21);
 			label_Security_dynu__API_Key.Name = "label_Security_dynu__API_Key";
 			label_Security_dynu__API_Key.Size = new Size(59, 12);
-			label_Security_dynu__API_Key.TabIndex = 1;
+			label_Security_dynu__API_Key.TabIndex = 320;
 			label_Security_dynu__API_Key.Text = "API-Key：";
 			// 
 			// linkLabel_Security_dynu__API
@@ -1241,7 +1241,7 @@
 			linkLabel_Security_dynu__API.Location = new Point(6, 3);
 			linkLabel_Security_dynu__API.Name = "linkLabel_Security_dynu__API";
 			linkLabel_Security_dynu__API.Size = new Size(233, 12);
-			linkLabel_Security_dynu__API.TabIndex = 0;
+			linkLabel_Security_dynu__API.TabIndex = 319;
 			linkLabel_Security_dynu__API.TabStop = true;
 			linkLabel_Security_dynu__API.Text = "https://www.dynu.com/en-US/Support/API";
 			linkLabel_Security_dynu__API.LinkClicked += linkLabel_Security__LinkClicked;
@@ -1251,7 +1251,7 @@
 			textBox_Security__Property__Name.Location = new Point(95, 20);
 			textBox_Security__Property__Name.Name = "textBox_Security__Property__Name";
 			textBox_Security__Property__Name.Size = new Size(144, 21);
-			textBox_Security__Property__Name.TabIndex = 1;
+			textBox_Security__Property__Name.TabIndex = 306;
 			textBox_Security__Property__Name.TextChanged += textBox_Security__Property__Name_TextChanged;
 			// 
 			// label_Security__Property__Name
@@ -1260,7 +1260,7 @@
 			label_Security__Property__Name.Location = new Point(6, 23);
 			label_Security__Property__Name.Name = "label_Security__Property__Name";
 			label_Security__Property__Name.Size = new Size(77, 12);
-			label_Security__Property__Name.TabIndex = 0;
+			label_Security__Property__Name.TabIndex = 305;
 			label_Security__Property__Name.Text = "配置的名称：";
 			// 
 			// button_Security_Del
@@ -1269,7 +1269,7 @@
 			button_Security_Del.Location = new Point(35, 242);
 			button_Security_Del.Name = "button_Security_Del";
 			button_Security_Del.Size = new Size(23, 23);
-			button_Security_Del.TabIndex = 1;
+			button_Security_Del.TabIndex = 303;
 			button_Security_Del.Text = "-";
 			button_Security_Del.UseVisualStyleBackColor = true;
 			button_Security_Del.Click += button_Security_Del_Click;
@@ -1279,7 +1279,7 @@
 			button_Security_Add.Location = new Point(6, 242);
 			button_Security_Add.Name = "button_Security_Add";
 			button_Security_Add.Size = new Size(23, 23);
-			button_Security_Add.TabIndex = 1;
+			button_Security_Add.TabIndex = 302;
 			button_Security_Add.Text = "+";
 			button_Security_Add.UseVisualStyleBackColor = true;
 			button_Security_Add.Click += button_Security_Add_Click;
@@ -1294,7 +1294,7 @@
 			listView_Security.MultiSelect = false;
 			listView_Security.Name = "listView_Security";
 			listView_Security.Size = new Size(152, 231);
-			listView_Security.TabIndex = 0;
+			listView_Security.TabIndex = 301;
 			listView_Security.UseCompatibleStateImageBehavior = false;
 			listView_Security.View = View.Details;
 			listView_Security.SelectedIndexChanged += listView_Security_SelectedIndexChanged;
@@ -1340,11 +1340,11 @@
 			tabPage_Update_Action.Controls.Add(numericUpDown_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_UpdateIP);
-			tabPage_Update_Action.Location = new Point(4, 26);
+			tabPage_Update_Action.Location = new Point(4, 22);
 			tabPage_Update_Action.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Update_Action.Name = "tabPage_Update_Action";
 			tabPage_Update_Action.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Update_Action.Size = new Size(532, 266);
+			tabPage_Update_Action.Size = new Size(532, 270);
 			tabPage_Update_Action.TabIndex = 3;
 			tabPage_Update_Action.Text = "更新操作";
 			tabPage_Update_Action.UseVisualStyleBackColor = true;
@@ -1358,7 +1358,7 @@
 			groupBox_Action_IP_Change_PlaySound.Location = new Point(6, 216);
 			groupBox_Action_IP_Change_PlaySound.Name = "groupBox_Action_IP_Change_PlaySound";
 			groupBox_Action_IP_Change_PlaySound.Size = new Size(520, 49);
-			groupBox_Action_IP_Change_PlaySound.TabIndex = 8;
+			groupBox_Action_IP_Change_PlaySound.TabIndex = 412;
 			groupBox_Action_IP_Change_PlaySound.TabStop = false;
 			// 
 			// button_Action_IP_Change_StopSound
@@ -1367,7 +1367,7 @@
 			button_Action_IP_Change_StopSound.Location = new Point(414, 20);
 			button_Action_IP_Change_StopSound.Name = "button_Action_IP_Change_StopSound";
 			button_Action_IP_Change_StopSound.Size = new Size(100, 23);
-			button_Action_IP_Change_StopSound.TabIndex = 12;
+			button_Action_IP_Change_StopSound.TabIndex = 415;
 			button_Action_IP_Change_StopSound.Text = "停止播放";
 			button_Action_IP_Change_StopSound.UseVisualStyleBackColor = true;
 			button_Action_IP_Change_StopSound.Click += button_Action_IP_Change_StopSound_Click;
@@ -1378,7 +1378,7 @@
 			button_Action_IP_Change_PlaySound.Location = new Point(376, 20);
 			button_Action_IP_Change_PlaySound.Name = "button_Action_IP_Change_PlaySound";
 			button_Action_IP_Change_PlaySound.Size = new Size(32, 23);
-			button_Action_IP_Change_PlaySound.TabIndex = 11;
+			button_Action_IP_Change_PlaySound.TabIndex = 414;
 			button_Action_IP_Change_PlaySound.Text = "...";
 			button_Action_IP_Change_PlaySound.UseVisualStyleBackColor = true;
 			button_Action_IP_Change_PlaySound.Click += button_Action_IP_Change_PlaySound_Click;
@@ -1390,7 +1390,7 @@
 			textBox_Action_IP_Change_PlaySound.Name = "textBox_Action_IP_Change_PlaySound";
 			textBox_Action_IP_Change_PlaySound.ReadOnly = true;
 			textBox_Action_IP_Change_PlaySound.Size = new Size(364, 21);
-			textBox_Action_IP_Change_PlaySound.TabIndex = 10;
+			textBox_Action_IP_Change_PlaySound.TabIndex = 413;
 			textBox_Action_IP_Change_PlaySound.TextChanged += textBox_Action_IP_Change_PlaySound_TextChanged;
 			// 
 			// checkBox_Action_IP_Change_PlaySound
@@ -1399,7 +1399,7 @@
 			checkBox_Action_IP_Change_PlaySound.Location = new Point(6, 0);
 			checkBox_Action_IP_Change_PlaySound.Name = "checkBox_Action_IP_Change_PlaySound";
 			checkBox_Action_IP_Change_PlaySound.Size = new Size(132, 16);
-			checkBox_Action_IP_Change_PlaySound.TabIndex = 9;
+			checkBox_Action_IP_Change_PlaySound.TabIndex = 411;
 			checkBox_Action_IP_Change_PlaySound.Text = "IP变动时，播放音乐";
 			checkBox_Action_IP_Change_PlaySound.UseVisualStyleBackColor = true;
 			checkBox_Action_IP_Change_PlaySound.CheckedChanged += checkBox_Action_IP_Change_PlaySound_CheckedChanged;
@@ -1410,7 +1410,7 @@
 			checkBox_Action_IP_Change_Popup.Location = new Point(6, 194);
 			checkBox_Action_IP_Change_Popup.Name = "checkBox_Action_IP_Change_Popup";
 			checkBox_Action_IP_Change_Popup.Size = new Size(156, 16);
-			checkBox_Action_IP_Change_Popup.TabIndex = 7;
+			checkBox_Action_IP_Change_Popup.TabIndex = 410;
 			checkBox_Action_IP_Change_Popup.Text = "IP变动时，弹出提示窗口";
 			checkBox_Action_IP_Change_Popup.UseVisualStyleBackColor = true;
 			checkBox_Action_IP_Change_Popup.CheckedChanged += checkBox_Action_IP_Change_Popup_CheckedChanged;
@@ -1421,7 +1421,7 @@
 			numericUpDown_Action_Timeout.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
 			numericUpDown_Action_Timeout.Name = "numericUpDown_Action_Timeout";
 			numericUpDown_Action_Timeout.Size = new Size(60, 21);
-			numericUpDown_Action_Timeout.TabIndex = 6;
+			numericUpDown_Action_Timeout.TabIndex = 409;
 			numericUpDown_Action_Timeout.TextAlign = HorizontalAlignment.Center;
 			numericUpDown_Action_Timeout.Value = new decimal(new int[] { 15, 0, 0, 0 });
 			numericUpDown_Action_Timeout.ValueChanged += numericUpDown_Action_Timeout_ValueChanged;
@@ -1432,7 +1432,7 @@
 			label_Action_Timeout.Location = new Point(6, 173);
 			label_Action_Timeout.Name = "label_Action_Timeout";
 			label_Action_Timeout.Size = new Size(245, 12);
-			label_Action_Timeout.TabIndex = 5;
+			label_Action_Timeout.TabIndex = 408;
 			label_Action_Timeout.Text = "自动更新超时（单位：秒。0 = 无限等待）：";
 			// 
 			// groupBox_Action_Set_DNS_Server
@@ -1443,7 +1443,7 @@
 			groupBox_Action_Set_DNS_Server.Location = new Point(6, 71);
 			groupBox_Action_Set_DNS_Server.Name = "groupBox_Action_Set_DNS_Server";
 			groupBox_Action_Set_DNS_Server.Size = new Size(520, 94);
-			groupBox_Action_Set_DNS_Server.TabIndex = 4;
+			groupBox_Action_Set_DNS_Server.TabIndex = 406;
 			groupBox_Action_Set_DNS_Server.TabStop = false;
 			// 
 			// textBox_Action_Custom_DNS_List
@@ -1454,7 +1454,7 @@
 			textBox_Action_Custom_DNS_List.Name = "textBox_Action_Custom_DNS_List";
 			textBox_Action_Custom_DNS_List.ScrollBars = ScrollBars.Both;
 			textBox_Action_Custom_DNS_List.Size = new Size(514, 71);
-			textBox_Action_Custom_DNS_List.TabIndex = 5;
+			textBox_Action_Custom_DNS_List.TabIndex = 407;
 			textBox_Action_Custom_DNS_List.Text = "8.8.8.8\r\n8.8.4.4\r\n114.114.114.114\r\n//2001:4860:4860::8888\r\n//2001:4860:4860::8844";
 			textBox_Action_Custom_DNS_List.TextChanged += textBox_Action_Custom_DNS_List_TextChanged;
 			// 
@@ -1466,7 +1466,7 @@
 			checkBox_Action_Use_Custom_DNS.Location = new Point(6, 0);
 			checkBox_Action_Use_Custom_DNS.Name = "checkBox_Action_Use_Custom_DNS";
 			checkBox_Action_Use_Custom_DNS.Size = new Size(402, 16);
-			checkBox_Action_Use_Custom_DNS.TabIndex = 5;
+			checkBox_Action_Use_Custom_DNS.TabIndex = 405;
 			checkBox_Action_Use_Custom_DNS.Text = "设定解析域名的DNS服务器（一行一个。//表示注释。\"\"表示系统默认）";
 			checkBox_Action_Use_Custom_DNS.UseVisualStyleBackColor = true;
 			checkBox_Action_Use_Custom_DNS.CheckedChanged += checkBox_Action_Use_Custom_DNS_CheckedChanged;
@@ -1479,7 +1479,7 @@
 			checkBox_Action_DNS_Lookup_First.Location = new Point(6, 49);
 			checkBox_Action_DNS_Lookup_First.Name = "checkBox_Action_DNS_Lookup_First";
 			checkBox_Action_DNS_Lookup_First.Size = new Size(228, 16);
-			checkBox_Action_DNS_Lookup_First.TabIndex = 3;
+			checkBox_Action_DNS_Lookup_First.TabIndex = 404;
 			checkBox_Action_DNS_Lookup_First.Text = "IP变动时，才执行更新（先解析域名）";
 			checkBox_Action_DNS_Lookup_First.UseVisualStyleBackColor = true;
 			checkBox_Action_DNS_Lookup_First.CheckedChanged += checkBox_Action_DNS_Lookup_First_CheckedChanged;
@@ -1490,7 +1490,7 @@
 			numericUpDown_Action_AutoAction_Interval.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
 			numericUpDown_Action_AutoAction_Interval.Name = "numericUpDown_Action_AutoAction_Interval";
 			numericUpDown_Action_AutoAction_Interval.Size = new Size(60, 21);
-			numericUpDown_Action_AutoAction_Interval.TabIndex = 2;
+			numericUpDown_Action_AutoAction_Interval.TabIndex = 403;
 			numericUpDown_Action_AutoAction_Interval.TextAlign = HorizontalAlignment.Center;
 			numericUpDown_Action_AutoAction_Interval.Value = new decimal(new int[] { 600, 0, 0, 0 });
 			numericUpDown_Action_AutoAction_Interval.ValueChanged += numericUpDown_Action_AutoAction_Interval_ValueChanged;
@@ -1503,7 +1503,7 @@
 			checkBox_Action_AutoAction_Interval.Location = new Point(6, 27);
 			checkBox_Action_AutoAction_Interval.Name = "checkBox_Action_AutoAction_Interval";
 			checkBox_Action_AutoAction_Interval.Size = new Size(204, 16);
-			checkBox_Action_AutoAction_Interval.TabIndex = 1;
+			checkBox_Action_AutoAction_Interval.TabIndex = 402;
 			checkBox_Action_AutoAction_Interval.Text = "自动执行操作的时间间隔（秒）：";
 			checkBox_Action_AutoAction_Interval.UseVisualStyleBackColor = true;
 			checkBox_Action_AutoAction_Interval.CheckedChanged += checkBox_Action_AutoAction_Interval_CheckedChanged;
@@ -1516,7 +1516,7 @@
 			checkBox_Action_UpdateIP.Location = new Point(6, 5);
 			checkBox_Action_UpdateIP.Name = "checkBox_Action_UpdateIP";
 			checkBox_Action_UpdateIP.Size = new Size(96, 16);
-			checkBox_Action_UpdateIP.TabIndex = 0;
+			checkBox_Action_UpdateIP.TabIndex = 401;
 			checkBox_Action_UpdateIP.Text = "更新域名的IP";
 			checkBox_Action_UpdateIP.UseVisualStyleBackColor = true;
 			checkBox_Action_UpdateIP.CheckedChanged += checkBox_Action_UpdateIP_CheckedChanged;
@@ -1528,11 +1528,11 @@
 			tabPage_Fix_hosts.Controls.Add(textBox_Fix_hosts__Path);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Content);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Path);
-			tabPage_Fix_hosts.Location = new Point(4, 26);
+			tabPage_Fix_hosts.Location = new Point(4, 22);
 			tabPage_Fix_hosts.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Fix_hosts.Name = "tabPage_Fix_hosts";
 			tabPage_Fix_hosts.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Fix_hosts.Size = new Size(532, 266);
+			tabPage_Fix_hosts.Size = new Size(532, 270);
 			tabPage_Fix_hosts.TabIndex = 4;
 			tabPage_Fix_hosts.Text = "修正 hosts";
 			tabPage_Fix_hosts.UseVisualStyleBackColor = true;
@@ -1546,7 +1546,7 @@
 			textBox_Fix_hosts__Content.ReadOnly = true;
 			textBox_Fix_hosts__Content.ScrollBars = ScrollBars.Both;
 			textBox_Fix_hosts__Content.Size = new Size(520, 197);
-			textBox_Fix_hosts__Content.TabIndex = 3;
+			textBox_Fix_hosts__Content.TabIndex = 505;
 			textBox_Fix_hosts__Content.Text = "72.246.164.14\tapi.godaddy.com\r\n162.216.242.29\twww.dynu.com\r\n162.216.242.253\tapi.dynu.com\r\n172.67.74.152\tapi.ipify.org";
 			// 
 			// button_Fix_hosts__Path_Browser
@@ -1555,7 +1555,7 @@
 			button_Fix_hosts__Path_Browser.Location = new Point(451, 19);
 			button_Fix_hosts__Path_Browser.Name = "button_Fix_hosts__Path_Browser";
 			button_Fix_hosts__Path_Browser.Size = new Size(75, 23);
-			button_Fix_hosts__Path_Browser.TabIndex = 2;
+			button_Fix_hosts__Path_Browser.TabIndex = 503;
 			button_Fix_hosts__Path_Browser.Text = "打开目录";
 			button_Fix_hosts__Path_Browser.UseVisualStyleBackColor = true;
 			button_Fix_hosts__Path_Browser.Click += button_Fix_hosts__Path_Browser_Click;
@@ -1567,7 +1567,7 @@
 			textBox_Fix_hosts__Path.Name = "textBox_Fix_hosts__Path";
 			textBox_Fix_hosts__Path.ReadOnly = true;
 			textBox_Fix_hosts__Path.Size = new Size(439, 21);
-			textBox_Fix_hosts__Path.TabIndex = 1;
+			textBox_Fix_hosts__Path.TabIndex = 502;
 			// 
 			// label_Fix_hosts__Content
 			// 
@@ -1575,7 +1575,7 @@
 			label_Fix_hosts__Content.Location = new Point(6, 53);
 			label_Fix_hosts__Content.Name = "label_Fix_hosts__Content";
 			label_Fix_hosts__Content.Size = new Size(101, 12);
-			label_Fix_hosts__Content.TabIndex = 0;
+			label_Fix_hosts__Content.TabIndex = 504;
 			label_Fix_hosts__Content.Text = "并添加以下记录：";
 			// 
 			// label_Fix_hosts__Path
@@ -1584,7 +1584,7 @@
 			label_Fix_hosts__Path.Location = new Point(6, 6);
 			label_Fix_hosts__Path.Name = "label_Fix_hosts__Path";
 			label_Fix_hosts__Path.Size = new Size(293, 12);
-			label_Fix_hosts__Path.TabIndex = 0;
+			label_Fix_hosts__Path.TabIndex = 501;
 			label_Fix_hosts__Path.Text = "如果出现访问部分域名不正常，可以尝试修改 hosts：";
 			// 
 			// groupBox_Settings_Preview
@@ -1612,8 +1612,8 @@
 			groupBox_Settings_Preview.Controls.Add(label_Settings_Preview__Update_Type);
 			groupBox_Settings_Preview.Location = new Point(558, 497);
 			groupBox_Settings_Preview.Name = "groupBox_Settings_Preview";
-			groupBox_Settings_Preview.Size = new Size(340, 221);
-			groupBox_Settings_Preview.TabIndex = 6;
+			groupBox_Settings_Preview.Size = new Size(364, 221);
+			groupBox_Settings_Preview.TabIndex = 600;
 			groupBox_Settings_Preview.TabStop = false;
 			groupBox_Settings_Preview.Text = "【预览设置】";
 			// 
@@ -1623,7 +1623,7 @@
 			label_Settings_Preview__Timeout_Val.Location = new Point(119, 197);
 			label_Settings_Preview__Timeout_Val.Name = "label_Settings_Preview__Timeout_Val";
 			label_Settings_Preview__Timeout_Val.Size = new Size(17, 12);
-			label_Settings_Preview__Timeout_Val.TabIndex = 0;
+			label_Settings_Preview__Timeout_Val.TabIndex = 620;
 			label_Settings_Preview__Timeout_Val.Text = "15";
 			// 
 			// label_Settings_Preview__DNS_Server_Val
@@ -1632,7 +1632,7 @@
 			label_Settings_Preview__DNS_Server_Val.Location = new Point(119, 177);
 			label_Settings_Preview__DNS_Server_Val.Name = "label_Settings_Preview__DNS_Server_Val";
 			label_Settings_Preview__DNS_Server_Val.Size = new Size(41, 12);
-			label_Settings_Preview__DNS_Server_Val.TabIndex = 0;
+			label_Settings_Preview__DNS_Server_Val.TabIndex = 618;
 			label_Settings_Preview__DNS_Server_Val.Text = "自定义";
 			// 
 			// label_Settings_Preview__DNS_Lookup_First_Val
@@ -1641,7 +1641,7 @@
 			label_Settings_Preview__DNS_Lookup_First_Val.Location = new Point(119, 157);
 			label_Settings_Preview__DNS_Lookup_First_Val.Name = "label_Settings_Preview__DNS_Lookup_First_Val";
 			label_Settings_Preview__DNS_Lookup_First_Val.Size = new Size(17, 12);
-			label_Settings_Preview__DNS_Lookup_First_Val.TabIndex = 0;
+			label_Settings_Preview__DNS_Lookup_First_Val.TabIndex = 616;
 			label_Settings_Preview__DNS_Lookup_First_Val.Text = "√";
 			// 
 			// label_Settings_Preview__Action_AutoUpdate_Val
@@ -1650,7 +1650,7 @@
 			label_Settings_Preview__Action_AutoUpdate_Val.Location = new Point(119, 137);
 			label_Settings_Preview__Action_AutoUpdate_Val.Name = "label_Settings_Preview__Action_AutoUpdate_Val";
 			label_Settings_Preview__Action_AutoUpdate_Val.Size = new Size(47, 12);
-			label_Settings_Preview__Action_AutoUpdate_Val.TabIndex = 0;
+			label_Settings_Preview__Action_AutoUpdate_Val.TabIndex = 614;
 			label_Settings_Preview__Action_AutoUpdate_Val.Text = "每 600s";
 			// 
 			// label_Settings_Preview__Action_UpdateIP_Val
@@ -1659,7 +1659,7 @@
 			label_Settings_Preview__Action_UpdateIP_Val.Location = new Point(119, 117);
 			label_Settings_Preview__Action_UpdateIP_Val.Name = "label_Settings_Preview__Action_UpdateIP_Val";
 			label_Settings_Preview__Action_UpdateIP_Val.Size = new Size(17, 12);
-			label_Settings_Preview__Action_UpdateIP_Val.TabIndex = 0;
+			label_Settings_Preview__Action_UpdateIP_Val.TabIndex = 612;
 			label_Settings_Preview__Action_UpdateIP_Val.Text = "√";
 			// 
 			// label_Settings_Preview__Security_Val
@@ -1668,7 +1668,7 @@
 			label_Settings_Preview__Security_Val.Location = new Point(119, 97);
 			label_Settings_Preview__Security_Val.Name = "label_Settings_Preview__Security_Val";
 			label_Settings_Preview__Security_Val.Size = new Size(83, 12);
-			label_Settings_Preview__Security_Val.TabIndex = 0;
+			label_Settings_Preview__Security_Val.TabIndex = 610;
 			label_Settings_Preview__Security_Val.Text = "xx 个配置文件";
 			// 
 			// label_Settings_Preview__Set_IPv6_Val
@@ -1677,7 +1677,7 @@
 			label_Settings_Preview__Set_IPv6_Val.Location = new Point(119, 77);
 			label_Settings_Preview__Set_IPv6_Val.Name = "label_Settings_Preview__Set_IPv6_Val";
 			label_Settings_Preview__Set_IPv6_Val.Size = new Size(125, 12);
-			label_Settings_Preview__Set_IPv6_Val.TabIndex = 0;
+			label_Settings_Preview__Set_IPv6_Val.TabIndex = 608;
 			label_Settings_Preview__Set_IPv6_Val.Text = "Server 接受连接的 IP";
 			// 
 			// label_Settings_Preview__Set_IPv4_Val
@@ -1686,7 +1686,7 @@
 			label_Settings_Preview__Set_IPv4_Val.Location = new Point(119, 57);
 			label_Settings_Preview__Set_IPv4_Val.Name = "label_Settings_Preview__Set_IPv4_Val";
 			label_Settings_Preview__Set_IPv4_Val.Size = new Size(125, 12);
-			label_Settings_Preview__Set_IPv4_Val.TabIndex = 0;
+			label_Settings_Preview__Set_IPv4_Val.TabIndex = 606;
 			label_Settings_Preview__Set_IPv4_Val.Text = "Server 接受连接的 IP";
 			// 
 			// label_Settings_Preview__Ping_Val
@@ -1695,7 +1695,7 @@
 			label_Settings_Preview__Ping_Val.Location = new Point(119, 37);
 			label_Settings_Preview__Ping_Val.Name = "label_Settings_Preview__Ping_Val";
 			label_Settings_Preview__Ping_Val.Size = new Size(23, 12);
-			label_Settings_Preview__Ping_Val.TabIndex = 0;
+			label_Settings_Preview__Ping_Val.TabIndex = 604;
 			label_Settings_Preview__Ping_Val.Text = "xxx";
 			// 
 			// label_Settings_Preview__Update_Type_Val
@@ -1704,7 +1704,7 @@
 			label_Settings_Preview__Update_Type_Val.Location = new Point(119, 17);
 			label_Settings_Preview__Update_Type_Val.Name = "label_Settings_Preview__Update_Type_Val";
 			label_Settings_Preview__Update_Type_Val.Size = new Size(137, 12);
-			label_Settings_Preview__Update_Type_Val.TabIndex = 0;
+			label_Settings_Preview__Update_Type_Val.TabIndex = 602;
 			label_Settings_Preview__Update_Type_Val.Text = "xxx.xxxx.xxx.xxx:xxxxx";
 			// 
 			// label_Settings_Preview__Timeout
@@ -1713,7 +1713,7 @@
 			label_Settings_Preview__Timeout.Location = new Point(6, 197);
 			label_Settings_Preview__Timeout.Name = "label_Settings_Preview__Timeout";
 			label_Settings_Preview__Timeout.Size = new Size(83, 12);
-			label_Settings_Preview__Timeout.TabIndex = 0;
+			label_Settings_Preview__Timeout.TabIndex = 619;
 			label_Settings_Preview__Timeout.Text = "更新超时(s)：";
 			// 
 			// label_Settings_Preview__DNS_Server
@@ -1722,7 +1722,7 @@
 			label_Settings_Preview__DNS_Server.Location = new Point(6, 177);
 			label_Settings_Preview__DNS_Server.Name = "label_Settings_Preview__DNS_Server";
 			label_Settings_Preview__DNS_Server.Size = new Size(77, 12);
-			label_Settings_Preview__DNS_Server.TabIndex = 0;
+			label_Settings_Preview__DNS_Server.TabIndex = 617;
 			label_Settings_Preview__DNS_Server.Text = "DNS 服务器：";
 			// 
 			// label_Settings_Preview__DNS_Lookup_First
@@ -1731,7 +1731,7 @@
 			label_Settings_Preview__DNS_Lookup_First.Location = new Point(6, 157);
 			label_Settings_Preview__DNS_Lookup_First.Name = "label_Settings_Preview__DNS_Lookup_First";
 			label_Settings_Preview__DNS_Lookup_First.Size = new Size(77, 12);
-			label_Settings_Preview__DNS_Lookup_First.TabIndex = 0;
+			label_Settings_Preview__DNS_Lookup_First.TabIndex = 615;
 			label_Settings_Preview__DNS_Lookup_First.Text = "先解析域名：";
 			// 
 			// label_Settings_Preview__Action_AutoUpdate
@@ -1740,7 +1740,7 @@
 			label_Settings_Preview__Action_AutoUpdate.Location = new Point(6, 137);
 			label_Settings_Preview__Action_AutoUpdate.Name = "label_Settings_Preview__Action_AutoUpdate";
 			label_Settings_Preview__Action_AutoUpdate.Size = new Size(65, 12);
-			label_Settings_Preview__Action_AutoUpdate.TabIndex = 0;
+			label_Settings_Preview__Action_AutoUpdate.TabIndex = 613;
 			label_Settings_Preview__Action_AutoUpdate.Text = "自动更新：";
 			// 
 			// label_Settings_Preview__Action_UpdateIP
@@ -1749,7 +1749,7 @@
 			label_Settings_Preview__Action_UpdateIP.Location = new Point(6, 117);
 			label_Settings_Preview__Action_UpdateIP.Name = "label_Settings_Preview__Action_UpdateIP";
 			label_Settings_Preview__Action_UpdateIP.Size = new Size(83, 12);
-			label_Settings_Preview__Action_UpdateIP.TabIndex = 0;
+			label_Settings_Preview__Action_UpdateIP.TabIndex = 611;
 			label_Settings_Preview__Action_UpdateIP.Text = "更新域名 IP：";
 			// 
 			// label_Settings_Preview__Security
@@ -1757,9 +1757,9 @@
 			label_Settings_Preview__Security.AutoSize = true;
 			label_Settings_Preview__Security.Location = new Point(6, 97);
 			label_Settings_Preview__Security.Name = "label_Settings_Preview__Security";
-			label_Settings_Preview__Security.Size = new Size(107, 12);
-			label_Settings_Preview__Security.TabIndex = 0;
-			label_Settings_Preview__Security.Text = "Security Profile:";
+			label_Settings_Preview__Security.Size = new Size(65, 12);
+			label_Settings_Preview__Security.TabIndex = 609;
+			label_Settings_Preview__Security.Text = "安全设置：";
 			// 
 			// label_Settings_Preview__Set_IPv6
 			// 
@@ -1767,7 +1767,7 @@
 			label_Settings_Preview__Set_IPv6.Location = new Point(6, 77);
 			label_Settings_Preview__Set_IPv6.Name = "label_Settings_Preview__Set_IPv6";
 			label_Settings_Preview__Set_IPv6.Size = new Size(65, 12);
-			label_Settings_Preview__Set_IPv6.TabIndex = 0;
+			label_Settings_Preview__Set_IPv6.TabIndex = 607;
 			label_Settings_Preview__Set_IPv6.Text = "设置IPv6：";
 			// 
 			// label_Settings_Preview__Set_IPv4
@@ -1776,7 +1776,7 @@
 			label_Settings_Preview__Set_IPv4.Location = new Point(6, 57);
 			label_Settings_Preview__Set_IPv4.Name = "label_Settings_Preview__Set_IPv4";
 			label_Settings_Preview__Set_IPv4.Size = new Size(65, 12);
-			label_Settings_Preview__Set_IPv4.TabIndex = 0;
+			label_Settings_Preview__Set_IPv4.TabIndex = 605;
 			label_Settings_Preview__Set_IPv4.Text = "设置IPv4：";
 			// 
 			// label_Settings_Preview__Ping
@@ -1785,7 +1785,7 @@
 			label_Settings_Preview__Ping.Location = new Point(6, 37);
 			label_Settings_Preview__Ping.Name = "label_Settings_Preview__Ping";
 			label_Settings_Preview__Ping.Size = new Size(77, 12);
-			label_Settings_Preview__Ping.TabIndex = 0;
+			label_Settings_Preview__Ping.TabIndex = 603;
 			label_Settings_Preview__Ping.Text = "Ping（ms）：";
 			// 
 			// label_Settings_Preview__Update_Type
@@ -1794,7 +1794,7 @@
 			label_Settings_Preview__Update_Type.Location = new Point(6, 17);
 			label_Settings_Preview__Update_Type.Name = "label_Settings_Preview__Update_Type";
 			label_Settings_Preview__Update_Type.Size = new Size(65, 12);
-			label_Settings_Preview__Update_Type.TabIndex = 0;
+			label_Settings_Preview__Update_Type.TabIndex = 601;
 			label_Settings_Preview__Update_Type.Text = "更新方式：";
 			// 
 			// linkLabel_WebSite
@@ -1804,7 +1804,7 @@
 			linkLabel_WebSite.Location = new Point(601, 760);
 			linkLabel_WebSite.Name = "linkLabel_WebSite";
 			linkLabel_WebSite.Size = new Size(29, 12);
-			linkLabel_WebSite.TabIndex = 7;
+			linkLabel_WebSite.TabIndex = 701;
 			linkLabel_WebSite.TabStop = true;
 			linkLabel_WebSite.Text = "官网";
 			linkLabel_WebSite.LinkClicked += linkLabel_WebSite_LinkClicked;
@@ -1816,7 +1816,7 @@
 			linkLabel_Github.Location = new Point(554, 760);
 			linkLabel_Github.Name = "linkLabel_Github";
 			linkLabel_Github.Size = new Size(41, 12);
-			linkLabel_Github.TabIndex = 7;
+			linkLabel_Github.TabIndex = 700;
 			linkLabel_Github.TabStop = true;
 			linkLabel_Github.Text = "github";
 			linkLabel_Github.LinkClicked += linkLabel_Github_LinkClicked;
@@ -1824,10 +1824,10 @@
 			// button_Update
 			// 
 			button_Update.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-			button_Update.Location = new Point(798, 746);
+			button_Update.Location = new Point(822, 746);
 			button_Update.Name = "button_Update";
 			button_Update.Size = new Size(100, 23);
-			button_Update.TabIndex = 8;
+			button_Update.TabIndex = 702;
 			button_Update.Text = "执行更新操作";
 			button_Update.UseVisualStyleBackColor = true;
 			button_Update.Click += button_Update_Click;
@@ -1860,7 +1860,7 @@
 			// 
 			AutoScaleDimensions = new SizeF(6F, 12F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(910, 781);
+			ClientSize = new Size(934, 781);
 			Controls.Add(button_Update);
 			Controls.Add(linkLabel_Github);
 			Controls.Add(linkLabel_WebSite);
