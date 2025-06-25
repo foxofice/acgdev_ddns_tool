@@ -47,16 +47,16 @@
     <None Update="Files\Languages\en-US.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\FF7CHOCO.MID">
+    <None Update="Files\Sound\FF7CHOCO.MID">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\PAL_015.MID">
+    <None Update="Files\Sound\PAL_015.MID">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\Zwei_幻の大地.mid">
+    <None Update="Files\Sound\Zwei_幻の大地.mid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Sound\笑傲江湖.mid">
+    <None Update="Files\Sound\笑傲江湖.mid">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

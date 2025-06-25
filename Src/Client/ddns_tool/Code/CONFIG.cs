@@ -134,14 +134,14 @@ namespace ddns_tool
 		//【更新操作】
 		internal class UPDATE_ACTION
 		{
-			internal static bool			m_s_UpdateIP				= true;						// 更新域名的 IP
-			internal static bool			m_s_DNS_Lookup_First		= true;						// 先解析域名
-			internal static bool			m_s_Use_Custom_DNS			= true;						// 是否使用自定义 DNS 服务器
-			internal static List<string>	m_s_Custom_DNS_List			= new();					// 自定义 DNS 服务器列表
-			internal static int				m_s_Timeout					= 15;						// 自动更新超时（单位：秒。0 = 无限等待）
-			internal static bool			m_s_IP_Change_Popup			= false;					// IP变动时，弹出提示窗口
-			internal static bool			m_s_IP_Change_Play_Sound	= false;					// IP变动时，播放音乐
-			internal static string			m_s_IP_Change_Sound_Path	= "Sound\\FF7CHOCO.MID";	// 音乐路径
+			internal static bool			m_s_UpdateIP				= true;		// 更新域名的 IP
+			internal static bool			m_s_DNS_Lookup_First		= true;		// 先解析域名
+			internal static bool			m_s_Use_Custom_DNS			= true;		// 是否使用自定义 DNS 服务器
+			internal static List<string>	m_s_Custom_DNS_List			= new();	// 自定义 DNS 服务器列表
+			internal static int				m_s_Timeout					= 15;		// 自动更新超时（单位：秒。0 = 无限等待）
+			internal static bool			m_s_IP_Change_Popup			= false;	// IP变动时，弹出提示窗口
+			internal static bool			m_s_IP_Change_Play_Sound	= false;	// IP变动时，播放音乐
+			internal static string			m_s_IP_Change_Sound_Path	= "Files\\Sound\\FF7CHOCO.MID";	// 音乐路径
 		};
 
 		//【日志记录】
