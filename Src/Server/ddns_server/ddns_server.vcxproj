@@ -108,6 +108,9 @@
     <Text Include="conf\ddns_server.txt">
       <DeploymentContent>false</DeploymentContent>
     </Text>
+    <Text Include="Files\Languages\en-US.txt" />
+    <Text Include="Files\Languages\zh-CN.txt" />
+    <Text Include="Files\Languages\zh-TW.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="copy_dlls.cmd" />

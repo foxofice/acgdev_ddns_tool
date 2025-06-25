@@ -19,4 +19,8 @@ set DST_DIR=%2
 %EXE%	%SRC_DIR%\zlib.dll				%DST_DIR%\zlib.dll
 %EXE%	%SRC_DIR%\zstd.dll				%DST_DIR%\zstd.dll
 
+%EXE%	Files\Languages\en-US.txt		%DST_DIR%\Files\Languages\en-US.txt
+%EXE%	Files\Languages\zh-CN.txt		%DST_DIR%\Files\Languages\zh-CN.txt
+%EXE%	Files\Languages\zh-TW.txt		%DST_DIR%\Files\Languages\zh-TW.txt
+
 if not exist %DST_DIR%\conf\ddns_server.txt	%EXE% conf\ddns_server.txt %DST_DIR%\conf\ddns_server.txt

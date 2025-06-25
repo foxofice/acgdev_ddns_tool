@@ -78,7 +78,7 @@ namespace ddns_lib
 
 			if(m_s_LanguagesList.TryGetValue(culture_name.ToLower(), out lang))
 				m_s_current_language = lang;
-			else if(m_s_LanguagesList.TryGetValue("en-US", out lang))
+			else if(m_s_LanguagesList.TryGetValue("en-US".ToLower(), out lang))
 				m_s_current_language = lang;
 			else
 				m_s_current_language = null;

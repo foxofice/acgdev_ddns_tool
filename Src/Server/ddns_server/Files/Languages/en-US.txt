@@ -1,0 +1,16 @@
+//-------------------------------------------------- ddns_lib
+0: DNS_Lookup failed ({0:s})
+1: DNS_Lookup failed
+2: DNS_Lookup({0:s}) {1:s}
+3: Invalid IP format ({0:s})
+4: Invalid IP{0:s} ({1:s})
+5: Connecting to {0:s}
+6: Updating "{0:s} record"...
+7: Updated "{0:s} record" successfully ({1:s})
+8: Failed to update "{0:s} record" ({1:s}) [ip = {2:s}, StatusCode = {3:s}, ReasonPhrase = {4:s}]
+9: Failed to update "{0:s} record" ({1:s}) [ip = {2:s}]
+10: ({0:s}) Website returned update result: {1:s}
+11: Failed to update "{0:s} record" ({1:s}) [{2:s} = {3:s}]
+12: Failed to obtain "Domain ID" ({0:s})
+13: Updated "{0:s} record" successfully ({1:s}) (remote result: {2:s})
+14: IP{0:s} unchanged, no update required

@@ -14,7 +14,7 @@ namespace ddns_server_CLR
 {
 
 // 初始化
-NNN_API void	DoInit();
+NNN_API void	DoInit(const WCHAR *culture = L"");
 
 // 更新 IP 记录
 NNN_API void	update_domains(	__inout std::vector<struct s_Domain>	&domains,

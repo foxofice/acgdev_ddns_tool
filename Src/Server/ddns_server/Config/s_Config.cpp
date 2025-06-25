@@ -51,6 +51,11 @@ void s_Config::Reset()
 	LOGIN.m_timeout					= 20;
 
 	//==================================================
+	// 多语言
+	//==================================================
+	LANGUAGES.m_culture				= L"zh-CN";
+
+	//==================================================
 	// 日志记录
 	//==================================================
 	_STRCPY(LOG.m_filename,	"Logs/%04d%02d%02d.log");
@@ -160,6 +165,17 @@ HRESULT s_Config::Read_Config(const WCHAR conf_filename[MAX_PATH], bool reset)
 		if(!_wcsicmp(w1, L"login.timeout"))
 		{
 			LOGIN.m_timeout = NNN::Text::ToUINT(w2);
+			continue;
+		}
+
+		//============================================================
+		// 多语言
+		//============================================================
+
+		// 语言区域（默认：zh-CN）
+		if(!_wcsicmp(w1, L"languages.culture"))
+		{
+			LANGUAGES.m_culture = w2;
 			continue;
 		}
 

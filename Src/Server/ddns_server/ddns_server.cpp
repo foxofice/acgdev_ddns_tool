@@ -74,7 +74,7 @@ HRESULT DoInit()
 	V_RETURN( Socket::DoInit() );
 
 	// ³õÊ¼»¯ ddns_server_CLR
-	ddns_server_CLR::DoInit();
+	ddns_server_CLR::DoInit(Config::g_config->LANGUAGES.m_culture.c_str());
 
 	return S_OK;
 }

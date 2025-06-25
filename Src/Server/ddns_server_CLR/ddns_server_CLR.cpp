@@ -30,9 +30,13 @@ void Add_Log(String ^txt, Color /*c*/)
  * ≥ı ºªØ
  * DoInit()
  *==============================================================*/
-void DoInit()
+void DoInit(const WCHAR *culture)
 {
 	ddns_lib::LIB::EVENTS::Event_On_AddLog += gcnew ddns_lib::LIB::EVENTS::e_Add_Log(&Add_Log);
+
+	// ∂‡”Ô—‘
+	ddns_lib::LANGUAGES::read_list();
+	ddns_lib::LANGUAGES::set_language(gcnew System::String(culture));
 }
 
 
