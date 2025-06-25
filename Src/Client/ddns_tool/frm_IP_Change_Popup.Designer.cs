@@ -43,7 +43,7 @@
 			listView_Main.Location = new Point(0, 0);
 			listView_Main.Margin = new Padding(3, 2, 3, 2);
 			listView_Main.Name = "listView_Main";
-			listView_Main.Size = new Size(413, 244);
+			listView_Main.Size = new Size(449, 244);
 			listView_Main.TabIndex = 0;
 			listView_Main.UseCompatibleStateImageBehavior = false;
 			listView_Main.View = View.Details;
@@ -57,18 +57,18 @@
 			// columnHeader_IPv4
 			// 
 			columnHeader_IPv4.Text = "IPv4 变化";
-			columnHeader_IPv4.Width = 66;
+			columnHeader_IPv4.Width = 84;
 			// 
 			// columnHeader_IPv6
 			// 
 			columnHeader_IPv6.Text = "IPv6 变化";
-			columnHeader_IPv6.Width = 66;
+			columnHeader_IPv6.Width = 84;
 			// 
 			// frm_IP_Change_Popup
 			// 
 			AutoScaleDimensions = new SizeF(6F, 12F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(413, 244);
+			ClientSize = new Size(449, 244);
 			Controls.Add(listView_Main);
 			Font = new Font("新宋体", 9F);
 			Margin = new Padding(3, 2, 3, 2);

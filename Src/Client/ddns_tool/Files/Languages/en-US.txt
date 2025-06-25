@@ -1,0 +1,195 @@
+//-------------------------------------------------- ddns_lib
+0: DNS_Lookup failed ({0:s})
+1: DNS_Lookup failed
+2: DNS_Lookup({0:s}) {1:s}
+3: Invalid IP format ({0:s})
+4: Invalid IP{0:s} ({1:s})
+5: Connecting to {0:s}
+6: Updating "{0:s} record"...
+7: Updated "{0:s} record" successfully ({1:s})
+8: Failed to update "{0:s} record" ({1:s}) [ip = {2:s}, StatusCode = {3:s}, ReasonPhrase = {4:s}]
+9: Failed to update "{0:s} record" ({1:s}) [ip = {2:s}]
+10: ({0:s}) Website returned update result: {1:s}
+11: Failed to update "{0:s} record" ({1:s}) [{2:s} = {3:s}]
+12: Failed to obtain "Domain ID" ({0:s})
+13: Updated "{0:s} record" successfully ({1:s}) (remote result: {2:s})
+14: IP{0:s} unchanged, no update required
+
+//-------------------------------------------------- General
+50: OK
+51: Show
+52: Open Dir
+
+//-------------------------------------------------- CONFIG
+100: read configuration file {0:s} successfully
+101: Update Method (
+102: ,
+103: )
+104: Server Address/Port
+105: Username for Server Login
+106: Password for Server Login
+107: Show Password
+108: Auto Ping Server
+109: IP{0:s} Retrieval Method
+110: URL for Checking Public IP{0:s}
+111: Set IP{0:s}/Previous IP{0:s}
+112: (0 = Obtain Public IP via URL, 1 = Manually Set IP, 2 = Client IP Accepted by Server)
+113: Security Profile
+114: Update Domain's IP
+115: Auto Execute Operation
+116: Time Interval for Auto Operation (seconds)
+117: DNS Lookup First
+118: Use Custom DNS Server
+119: Custom DNS Server List (one per line. // for comments. "" for system default)
+120: Auto Update Timeout (seconds, 0 = infinite)
+121: Show Popup on IP Change
+122: Play Music on IP Change
+123: Music Path
+124: Maximum Log Lines
+125: Save to Log File
+126: Domain
+127: Save config File {0:s}
+
+//-------------------------------------------------- frm_Domain
+200: Add
+201: Edit
+202: Domain:
+203: Type:
+204: Profile:
+205: Update IP{0:s}
+
+250: TTL (s, optional):
+251: Auto IP{0:s}
+252: {0:s} already exists, please re-enter
+
+//-------------------------------------------------- frm_IP_Change_Popup
+300: Domains which IP has Changed
+301: Domain
+302: IP{0:s} Changed
+
+//-------------------------------------------------- frm_MainForm
+400: Open
+401: 语言(Languages)
+402: Current Culture({0:s})
+403: Exit Program
+
+410: Official Website
+411: Exec Update
+
+//-------------------------------------------------- frm_MainForm - Domain List
+500: [Domain List]
+501: Add
+502: Edit
+503: Delete
+504: Enable IP{0:s} Update
+505: Disable IP{0:s} Update
+506: Copy Text
+
+550: Domain
+551: Type
+552: Profile
+553: Last IP{0:s}
+554: Status
+
+//-------------------------------------------------- frm_MainForm - Logs
+600: [Logs]
+601: Time
+602: Log
+
+620: Copy Text
+621: Delete Selected Records
+622: Select All
+
+650: Max Display Lines:
+651: Save to File
+
+//-------------------------------------------------- frm_MainForm - Update Method
+700: Update Method
+701: Local Update (Direct Connection)
+702: Remote Update (Performed by Remote Server)
+703: Remote Server Settings
+704: Server Address/Port:
+705: User for Server Login:
+706: Pwd for Server Login:
+707: Ping (ms):
+708: Auto Ping Server
+
+//-------------------------------------------------- frm_MainForm - Set IP
+800: Set IP
+801: Obtain Public IP{0:s} via URL
+802: Manually Specify IP{0:s}
+803: Client IP{0:s} Accepted by Server
+
+//-------------------------------------------------- frm_MainForm - Security Profile
+900: Security Profile
+901: Profile
+902: Properties
+903: Profile Name:
+904: Save to Config File
+
+950: Add
+951: Delete
+
+//-------------------------------------------------- frm_MainForm - Update Operation
+1000: Update Operation
+1001: Update Domain's IP
+1002: Time Interval for Auto Operation (s):
+1003: Update Only on IP Change (DNS Lookup First)
+1004: Set DNS Servers for DNS Lookup (one per line. // = comments. "" = system default)
+1005: Auto Update Timeout (s, 0 = infinite):
+1006: Show Popup on IP Change
+1007: Play Music on IP Change
+1008: Stop Playback
+
+//-------------------------------------------------- frm_MainForm - Fix hosts
+1100: Fix hosts
+1101: If some domains are not accessible, try modifying the hosts file:
+1102: And add the following records:
+
+//-------------------------------------------------- frm_MainForm - Preview Settings
+1200: [Preview Settings]
+1201: Update Method:
+1202: Ping (ms):
+1203: Set IP{0:s}:
+1204: Security Profile:
+1205: Update Domain IP:
+1206: Auto Update:
+1207: DNS Lookup First:
+1208: DNS Server:
+1209: Update Timeout(s):
+
+//-------------------------------------------------- frm_MainForm Code
+1300: Start Update
+1301: DNS Lookup
+1302: Updating
+1303: Update Done
+1304: Update Failed
+
+1320: Connected to Server successfully (client = {0:s}:{1:d})
+1321: Disconnected from Server
+1322: Login to Server Successful
+1323: Login to Server Failed
+1324: Exit the program?
+1325: Auto IP{0:s}
+1326: Delete the selected {0:d} records?
+1327: Delete "{0:s}"?
+1328: Audio File
+1329: All Files
+1330: Obtain via URL
+1331: Manually Specify IP
+1332: IP Accepted by Server
+1333: {0:d} Profiles
+1334: Per {0:d}s
+1335: Custom
+1336: System Default
+1337: Next Auto Update Time: {0:s}
+1338: {0:s} not found
+1339: Obtaining current public {0:s} address...
+1340: Obtained public {0:s} via URL successfully ({1:s})
+1341: Failed to obtain public {0:s} via URL ({1:s} {2:s})
+1342: Server Address/Port Error
+1343: Server Port Error
+1344: Failed to connect to remote server ({0:s})
+1345: Failed to update IP{0:s} ({1:s})
+1346: Update successful. IPv4 = {0:s}, IPv6 = {1:s}
+1347: {0:d} succeeded, {1:d} failed, {2:d} skipped, {3:d} total

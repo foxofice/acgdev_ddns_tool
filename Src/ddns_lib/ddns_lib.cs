@@ -210,7 +210,9 @@ namespace ddns_lib
 				}
 				catch(Exception ex)
 				{
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : DNS_Lookup failed ({ex.Message})", Color.Red);
+					// 0: DNS_Lookup failed ({0:s})
+					EVENTS.Add_Log(	$"[Error] {domain.m_domain} : {string.Format(LANGUAGES.txt(0), ex.Message)}",
+									Color.Red );
 					return false;
 				}
 			}
@@ -221,7 +223,8 @@ namespace ddns_lib
 
 				if(!res)
 				{
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : DNS_Lookup failed", Color.Red);
+					// 1: DNS_Lookup failed
+					EVENTS.Add_Log($"[Error] {domain.m_domain} : {LANGUAGES.txt(1)}", Color.Red);
 					return false;
 				}
 
@@ -239,7 +242,12 @@ namespace ddns_lib
 					var af = af_list[i];
 
 					if(af.m_error_msg.Length > 0)
-						EVENTS.Add_Log($"[Warning] {domain.m_domain} : DNS_Lookup({af.m_af_name}) {af.m_error_msg}", Color.DarkOrange);
+					{
+						// 2: DNS_Lookup({0:s}) {1:s}
+						string log_txt = string.Format(LANGUAGES.txt(2), af.m_af_name, af.m_error_msg);
+
+						EVENTS.Add_Log($"[Warning] {domain.m_domain} : {log_txt}", Color.DarkOrange);
+					}
 
 					foreach(string ip in af.m_ip_list!)
 					{
@@ -275,7 +283,8 @@ namespace ddns_lib
 
 			if(!IPAddress.TryParse(ip, out IPAddress? address))
 			{
-				EVENTS.Add_Log($"[Error] {domain} : 无效的 IP 格式（{ip}）", Color.Red);
+				// 3: 无效的 IP 格式（{0:s}）
+				EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(3), ip)}", Color.Red);
 				return false;
 			}
 
@@ -283,7 +292,8 @@ namespace ddns_lib
 			{
 				if(address.AddressFamily != AddressFamily.InterNetworkV6)
 				{
-					EVENTS.Add_Log($"[Error] {domain} : 无效的 IPv6（{ip}）", Color.Red);
+					// 4: 无效的 IP{0:s}（{1:s}）
+					EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v6", ip)}", Color.Red);
 					return false;
 				}
 			}
@@ -291,7 +301,8 @@ namespace ddns_lib
 			{
 				if(address.AddressFamily != AddressFamily.InterNetwork)
 				{
-					EVENTS.Add_Log($"[Error] {domain} : 无效的 IPv4（{ip}）", Color.Red);
+					// 4: 无效的 IP{0:s}（{1:s}）
+					EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v4", ip)}", Color.Red);
 					return false;
 				}
 			}
@@ -357,8 +368,10 @@ namespace ddns_lib
 				string			url	= $"https://api.godaddy.com/v1/domains/{root_donmain}/records/{setting.m_record_type}/{name}";
 				StringContent	sc	= new(sb_json.ToString(), Encoding.UTF8, "application/json");
 
-				EVENTS.Add_Log($"连接到 {url}", Color.Black);
-				EVENTS.Add_Log($"正在更新 {domain} 的「{setting.m_record_type} 记录」……", Color.Black);
+				// 5: 连接到 {0:s}
+				EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(5), url)}", Color.Black);
+				// 6: 正在更新「{1:s} 记录」……
+				EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(6), setting.m_record_type)}", Color.Black);
 
 				try
 				{
@@ -369,8 +382,12 @@ namespace ddns_lib
 						setting.m_domain_af.m_current_IP	= setting.m_domain_af.m_input_IP;
 						setting.m_domain_af.m_err_msg		= "";
 
-						EVENTS.Add_Log(	$"{domain.m_domain} : 更新「{setting.m_record_type} 记录」成功（{setting.m_domain_af.m_input_IP}）",
-										Color.Green );
+						// 7: 更新「{0:s} 记录」成功（{1:s}）
+						string log_txt = string.Format(	LANGUAGES.txt(7),
+														setting.m_record_type,
+														setting.m_domain_af.m_input_IP );
+
+						EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Green);
 					}
 					else
 					{
@@ -378,14 +395,15 @@ namespace ddns_lib
 
 						setting.m_domain_af.m_err_msg = err_msg;
 
-						EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s} 记录」失败（{2:s}）[ip = {3:s}, StatusCode = {4:s}，ReasonPhrase = {5:s}]",
-														domain.m_domain,
+						// 8: 更新「{0:s} 记录」失败（{1:s}）[ip = {2:s}, StatusCode = {3:s}，ReasonPhrase = {4:s}]
+						string log_txt = string.Format(	LANGUAGES.txt(8),
 														setting.m_record_type,
 														err_msg,
 														setting.m_domain_af.m_input_IP,
 														response.StatusCode.ToString(),
-														response.ReasonPhrase ),
-										Color.Red );
+														response.ReasonPhrase ); 
+
+						EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 					}
 				}
 				catch(Exception ex)
@@ -394,14 +412,15 @@ namespace ddns_lib
 
 					setting.m_domain_af.m_err_msg = err_msg;
 
-					EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s}记录」失败（{2:s}）[ip = {3:s}]",
-													domain.m_domain,
+					// 9: 更新「{0:s}记录」失败（{1:s}）[ip = {2:s}]
+					string log_txt = string.Format(	LANGUAGES.txt(9),
 													setting.m_record_type,
 													err_msg,
-													setting.m_domain_af.m_input_IP ),
-									Color.Red );
+													setting.m_domain_af.m_input_IP );
+
+					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 				}
-			}   // for
+			}	// for
 		}
 
 		class c_update_domain_dynv6_setting
@@ -455,22 +474,26 @@ namespace ddns_lib
 
 				try
 				{
-					string str = client.GetStringAsync(url).GetAwaiter().GetResult();
+					string str_res = client.GetStringAsync(url).GetAwaiter().GetResult();
 
 					if(!setting.m_auto)
 						setting.m_domain_af.m_current_IP = ip;
 
-					EVENTS.Add_Log($"{domain.m_domain} ({setting.m_af_name}) : 网站返回更新结果：{str}", Color.Black);
+					// 10: ({0:s}) 网站返回更新结果：{1:s}
+					string log_txt = string.Format(LANGUAGES.txt(10), setting.m_af_name, str_res);
+
+					EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Black);
 				}
 				catch(Exception ex)
 				{
-					EVENTS.Add_Log(	string.Format(	"[Error] {0:s} ({1:s}) : 更新「{2:s}记录」失败（{3:s}）[ip = {4:s}]",
-													domain.m_domain,
-													setting.m_af_name,
+					// 11: 更新「{0:s}记录」失败（{1:s}）[{2:s} = {3:s}]
+					string log_txt = string.Format(	LANGUAGES.txt(11),
 													setting.m_record_type,
 													(ex.InnerException == null) ? "" : ex.InnerException.Message,
-													ip ),
-									Color.Red );
+													setting.m_af_name,
+													ip );
+
+					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 				}
 			}	// for
 		}
@@ -499,20 +522,22 @@ namespace ddns_lib
 			{
 				try
 				{
-					string res = client.GetStringAsync($"https://api.dynu.com/v2/dns/getroot/{domain.m_domain}").GetAwaiter().GetResult();
+					string str_res = client.GetStringAsync($"https://api.dynu.com/v2/dns/getroot/{domain.m_domain}").GetAwaiter().GetResult();
 
 					const string k_ID	= "\"id\":";
 
-					int		idx		= res.IndexOf(k_ID);
-					string	str_ID	= res.Substring(idx + k_ID.Length);
+					int		idx		= str_res.IndexOf(k_ID);
+					string	str_ID	= str_res.Substring(idx + k_ID.Length);
 					str_ID = str_ID.Substring(0, str_ID.IndexOf(","));
 
 					domain.m_dynu__ID = int.Parse(str_ID);
 				}
 				catch(Exception ex)
 				{
-					EVENTS.Add_Log(	$"[Error] {domain.m_domain} : 获取「域名ID」失败（{ex.Message}）",
-									Color.Red );
+					// 12: 获取「域名ID」失败（{0:s}）
+					string log_txt = string.Format(LANGUAGES.txt(12), ex.Message);
+
+					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 					return;
 				}
 			}
@@ -590,8 +615,10 @@ namespace ddns_lib
 						domain.IPv6.m_err_msg		= "";
 					}
 
-					EVENTS.Add_Log(	$"{domain.m_domain} : 更新「{all_record_type} 记录」成功（{all_ip}）（远程返回结果：{msg}）",
-									Color.Green );
+					// 13: 更新「{0:s} 记录」成功（{1:s}）（远程返回结果：{2:s}）
+					string log_txt = string.Format(LANGUAGES.txt(13), all_record_type, all_ip, msg);
+
+					EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Green);
 				}
 				else
 				{
@@ -601,14 +628,15 @@ namespace ddns_lib
 					if(update_ipv6)
 						domain.IPv6.m_err_msg = msg;
 
-					EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s} 记录」失败（{2:s}）[ip = {3:s}, StatusCode = {4:s}，ReasonPhrase = {5:s}]",
-													domain.m_domain,
+					// 8: 更新「{0:s} 记录」失败（{1:s}）[ip = {2:s}，StatusCode = {3:s}，ReasonPhrase = {4:s}]
+					string log_txt = string.Format(	LANGUAGES.txt(8),
 													all_record_type,
 													msg,
 													all_ip,
 													response.StatusCode.ToString(),
-													response.ReasonPhrase ),
-									Color.Red );
+													response.ReasonPhrase );
+
+					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 				}
 			}
 			catch(Exception ex)
@@ -621,12 +649,10 @@ namespace ddns_lib
 				if(update_ipv6)
 					domain.IPv6.m_err_msg = err_msg;
 
-				EVENTS.Add_Log(	string.Format(	"[Error] {0:s} : 更新「{1:s}记录」失败（{2:s}）[ip = {3:s}]",
-												domain.m_domain,
-												all_record_type,
-												err_msg,
-												all_ip ),
-								Color.Red );
+				// 9: 更新「{0:s}记录」失败（{1:s}）[ip = {2:s}]
+				string log_txt = string.Format(LANGUAGES.txt(9), all_record_type, err_msg, all_ip);
+
+				EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
 			}
 		}
 
@@ -690,10 +716,16 @@ namespace ddns_lib
 					EVENTS.Set_Progress(domain.m_domain, e_Progress.Updating);
 
 					if(domain.IPv4.m_enabled && domain.IPv4.m_same_ip)
-						EVENTS.Add_Log($"{domain.m_domain} : IPv4 没变化，无需更新", Color.Black);
+					{
+						// 14: IP{0:s} 没变化，无需更新
+						EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v4")}", Color.Black);
+					}
 
 					if(domain.IPv6.m_enabled && domain.IPv6.m_same_ip)
-						EVENTS.Add_Log($"{domain.m_domain} : IPv6 没变化，无需更新", Color.Black);
+					{
+						// 14: IP{0:s} 没变化，无需更新
+						EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v6")}", Color.Black);
+					}
 
 					switch(domain.m_type)
 					{

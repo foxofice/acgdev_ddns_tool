@@ -29,11 +29,11 @@ namespace ddns_tool
 			RemoteServer_AutoPing,				// 自动 ping 服务器
 
 			//【设置 IP】
-			SetIP_type_IPv4,					// IPv4 获取方式（0 = 通过互联网获取公网 IP、1 = 手动指定 IP、2 = Server 接受连接的客户端 IP）
+			SetIP_type_IPv4,					// IPv4 获取方式（0 = 通过 URL 获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）
 			SetIP_get_ipv4_URL,					// 检查公网 IPv4 的 URL
 			SetIP_IPv4,							// 设置的 IPv4/上次的 IPv4
 
-			SetIP_type_IPv6,					// IPv6 获取方式（0 = 通过互联网获取公网 IP、1 = 手动指定 IP、2 = Server 接受连接的客户端 IP）
+			SetIP_type_IPv6,					// IPv6 获取方式（0 = 通过 URL 获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）
 			SetIP_get_ipv6_URL,					// 检查公网 IPv6 的 URL
 			SetIP_IPv6,							// 设置的 IPv6/上次的 IPv6
 
@@ -711,7 +711,8 @@ namespace ddns_tool
 					domain.m_Security_Profile = SECURITY.m_s_profiles[profile_idx];
 			}	// for
 
-			frm_MainForm.m_s_Mainform.add_log($"读取配置文件 {conf_file} 完成", Color.Green);
+			// 100: 读取配置文件 {0:s} 完成
+			frm_MainForm.m_s_Mainform.add_log(string.Format(ddns_lib.LANGUAGES.txt(100), conf_file), Color.Green);
 		}
 
 		/*==============================================================
@@ -725,15 +726,15 @@ namespace ddns_tool
 			StringBuilder sb = new();
 
 			//====================【更新方式】====================(Start)
-			sb.Append("// 更新方式（");
+			sb.Append($"// {ddns_lib.LANGUAGES.txt(101)}");	// 101: 更新方式（
 			for(int i=0; i<(int)e_Update_Type.MAX; ++i)
 			{
 				sb.Append($"{i} = {(e_Update_Type)i}");
 
 				if(i == (int)e_Update_Type.MAX - 1)
-					sb.AppendLine("）");
+					sb.AppendLine(ddns_lib.LANGUAGES.txt(103));	// 103: ）
 				else
-					sb.Append("、");
+					sb.Append(ddns_lib.LANGUAGES.txt(102));	// 102: 、
 			}	// for
 
 			sb.AppendLine($"{e_Header.update_type}: {(int)m_s_update_type}");
@@ -742,59 +743,63 @@ namespace ddns_tool
 
 			//====================【远程 Server 设置】====================(Start)
 			// 地址/端口
-			sb.AppendLine("// server 地址/端口");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(104)}");	// 104: server 地址/端口
 			sb.AppendLine($"{e_Header.RemoteServer_Addr}: {REMOTE_SERVER.m_s_addr}");
 			sb.AppendLine();
 
 			// 登录到 Server 的用户名
-			sb.AppendLine("// 登录到 Server 的用户名");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(105)}");	// 105: 登录到 Server 的用户名
 			sb.AppendLine($"{e_Header.RemoteServer_User}: {REMOTE_SERVER.m_s_user}");
 			sb.AppendLine();
 
 			// 登录到 Server 的密码
-			sb.AppendLine("// 登录到 Server 的密码");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(106)}");	// 106: 登录到 Server 的密码
 			sb.AppendLine($"{e_Header.RemoteServer_Pwd}: {REMOTE_SERVER.m_s_pwd}");
 			sb.AppendLine();
 
 			// 显示密码
-			sb.AppendLine("// 显示密码");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(107)}");	// 107: 显示密码
 			sb.AppendLine($"{e_Header.RemoteServer_ShowPwd}: {REMOTE_SERVER.m_s_show_pwd}");
 			sb.AppendLine();
 
 			// 自动 ping 服务器
-			sb.AppendLine("// 自动 ping 服务器");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(108)}");	// 108: 自动 ping 服务器
 			sb.AppendLine($"{e_Header.RemoteServer_AutoPing}: {REMOTE_SERVER.m_s_auto_ping}");
 			sb.AppendLine();
 			//====================【远程 Server 设置】====================(End)
 
 			//====================【设置 IP】====================(Start)
 			// IPv4 获取方式
-			sb.AppendLine("// IPv4 获取方式（0 = 通过互联网获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）");
+			// 109: IP{0:s} 获取方式
+			// 112: （0 = 通过 URL 获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）
+			sb.AppendLine($"// {string.Format(ddns_lib.LANGUAGES.txt(109), "v4")}{ddns_lib.LANGUAGES.txt(112)}");
 			sb.AppendLine($"{e_Header.SetIP_type_IPv4}: {(int)SET_IP.m_s_type_IPv4}");
 			sb.AppendLine();
 
 			// 检查公网 IPv4 的 URL
-			sb.AppendLine("// 检查公网 IPv4 的 URL");
+			sb.AppendLine("// " + string.Format(ddns_lib.LANGUAGES.txt(110), "v4"));	// 110: 检查公网 IP{0:s} 的 URL
 			sb.AppendLine($"{e_Header.SetIP_get_ipv4_URL}: {SET_IP.m_s_Get_IPv4_URL}");
 			sb.AppendLine();
 
 			// 设置的 IPv4/上次的 IPv4
-			sb.AppendLine("// 设置的 IPv4/上次的 IPv4");
+			sb.AppendLine("// " + string.Format(ddns_lib.LANGUAGES.txt(111), "v4"));	// 111: 设置的 IP{0:s}/上次的 IP{0:s}
 			sb.AppendLine($"{e_Header.SetIP_IPv4}: {SET_IP.m_s_IPv4}");
 			sb.AppendLine();
 
 			// IPv6 获取方式
-			sb.AppendLine("// IPv6 获取方式（0 = 通过互联网获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）");
+			// 109: IP{0:s} 获取方式
+			// 112: （0 = 通过 URL 获取公网 IP、1 = 手动设置 IP、2 = Server 接受连接的客户端 IP）
+			sb.AppendLine($"// {string.Format(ddns_lib.LANGUAGES.txt(109), "v6")}{ddns_lib.LANGUAGES.txt(112)}");
 			sb.AppendLine($"{e_Header.SetIP_type_IPv6}: {(int)SET_IP.m_s_type_IPv6}");
 			sb.AppendLine();
 
 			// 检查公网 IPv6 的 URL
-			sb.AppendLine("// 检查公网 IPv6 的 URL");
+			sb.AppendLine("// " + string.Format(ddns_lib.LANGUAGES.txt(110), "v6"));	// 110: 检查公网 IP{0:s} 的 URL
 			sb.AppendLine($"{e_Header.SetIP_get_ipv6_URL}: {SET_IP.m_s_Get_IPv6_URL}");
 			sb.AppendLine();
 
 			// 设置的 IPv6/上次的 IPv6
-			sb.AppendLine("// 设置的 IPv6/上次的 IPv6");
+			sb.AppendLine("// " + string.Format(ddns_lib.LANGUAGES.txt(111), "v6"));	// 111: 设置的 IP{0:s}/上次的 IP{0:s}
 			sb.AppendLine($"{e_Header.SetIP_IPv6}: {SET_IP.m_s_IPv6}");
 			sb.AppendLine();
 			//====================【设置 IP】====================(End)
@@ -807,7 +812,8 @@ namespace ddns_tool
 				if(!profile.m_Save_To_Config)
 					continue;
 
-				sb.AppendLine($"// Security_Profile[{i}] - {profile.m_Name}");
+				// 113: 安全 Profile
+				sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(113)}[{i}] - {profile.m_Name}");
 
 				// Name
 				sb.AppendLine($"{e_Header.Security_Profile__Name.ToString().Replace("__", $"[{i}].")}: {profile.m_Name}");
@@ -845,66 +851,66 @@ namespace ddns_tool
 
 			//====================【更新操作】====================(Start)
 			// 更新域名的 IP
-			sb.AppendLine("// 更新域名的 IP");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(114)}");	// 114: 更新域名的 IP
 			sb.AppendLine($"{e_Header.UpdateAction_UpdateIP}: {UPDATE_ACTION.m_s_UpdateIP}");
 			sb.AppendLine();
 
 			// 自动执行操作
-			sb.AppendLine("// 自动执行操作");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(115)}");	// 115: 自动执行操作
 			sb.AppendLine($"{e_Header.UpdateAction_AutoAction}: {ACTION.m_s_AutoAction}");
 			sb.AppendLine();
 
 			// 自动执行操作的时间间隔（秒）
-			sb.AppendLine("// 自动执行操作的时间间隔（秒）");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(116)}");	// 116: 自动执行操作的时间间隔（秒）
 			sb.AppendLine($"{e_Header.UpdateAction_AutoAction_interval}: {ACTION.m_s_AutoAction_interval}");
 			sb.AppendLine();
 
 			// 先解析域名
-			sb.AppendLine("// 先解析域名");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(117)}");	// 117: 先解析域名
 			sb.AppendLine($"{e_Header.UpdateAction_DNS_Lookup_First}: {UPDATE_ACTION.m_s_DNS_Lookup_First}");
 			sb.AppendLine();
 
 			// 是否使用自定义 DNS 服务器
-			sb.AppendLine("// 是否使用自定义 DNS 服务器");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(118)}");	// 118: 是否使用自定义 DNS 服务器
 			sb.AppendLine($"{e_Header.UpdateAction_Use_Custom_DNS}: {UPDATE_ACTION.m_s_Use_Custom_DNS}");
 			sb.AppendLine();
 
 			// 自定义 DNS 服务器列表
-			sb.AppendLine("// 自定义 DNS 服务器列表（一行一个。//表示注释。\"\"表示系统默认）");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(119)}");	// 119: 自定义 DNS 服务器列表（一行一个。//表示注释。""表示系统默认）
 			foreach(string dns_server in UPDATE_ACTION.m_s_Custom_DNS_List)
 				sb.AppendLine($"{e_Header.UpdateAction_Custom_DNS_List}: {dns_server}");
 
 			sb.AppendLine();
 
 			// 自动更新超时（单位：秒。0 = 无限等待）
-			sb.AppendLine("// 自动更新超时（单位：秒。0 = 无限等待）");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(120)}");	// 120: 自动更新超时（单位：秒。0 = 无限等待）
 			sb.AppendLine($"{e_Header.UpdateAction_Timeout}: {UPDATE_ACTION.m_s_Timeout}");
 			sb.AppendLine();
 
 			// IP变动时，弹出提示窗口
-			sb.AppendLine("// IP变动时，弹出提示窗口");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(121)}");	// 121: IP变动时，弹出提示窗口
 			sb.AppendLine($"{e_Header.UpdateAction_IP_Change_Popup}: {UPDATE_ACTION.m_s_IP_Change_Popup}");
 			sb.AppendLine();
 
 			// IP变动时，播放音乐
-			sb.AppendLine("// IP变动时，播放音乐");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(122)}");	// 122: IP变动时，播放音乐
 			sb.AppendLine($"{e_Header.UpdateAction_IP_Change_Play_Sound}: {UPDATE_ACTION.m_s_IP_Change_Play_Sound}");
 			sb.AppendLine();
 
 			// 音乐路径
-			sb.AppendLine("// 音乐路径");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(123)}");	// 123: 音乐路径
 			sb.AppendLine($"{e_Header.UpdateAction_IP_Change_Sound_Path}: {UPDATE_ACTION.m_s_IP_Change_Sound_Path}");
 			sb.AppendLine();
 			//====================【更新操作】====================(End)
 
 			//====================【日志记录】====================(Start)
 			// 日志最大行数
-			sb.AppendLine("// 日志最大行数");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(124)}");	// 124: 日志最大行数
 			sb.AppendLine($"{e_Header.Log_MaxLines}: {LOG.m_s_MaxLines}");
 			sb.AppendLine();
 
 			// 保存到日志文件
-			sb.AppendLine("// 保存到日志文件");
+			sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(125)}");	// 125: 保存到日志文件
 			sb.AppendLine($"{e_Header.Log_SaveToFile}: {LOG.m_s_Save_To_File}");
 			sb.AppendLine();
 			//====================【日志记录】====================(End)
@@ -914,7 +920,8 @@ namespace ddns_tool
 			{
 				ddns_lib.c_Domain domain = m_s_domains_list[i];
 
-				sb.AppendLine($"// Domain[{i}] - {domain.m_domain}");
+				// 126: Domain
+				sb.AppendLine($"// {ddns_lib.LANGUAGES.txt(126)}[{i}] - {domain.m_domain}");
 
 				// Domain
 				sb.AppendLine($"{e_Header.Domain__Domain.ToString().Replace("__", $"[{i}].")}: {domain.m_domain}");
@@ -957,7 +964,8 @@ namespace ddns_tool
 
 			File.WriteAllText(m_k_CONFIG_FILE, sb.ToString(), Encoding.UTF8);
 
-			frm_MainForm.m_s_Mainform.add_log($"保存配置文件 {m_k_CONFIG_FILE}", Color.Blue);
+			// 127: 保存配置文件 {0:s}
+			frm_MainForm.m_s_Mainform.add_log(string.Format(ddns_lib.LANGUAGES.txt(127), m_k_CONFIG_FILE), Color.Blue);
 			//====================【域名列表】====================(End)
 
 			m_s_dirty = false;

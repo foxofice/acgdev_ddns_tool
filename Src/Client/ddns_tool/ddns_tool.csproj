@@ -38,6 +38,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Files\Languages\zh-CN.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Languages\zh-TW.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Languages\en-US.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Sound\FF7CHOCO.MID">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

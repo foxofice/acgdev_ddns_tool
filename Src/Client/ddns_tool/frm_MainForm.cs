@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Text;
 
@@ -150,6 +151,202 @@ namespace ddns_tool
 		}
 		#endregion
 
+		#region 多语言
+		// 当前选择的 ToolStripMenuItem
+		ToolStripMenuItem?	m_current_language_ToolStripMenuItem	= null;
+
+		/*==============================================================
+		 * 切换多语言
+		 *==============================================================*/
+		private void ToolStripMenuItem_Language_Click(object? sender, EventArgs e)
+		{
+			ToolStripMenuItem new_item = (ToolStripMenuItem)sender!;
+
+			if(new_item.Checked)
+				return;
+
+			if(m_current_language_ToolStripMenuItem != null)
+				m_current_language_ToolStripMenuItem.Checked = false;
+
+			ddns_lib.LANGUAGES.set_language(Get_Tag__Language(new_item));
+			update_language_text();
+
+			new_item.Checked = true;
+
+			m_current_language_ToolStripMenuItem = new_item;
+		}
+
+		/*==============================================================
+		 * 更新多语言文本
+		 *==============================================================*/
+		void update_language_text()
+		{
+			//========== 托盘图标 - 上下文菜单 ==========(Start)
+			ToolStripMenuItem_Open.Text						= ddns_lib.LANGUAGES.txt(400);	// 400: 打开
+			ToolStripMenuItem_Languages.Text				= ddns_lib.LANGUAGES.txt(401);	// 401: 语言(Languages)
+
+			// 402: 当前区域设置({0:s})
+			toolStripMenuItem_Languages_CurrentCulture.Text	= string.Format(ddns_lib.LANGUAGES.txt(402),
+																			CultureInfo.CurrentCulture.Name);
+
+			ToolStripMenuItem_Exit.Text						= ddns_lib.LANGUAGES.txt(403);	// 403: 退出程序
+			//========== 托盘图标 - 上下文菜单 ==========(End)
+
+			//========== 主界面 ==========(Start)
+			linkLabel_WebSite.Text							= ddns_lib.LANGUAGES.txt(410);	// 410: 官网
+			button_Update.Text								= ddns_lib.LANGUAGES.txt(411);	// 411: 执行更新操作
+			//========== 主界面 ==========(End)
+
+			//========== 【域名列表】 ==========(Start)
+			groupBox_Domains.Text							= ddns_lib.LANGUAGES.txt(500);	// 500: 【域名列表】
+			toolStripButton_Domains_Add.Text				= ddns_lib.LANGUAGES.txt(501);	// 501: 添加
+			toolStripButton_Domains_Modify.Text				= ddns_lib.LANGUAGES.txt(502);	// 502: 修改
+			toolStripButton_Domains_Delete.Text				= ddns_lib.LANGUAGES.txt(503);	// 503: 删除
+
+			// 504: 允许更新IP{0:s}
+			toolStripButton_Domains_IPv4_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(504), "v4");
+			toolStripButton_Domains_IPv6_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(504), "v6");
+
+			// 505: 禁止更新IP{0:s}
+			toolStripButton_Domains_IPv4_Disable.Text		= string.Format(ddns_lib.LANGUAGES.txt(505), "v4");
+			toolStripButton_Domains_IPv6_Disable.Text		= string.Format(ddns_lib.LANGUAGES.txt(505), "v6");
+
+			toolStripButton_Domains_CopyText.Text			= ddns_lib.LANGUAGES.txt(506);	// 506: 复制文本
+
+			columnHeader_Domains_Domain.Text				= ddns_lib.LANGUAGES.txt(550);	// 550: 域名
+			columnHeader_Domains_Type.Text					= ddns_lib.LANGUAGES.txt(551);	// 551: 类型
+			columnHeader_Domains_Profile.Text				= ddns_lib.LANGUAGES.txt(552);	// 552: 安全配置
+
+			// 553: 最新IP{0:s}
+			columnHeader_Domains_IPv4.Text					= string.Format(ddns_lib.LANGUAGES.txt(553), "v4");
+			columnHeader_Domains_IPv6.Text					= string.Format(ddns_lib.LANGUAGES.txt(553), "v6");
+
+			columnHeader_Domains_Status.Text				= ddns_lib.LANGUAGES.txt(554);	// 554: 状态
+
+			//（上下文菜单）
+			ToolStripMenuItem_Domains_Add.Text				= ddns_lib.LANGUAGES.txt(501);	// 501: 添加
+			ToolStripMenuItem_Domains_Modify.Text			= ddns_lib.LANGUAGES.txt(502);	// 502: 修改
+			ToolStripMenuItem_Domains_Delete.Text			= ddns_lib.LANGUAGES.txt(503);	// 503: 删除
+
+			// 504: 允许更新IP{0:s}
+			ToolStripMenuItem_Domains_IPv4_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(504), "v4");
+			ToolStripMenuItem_Domains_IPv6_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(504), "v6");
+
+			// 505: 禁止更新IP{0:s}
+			ToolStripMenuItem_Domains_IPv4_Disable.Text		= string.Format(ddns_lib.LANGUAGES.txt(505), "v4");
+			ToolStripMenuItem_Domains_IPv6_Disable.Text		= string.Format(ddns_lib.LANGUAGES.txt(505), "v6");
+
+			ToolStripMenuItem_Domains_CopyText.Text			= ddns_lib.LANGUAGES.txt(506);	// 506: 复制文本
+			//========== 【域名列表】 ==========(End)
+
+			//========== 【日志记录】 ==========(Start)
+			groupBox_Logs.Text								= ddns_lib.LANGUAGES.txt(600);	// 600: 【日志记录】
+
+			columnHeader_Logs_Time.Text						= ddns_lib.LANGUAGES.txt(601);	// 601: 时间
+			columnHeader_Logs_Log.Text						= ddns_lib.LANGUAGES.txt(602);	// 602: 日志
+
+			//（上下文菜单）
+			ToolStripMenuItem_Logs_Copy.Text				= ddns_lib.LANGUAGES.txt(620);	// 620: 复制文本
+			ToolStripMenuItem_Logs_Delete.Text				= ddns_lib.LANGUAGES.txt(621);	// 621: 删除选定记录
+			ToolStripMenuItem_Logs_SelectAll.Text			= ddns_lib.LANGUAGES.txt(622);	// 622: 全选
+
+			label_Logs_MaxLines.Text						= ddns_lib.LANGUAGES.txt(650);	// 650: 最大显示行数
+			checkBox_Logs__Save_To_File.Text				= ddns_lib.LANGUAGES.txt(651);	// 651: 保存到日志文件
+			//========== 【日志记录】 ==========(End)
+
+			//========== 更新方式 ==========(Start)
+			tabPage_Update_Type.Text						= ddns_lib.LANGUAGES.txt(700);	// 700: 更新方式
+
+			radioButton_Settings_Type__Local.Text			= ddns_lib.LANGUAGES.txt(701);	// 701: 本地更新（直连）
+			radioButton_Settings_Type__Remote.Text			= ddns_lib.LANGUAGES.txt(702);	// 702: 远程更新（由远程 Server 执行更新）
+
+			groupBox_Settings_RemoteServer.Text				= ddns_lib.LANGUAGES.txt(703);	// 703: 远程 Server 设置
+			label_Settings_RemoteServer__Addr.Text			= ddns_lib.LANGUAGES.txt(704);	// 704: Server 地址/端口：
+			label_Settings_RemoteServer__User.Text			= ddns_lib.LANGUAGES.txt(705);	// 705: 登录到 Server 的用户名：
+			label_Settings_RemoteServer__Pwd.Text			= ddns_lib.LANGUAGES.txt(706);	// 706: 登录到 Server 的密码：
+			checkBox_Settings_RemoteServer__Pwd.Text		= ddns_lib.LANGUAGES.txt(51);	// 51: 显示
+			label_Settings_RemoteServer__Ping.Text			= ddns_lib.LANGUAGES.txt(707);	// 707: Ping 值 (ms)：
+			checkBox_Settings_RemoteServer__Ping.Text		= ddns_lib.LANGUAGES.txt(708);	// 708: 自动 ping 服务器
+			//========== 更新方式 ==========(End)
+
+			//========== 设置 IP ==========(Start)
+			tabPage_Set_IP.Text								= ddns_lib.LANGUAGES.txt(800);	// 800: 设置 IP
+
+			// 801: 通过 URL 获取公网 IP{0:s}
+			radioButton_Settings_IPv4__From_URL.Text		= string.Format(ddns_lib.LANGUAGES.txt(801), "v4");
+			radioButton_Settings_IPv6__From_URL.Text		= string.Format(ddns_lib.LANGUAGES.txt(801), "v6");
+
+			// 802: 手动指定 IP{0:s}
+			radioButton_Settings_IPv4__Manual.Text			= string.Format(ddns_lib.LANGUAGES.txt(802), "v4");
+			radioButton_Settings_IPv6__Manual.Text			= string.Format(ddns_lib.LANGUAGES.txt(802), "v6");
+
+			// 803: Server 接受连接的客户端 IP{0:s}
+			radioButton_Settings_IPv4__Accept_IP.Text		= string.Format(ddns_lib.LANGUAGES.txt(803), "v4");
+			radioButton_Settings_IPv6__Accept_IP.Text		= string.Format(ddns_lib.LANGUAGES.txt(803), "v6");
+			//========== 设置 IP ==========(End)
+
+			//========== 安全设置 ==========(Start)
+			tabPage_Security.Text							= ddns_lib.LANGUAGES.txt(900);	// 900: 安全设置
+
+			columnHeader_Security.Text						= ddns_lib.LANGUAGES.txt(901);	// 901: Profile
+
+			groupBox_Security__Property.Text				= ddns_lib.LANGUAGES.txt(902);	// 902: 属性
+			label_Security__Property__Name.Text				= ddns_lib.LANGUAGES.txt(903);	// 903: 配置的名称：
+
+			checkBox_Security_Godaddy__Key.Text				= ddns_lib.LANGUAGES.txt(51);	// 51: 显示
+			checkBox_Security_Godaddy__Secret.Text			= ddns_lib.LANGUAGES.txt(51);	// 51: 显示
+			checkBox_Security_dynv6__token.Text				= ddns_lib.LANGUAGES.txt(51);	// 51: 显示
+			checkBox_Security_dynu__API_Key.Text			= ddns_lib.LANGUAGES.txt(51);	// 51: 显示
+
+			checkBox_Security__Save_To_Config.Text			= ddns_lib.LANGUAGES.txt(904);	// 904: 保存到 Config 文件
+
+			ToolStripMenuItem__Security_Add.Text			= ddns_lib.LANGUAGES.txt(950);	// 950: 添加
+			ToolStripMenuItem__Security_Del.Text			= ddns_lib.LANGUAGES.txt(951);	// 951: 删除
+			//========== 安全设置 ==========(End)
+
+			//========== 更新操作 ==========(Start)
+			tabPage_Update_Action.Text						= ddns_lib.LANGUAGES.txt(1000);	// 1000: 更新操作
+
+			checkBox_Action_UpdateIP.Text					= ddns_lib.LANGUAGES.txt(1001);	// 1001: 更新域名的IP
+			checkBox_Action_AutoAction_Interval.Text		= ddns_lib.LANGUAGES.txt(1002);	// 1002: 自动执行操作的时间间隔（秒）：
+			checkBox_Action_DNS_Lookup_First.Text			= ddns_lib.LANGUAGES.txt(1003);	// 1003: IP变动时，才执行更新（先解析域名）
+			checkBox_Action_Use_Custom_DNS.Text				= ddns_lib.LANGUAGES.txt(1004);	// 1004: 设定解析域名的DNS服务器（一行一个。//表示注释。""表示系统默认）
+			label_Action_Timeout.Text						= ddns_lib.LANGUAGES.txt(1005);	// 1005: 自动更新超时（单位：秒。0 = 无限等待）：
+			checkBox_Action_IP_Change_Popup.Text			= ddns_lib.LANGUAGES.txt(1006);	// 1006: IP变动时，弹出提示窗口
+			checkBox_Action_IP_Change_PlaySound.Text		= ddns_lib.LANGUAGES.txt(1007);	// 1007: IP变动时，播放音乐
+			button_Action_IP_Change_StopSound.Text			= ddns_lib.LANGUAGES.txt(1008);	// 1008: 停止播放
+			//========== 更新操作 ==========(End)
+
+			//========== 修正 hosts ==========(Start)
+			tabPage_Fix_hosts.Text							= ddns_lib.LANGUAGES.txt(1100);	// 1100: 修正 hosts
+
+			label_Fix_hosts__Path.Text						= ddns_lib.LANGUAGES.txt(1101);	// 1101: 如果出现访问部分域名不正常，可以尝试修改 hosts。添加以下记录：
+			button_Fix_hosts__Path_Browser.Text				= ddns_lib.LANGUAGES.txt(52);	// 52: 打开目录
+			label_Fix_hosts__Content.Text					= ddns_lib.LANGUAGES.txt(1102);	// 1102: 并添加以下记录：
+			//========== 修正 hosts ==========(End)
+
+			//========== 【预览设置】 ==========(Start)
+			groupBox_Settings_Preview.Text					= ddns_lib.LANGUAGES.txt(1200);	// 1200: 【预览设置】
+
+			label_Settings_Preview__Update_Type.Text		= ddns_lib.LANGUAGES.txt(1201);	// 1201: 更新方式：
+			label_Settings_Preview__Ping.Text				= ddns_lib.LANGUAGES.txt(1202);	// 1202: Ping（ms）：
+
+			// 1203: 设置IP{0:s}：
+			label_Settings_Preview__Set_IPv4.Text			= string.Format(ddns_lib.LANGUAGES.txt(1203), "v4");
+			label_Settings_Preview__Set_IPv6.Text			= string.Format(ddns_lib.LANGUAGES.txt(1203), "v6");
+
+			label_Settings_Preview__Security.Text			= ddns_lib.LANGUAGES.txt(1204);	// 1204: 安全设置：
+			label_Settings_Preview__Action_UpdateIP.Text	= ddns_lib.LANGUAGES.txt(1205);	// 1205: 更新域名 IP：
+			label_Settings_Preview__Action_AutoUpdate.Text	= ddns_lib.LANGUAGES.txt(1206);	// 1206: 自动更新：
+			label_Settings_Preview__DNS_Lookup_First.Text	= ddns_lib.LANGUAGES.txt(1207);	// 1207: 先解析域名：
+			label_Settings_Preview__DNS_Server.Text			= ddns_lib.LANGUAGES.txt(1208);	// 1208: DNS 服务器：
+			label_Settings_Preview__Timeout.Text			= ddns_lib.LANGUAGES.txt(1209);	// 1209: 更新超时(s)：
+			//========== 【预览设置】 ==========(End)
+
+			Update_Settings_Preview__All();
+		}
+		#endregion
+
 		#region 封包事件
 		internal class EVENTS
 		{
@@ -158,7 +355,10 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void OnConnected(string ip, ushort port)
 			{
-				m_s_Mainform.add_log($"连接到 Server 成功 (client = {ip}:{port})", Color.Green);
+				// 1320: 连接到 Server 成功 (client = {0:s}:{1:d})
+				string log_txt = string.Format(ddns_lib.LANGUAGES.txt(1320), ip, port);
+
+				m_s_Mainform.add_log(log_txt, Color.Green);
 			}
 
 			/*==============================================================
@@ -166,7 +366,7 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void OnDisconnecting()
 			{
-				m_s_Mainform.add_log("已断开 Server 的连接");
+				m_s_Mainform.add_log(ddns_lib.LANGUAGES.txt(1321));	// 1321: 已断开 Server 的连接
 				m_s_Mainform.update__done();
 
 				m_s_Mainform.invoke(() =>
@@ -204,7 +404,7 @@ namespace ddns_tool
 				{
 					m_s_Mainform.m_login_server_done = true;
 
-					m_s_Mainform.add_log("登录服务器成功", Color.Green);
+					m_s_Mainform.add_log(ddns_lib.LANGUAGES.txt(1322), Color.Green);	// 1322: 登录服务器成功
 
 					ddns_tool_CLR.CLR.send_Update_Domains(	CONFIG.m_s_domains_list,
 															CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First,
@@ -213,7 +413,8 @@ namespace ddns_tool
 				}
 				else
 				{
-					m_s_Mainform.add_log("[Error] 登录服务器失败", Color.Red);
+					// 1323: 登录服务器失败
+					m_s_Mainform.add_log($"[Error] {ddns_lib.LANGUAGES.txt(1323)}", Color.Red);
 
 					ddns_tool_CLR.CLR.DisConnect();
 				}
@@ -262,33 +463,36 @@ namespace ddns_tool
 
 					if(LVI != null)
 					{
-						switch(progress)
-						{
-						case ddns_lib.e_Progress.None:			LVI.SubItems[(int)e_Column_Domains.Status].Text = "";			break;
-						case ddns_lib.e_Progress.Starting:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "开始更新";	break;
-						case ddns_lib.e_Progress.DNS_Lookup:	LVI.SubItems[(int)e_Column_Domains.Status].Text = "域名解析";	break;
-						case ddns_lib.e_Progress.Updating:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "正在更新";	break;
-						case ddns_lib.e_Progress.Done:			LVI.SubItems[(int)e_Column_Domains.Status].Text = "更新完成";	break;
-						case ddns_lib.e_Progress.Failed:		LVI.SubItems[(int)e_Column_Domains.Status].Text = "更新失败";	break;
-						}	// switch
+						var LVSI = LVI.SubItems[(int)e_Column_Domains.Status];
 
-						LVI.SubItems[(int)e_Column_Domains.Status].ForeColor = (progress == ddns_lib.e_Progress.Failed) ? Color.Red : Color.Black;
+						LVSI.Text = progress switch
+						{
+							ddns_lib.e_Progress.None		=> "",
+							ddns_lib.e_Progress.Starting	=> ddns_lib.LANGUAGES.txt(1300),	// 1300: 开始更新
+							ddns_lib.e_Progress.DNS_Lookup	=> ddns_lib.LANGUAGES.txt(1301),	// 1301: 域名解析
+							ddns_lib.e_Progress.Updating	=> ddns_lib.LANGUAGES.txt(1302),	// 1302: 正在更新
+							ddns_lib.e_Progress.Done		=> ddns_lib.LANGUAGES.txt(1303),	// 1303: 更新完成
+							ddns_lib.e_Progress.Failed		=> ddns_lib.LANGUAGES.txt(1304),	// 1304: 更新失败
+							_								=> "",
+						};
+
+						LVSI.ForeColor = (progress == ddns_lib.e_Progress.Failed) ? Color.Red : Color.Black;
 					}
 				});
 			}
 		};
 		#endregion
 
-		#region LVI.Tag
+		#region Tag
 		/*==============================================================
 		 * 设置/获取 LVI.Tag（Domain）
 		 *==============================================================*/
-		void Set_LVI_Tag__Domain(ListViewItem LVI, ddns_lib.c_Domain domain)
+		void Set_Tag__Domain(ListViewItem LVI, ddns_lib.c_Domain domain)
 		{
 			LVI.Tag = domain;
 		}
 		//--------------------------------------------------
-		ddns_lib.c_Domain Get_LVI_Tag__Domain(ListViewItem LVI)
+		ddns_lib.c_Domain Get_Tag__Domain(ListViewItem LVI)
 		{
 			return (ddns_lib.c_Domain)LVI.Tag!;
 		}
@@ -296,14 +500,27 @@ namespace ddns_tool
 		/*==============================================================
 		 * 设置/获取 LVI.Tag（Security_Profile）
 		 *==============================================================*/
-		void Set_LVI_Tag__Security_Profile(ListViewItem LVI, ddns_lib.c_Security_Profile profile)
+		void Set_Tag__Security_Profile(ListViewItem LVI, ddns_lib.c_Security_Profile profile)
 		{
 			LVI.Tag = profile;
 		}
 		//--------------------------------------------------
-		ddns_lib.c_Security_Profile Get_LVI_Tag__Security_Profile(ListViewItem LVI)
+		ddns_lib.c_Security_Profile Get_Tag__Security_Profile(ListViewItem LVI)
 		{
 			return (ddns_lib.c_Security_Profile)LVI.Tag!;
+		}
+
+		/*==============================================================
+		 * 设置/获取 Tag（多语言）
+		 *==============================================================*/
+		void Set_Tag__Language(ToolStripMenuItem TSMI, string culture_name)
+		{
+			TSMI.Tag = culture_name;
+		}
+		//--------------------------------------------------
+		string Get_Tag__Language(ToolStripMenuItem TSMI)
+		{
+			return (string)TSMI.Tag!;
 		}
 		#endregion
 
@@ -326,6 +543,41 @@ namespace ddns_tool
 
 			// 初始化 DDNS_CLR
 			ddns_tool_CLR.CLR.DoInit();
+
+			// 初始化多语言
+			ddns_lib.LANGUAGES.read_list();
+			ddns_lib.LANGUAGES.set_language_to_default();
+
+			foreach(var kvp in ddns_lib.LANGUAGES.m_s_LanguagesList)
+			{
+				var lang = kvp.Value;
+
+				string display_name = "";
+
+				try
+				{
+					CultureInfo ci = new CultureInfo(lang.m_name);
+					display_name = ci.DisplayName;
+				}
+				catch(Exception)
+				{
+				}
+
+				ToolStripMenuItem item = new($"({lang.m_name}) {display_name}");
+
+				if(lang == ddns_lib.LANGUAGES.m_s_current_language)
+				{
+					item.Checked = true;
+					m_current_language_ToolStripMenuItem = item;
+				}
+
+				Set_Tag__Language(item, lang.m_name);
+				item.Click += ToolStripMenuItem_Language_Click;
+
+				ToolStripMenuItem_Languages.DropDownItems.Add(item);
+			}	// for
+
+			update_language_text();
 
 			// 设置回调函数
 			ddns_tool_CLR.CLR.Event_OnConnected					+= EVENTS.OnConnected;
@@ -397,7 +649,7 @@ namespace ddns_tool
 				ListViewItem LVI = new(profile.m_Name);
 				listView_Security.Items.Add(LVI);
 
-				Set_LVI_Tag__Security_Profile(LVI, profile);
+				Set_Tag__Security_Profile(LVI, profile);
 			}	// for
 
 			//【更新操作】
@@ -428,16 +680,7 @@ namespace ddns_tool
 
 			set_next_Auto_Update_Time();
 
-			Update_Settings_Preview__Update_Type();
-			Update_Settings_Preview__Ping();
-			Update_Settings_Preview__Set_IPv4();
-			Update_Settings_Preview__Set_IPv6();
-			Update_Settings_Preview__Security();
-			Update_Settings_Preview__UpdateIP();
-			Update_Settings_Preview__AutoUpdate();
-			Update_Settings_Preview__DNS_Lookup_First();
-			Update_Settings_Preview__DNS_Server();
-			Update_Settings_Preview__timeout();
+			Update_Settings_Preview__All();
 		}
 		//--------------------------------------------------
 		private void frm_MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -564,7 +807,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void ToolStripMenuItem_Exit_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	"是否退出程序？",
+			if(MessageBox.Show(	ddns_lib.LANGUAGES.txt(1324),	// 1324: 是否退出程序？
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -585,7 +828,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		void update_LVI__Domain(ListViewItem LVI)
 		{
-			ddns_lib.c_Domain domain	= Get_LVI_Tag__Domain(LVI);
+			ddns_lib.c_Domain domain	= Get_Tag__Domain(LVI);
 
 			LVI.SubItems[(int)e_Column_Domains.Domain].Text	= domain.m_domain;
 
@@ -602,14 +845,14 @@ namespace ddns_tool
 
 			case ddns_lib.e_DomainType.dynv6:
 				if(domain.m_dynv6__Auto_IPv4)
-					sb_type.Append(" 自动IPv4");
+					sb_type.Append(" " + string.Format(ddns_lib.LANGUAGES.txt(1325), "v4"));	// 1325: 自动IP{0:s}
 
 				if(domain.m_dynv6__Auto_IPv6)
 				{
 					if(domain.m_dynv6__Auto_IPv4)
 						sb_type.Append("+IPv6");
 					else
-						sb_type.Append(" 自动IPv6");
+						sb_type.Append(" " + string.Format(ddns_lib.LANGUAGES.txt(1325), "v6"));	// 1325: 自动IP{0:s}
 				}
 				break;
 
@@ -673,7 +916,7 @@ namespace ddns_tool
 				LVI.SubItems.Add("");
 
 			listView_Domains.Items.Add(LVI);
-			Set_LVI_Tag__Domain(LVI, domain);
+			Set_Tag__Domain(LVI, domain);
 
 			LVI.UseItemStyleForSubItems = false;
 			LVI.EnsureVisible();
@@ -691,14 +934,14 @@ namespace ddns_tool
 
 			ListViewItem LVI = listView_Domains.SelectedItems[0];
 
-			ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+			ddns_lib.c_Domain domain = Get_Tag__Domain(LVI);
 
 			frm_Domain dlg = new(domain);
 
 			if(dlg.ShowDialog() == DialogResult.OK)
 			{
 				domain = dlg.m_domain;
-				Set_LVI_Tag__Domain(LVI, domain);
+				Set_Tag__Domain(LVI, domain);
 
 				if(string.Compare(domain.m_domain, LVI.SubItems[(int)e_Column_Domains.Domain].Text, true) != 0)
 					LVI.SubItems[(int)e_Column_Domains.Status].Text = "";
@@ -780,7 +1023,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void toolStripButton_Domains_Delete_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	$"是否要删除选定的 {listView_Domains.SelectedItems.Count} 条记录？",
+			// 1326: 是否要删除选定的 {0:d} 条记录？
+			if(MessageBox.Show(	string.Format(ddns_lib.LANGUAGES.txt(1326), listView_Domains.SelectedItems.Count),
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -800,7 +1044,7 @@ namespace ddns_tool
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				ddns_lib.c_Domain domain = Get_Tag__Domain(LVI);
 				domain.IPv4.m_enabled = true;
 
 				update_LVI__Domain(LVI);
@@ -816,7 +1060,7 @@ namespace ddns_tool
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				ddns_lib.c_Domain domain = Get_Tag__Domain(LVI);
 				domain.IPv6.m_enabled = true;
 
 				update_LVI__Domain(LVI);
@@ -832,7 +1076,7 @@ namespace ddns_tool
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				ddns_lib.c_Domain domain = Get_Tag__Domain(LVI);
 				domain.IPv4.m_enabled = false;
 
 				update_LVI__Domain(LVI);
@@ -848,7 +1092,7 @@ namespace ddns_tool
 		{
 			foreach(ListViewItem LVI in listView_Domains.SelectedItems)
 			{
-				ddns_lib.c_Domain domain = Get_LVI_Tag__Domain(LVI);
+				ddns_lib.c_Domain domain = Get_Tag__Domain(LVI);
 				domain.IPv6.m_enabled = false;
 
 				update_LVI__Domain(LVI);
@@ -1032,7 +1276,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void ToolStripMenuItem_Logs_Delete_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	$"是否要删除选定的 {listView_Logs.SelectedItems.Count} 条记录？",
+			// 1326: 是否要删除选定的 {0:d} 条记录？
+			if(MessageBox.Show(	string.Format(ddns_lib.LANGUAGES.txt(1326), listView_Logs.SelectedItems.Count),
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -1207,7 +1452,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 通过互联网获取公网 IPv4
+		 * 通过 URL 获取公网 IPv4
 		 *==============================================================*/
 		private void comboBox_Settings_IPv4__From_URL_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -1245,7 +1490,7 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 通过互联网获取公网 IPv6
+		 * 通过 URL 获取公网 IPv6
 		 *==============================================================*/
 		private void comboBox_Settings_IPv6__From_URL_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -1272,7 +1517,7 @@ namespace ddns_tool
 			if(listView_Security.SelectedItems.Count == 0)
 				return null;
 
-			return Get_LVI_Tag__Security_Profile(listView_Security.SelectedItems[0]);
+			return Get_Tag__Security_Profile(listView_Security.SelectedItems[0]);
 		}
 
 		/*==============================================================
@@ -1362,7 +1607,7 @@ namespace ddns_tool
 			LVI.Selected = true;
 			LVI.EnsureVisible();
 
-			Set_LVI_Tag__Security_Profile(LVI, profile);
+			Set_Tag__Security_Profile(LVI, profile);
 			Update_Settings_Preview__Security();
 
 			CONFIG.m_s_dirty = true;
@@ -1373,7 +1618,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void button_Security_Del_Click(object sender, EventArgs e)
 		{
-			if(MessageBox.Show(	$"是否要删除「{listView_Security.SelectedItems[0].Text}」？",
+			// 1327: 是否要删除「{0:s}」？
+			if(MessageBox.Show(	string.Format(ddns_lib.LANGUAGES.txt(1327), listView_Security.SelectedItems[0].Text),
 								this.Text,
 								MessageBoxButtons.YesNo,
 								MessageBoxIcon.Question,
@@ -1382,7 +1628,7 @@ namespace ddns_tool
 
 			int							idx		= listView_Security.SelectedIndices[0];
 			ListViewItem				LVI		= listView_Security.Items[idx];
-			ddns_lib.c_Security_Profile	profile	= Get_LVI_Tag__Security_Profile(LVI);
+			ddns_lib.c_Security_Profile	profile	= Get_Tag__Security_Profile(LVI);
 
 			CONFIG.SECURITY.m_s_profiles.RemoveAt(idx);
 			listView_Security.Items.RemoveAt(idx);
@@ -1581,7 +1827,7 @@ namespace ddns_tool
 		/*==============================================================
 		 * 添加
 		 *==============================================================*/
-		private void ToolStripMenuItem_Security_Add_Click(object sender, EventArgs e)
+		private void ToolStripMenuItem__Security_Add_Click(object sender, EventArgs e)
 		{
 			button_Security_Add.PerformClick();
 		}
@@ -1717,7 +1963,10 @@ namespace ddns_tool
 				dir = "";
 
 			dlg.InitialDirectory	= Path.GetFullPath(Directory.Exists(dir) ? dir : "Sound");
-			dlg.Filter				= "音频文件 (*.wav;*.mid;*.mp3)|*.wav;*.mid;*.mp3|所有文件 (*.*)|*.*";
+
+			dlg.Filter				= string.Format("{0:s} (*.wav;*.mid;*.mp3)|*.wav;*.mid;*.mp3|{1:s} (*.*)|*.*",
+													ddns_lib.LANGUAGES.txt(1328),	// 1328: 音频文件
+													ddns_lib.LANGUAGES.txt(1329));	// 1329: 所有文件
 			dlg.RestoreDirectory	= true;
 
 			if(dlg.ShowDialog() == DialogResult.OK)
@@ -1737,18 +1986,35 @@ namespace ddns_tool
 		private void button_Fix_hosts__Path_Browser_Click(object sender, EventArgs e)
 		{
 			string dir = textBox_Fix_hosts__Path.Text.Substring(0, textBox_Fix_hosts__Path.Text.LastIndexOf("\\"));
-			Process.Start("explorer.exe", dir);
+			PATH.open_dir(dir);
 		}
 		#endregion
 
 		#region 预览设置
+		/*==============================================================
+		 * 更新【预览设置】
+		 *==============================================================*/
+		void Update_Settings_Preview__All()
+		{
+			Update_Settings_Preview__Update_Type();
+			Update_Settings_Preview__Ping();
+			Update_Settings_Preview__Set_IPv4();
+			Update_Settings_Preview__Set_IPv6();
+			Update_Settings_Preview__Security();
+			Update_Settings_Preview__UpdateIP();
+			Update_Settings_Preview__AutoUpdate();
+			Update_Settings_Preview__DNS_Lookup_First();
+			Update_Settings_Preview__DNS_Server();
+			Update_Settings_Preview__timeout();
+		}
+
 		/*==============================================================
 		 * 更新方式
 		 *==============================================================*/
 		void Update_Settings_Preview__Update_Type()
 		{
 			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local)
-				label_Settings_Preview__Update_Type_Val.Text = "本地更新（直连）";
+				label_Settings_Preview__Update_Type_Val.Text = ddns_lib.LANGUAGES.txt(701);	// 701: 本地更新（直连）
 			else
 				label_Settings_Preview__Update_Type_Val.Text = CONFIG.REMOTE_SERVER.m_s_addr;
 		}
@@ -1769,15 +2035,15 @@ namespace ddns_tool
 			switch(CONFIG.SET_IP.m_s_type_IPv4)
 			{
 			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
-				label_Settings_Preview__Set_IPv4_Val.Text = "通过 URL 获取";
+				label_Settings_Preview__Set_IPv4_Val.Text = ddns_lib.LANGUAGES.txt(1330);	// 1330: 通过 URL 获取
 				break;
 
 			case CONFIG.e_IP_Get_Type.Manual_IP:
-				label_Settings_Preview__Set_IPv4_Val.Text = "手动指定 IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = ddns_lib.LANGUAGES.txt(1331);	// 1331: 手动指定 IP
 				break;
 
 			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
-				label_Settings_Preview__Set_IPv4_Val.Text = "Server 接受连接的 IP";
+				label_Settings_Preview__Set_IPv4_Val.Text = ddns_lib.LANGUAGES.txt(1332);	// 1332: Server 接受连接的 IP
 				break;
 			}	// switch
 		}
@@ -1790,15 +2056,15 @@ namespace ddns_tool
 			switch(CONFIG.SET_IP.m_s_type_IPv6)
 			{
 			case CONFIG.e_IP_Get_Type.Get_IP_From_URL:
-				label_Settings_Preview__Set_IPv6_Val.Text = "通过 URL 获取";
+				label_Settings_Preview__Set_IPv6_Val.Text = ddns_lib.LANGUAGES.txt(1330);	// 1330: 通过 URL 获取
 				break;
 
 			case CONFIG.e_IP_Get_Type.Manual_IP:
-				label_Settings_Preview__Set_IPv6_Val.Text = "手动指定 IP";
+				label_Settings_Preview__Set_IPv6_Val.Text = ddns_lib.LANGUAGES.txt(1331);	// 1331: 手动指定 IP
 				break;
 
 			case CONFIG.e_IP_Get_Type.Server_Accept_IP:
-				label_Settings_Preview__Set_IPv6_Val.Text = "Server 接受连接的 IP";
+				label_Settings_Preview__Set_IPv6_Val.Text = ddns_lib.LANGUAGES.txt(1332);	// 1332: Server 接受连接的 IP
 				break;
 			}	// switch
 		}
@@ -1808,7 +2074,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		void Update_Settings_Preview__Security()
 		{
-			label_Settings_Preview__Security_Val.Text = $"{CONFIG.SECURITY.m_s_profiles.Count} 个配置文件";
+			label_Settings_Preview__Security_Val.Text = string.Format(	ddns_lib.LANGUAGES.txt(1333),	// 1333: {0:d} 个配置文件
+																		CONFIG.SECURITY.m_s_profiles.Count );
 		}
 
 		/*==============================================================
@@ -1824,7 +2091,8 @@ namespace ddns_tool
 		 *==============================================================*/
 		void Update_Settings_Preview__AutoUpdate()
 		{
-			label_Settings_Preview__Action_AutoUpdate_Val.Text = CONFIG.ACTION.m_s_AutoAction ? $"每 {CONFIG.ACTION.m_s_AutoAction_interval}s" : COMMON.STR_FALSE;
+			// 1334: 每 {0:d}s
+			label_Settings_Preview__Action_AutoUpdate_Val.Text = CONFIG.ACTION.m_s_AutoAction ? string.Format(ddns_lib.LANGUAGES.txt(1334), CONFIG.ACTION.m_s_AutoAction_interval) : COMMON.STR_FALSE;
 		}
 
 		/*==============================================================
@@ -1840,7 +2108,9 @@ namespace ddns_tool
 		 *==============================================================*/
 		void Update_Settings_Preview__DNS_Server()
 		{
-			label_Settings_Preview__DNS_Server_Val.Text = CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS ? "自定义" : "系统默认";
+			// 1335: 自定义
+			// 1336: 系统默认
+			label_Settings_Preview__DNS_Server_Val.Text = CONFIG.UPDATE_ACTION.m_s_Use_Custom_DNS ? ddns_lib.LANGUAGES.txt(1335) : ddns_lib.LANGUAGES.txt(1336);
 		}
 
 		/*==============================================================
@@ -1873,7 +2143,10 @@ namespace ddns_tool
 		{
 			m_can_auto_update_time = DateTime.Now.AddSeconds((int)numericUpDown_Action_AutoAction_Interval.Value);
 
-			add_log($"下次自动更新时间：{m_can_auto_update_time.ToString("G").Replace("/", "-")}", Color.FromArgb(0, 162, 232));
+			string log_txt = string.Format(	ddns_lib.LANGUAGES.txt(1337),	// 1337: 下次自动更新时间：{0:s}
+											m_can_auto_update_time.ToString("G").Replace("/", "-") );
+
+			add_log(log_txt, Color.FromArgb(0, 162, 232));
 		}
 
 		/*==============================================================
@@ -1945,11 +2218,13 @@ namespace ddns_tool
 				const string k_GET_IP_EXE = "get_ip_from_URL.exe";
 				if(!File.Exists(k_GET_IP_EXE))
 				{
-					add_log($"[Error] 找不到 {k_GET_IP_EXE}", Color.Red);
+					// 1338: 找不到 {0:s}
+					add_log($"[Error] {string.Format(ddns_lib.LANGUAGES.txt(1338), k_GET_IP_EXE)}", Color.Red);
 					return false;
 				}
 
-				add_log($"正在获取当前公网 {th.m_ip_type} 地址……");
+				// 1339: 正在获取当前公网 {0:s} 地址……
+				add_log(string.Format(ddns_lib.LANGUAGES.txt(1339), th.m_ip_type));
 
 				// 由于 ServicePointManager 缓存问题，在应用程序生命周期无法切换 IP 地址族，这里使用外部进程获取 IP
 				th.m_Thread = new(() =>
@@ -1976,7 +2251,8 @@ namespace ddns_tool
 						IPAddress.TryParse(ip, out IPAddress? addr)	&&
 						addr.AddressFamily == th.m_af )
 					{
-						add_log($"通过互联网获取公网 {th.m_ip_type} 成功 ({ip})");
+						// 1340: 通过 URL 获取公网 {0:s} 成功 ({1:s})
+						add_log(string.Format(ddns_lib.LANGUAGES.txt(1340), th.m_ip_type, ip));
 						th.m_get_ip_ok = true;
 
 						invoke(() =>
@@ -1987,7 +2263,14 @@ namespace ddns_tool
 					else
 					{
 						ip = "";
-						add_log($"[Error] 通过互联网获取公网 {th.m_ip_type} 失败（{psi.FileName} {psi.Arguments}）", Color.Red);
+
+						// 1341: 通过 URL 获取公网 {0:s} 失败（{1:s} {2:s}）
+						string log_txt = string.Format(	ddns_lib.LANGUAGES.txt(1341),
+														th.m_ip_type,
+														psi.FileName,
+														psi.Arguments );
+
+						add_log($"[Error] {log_txt}", Color.Red);
 
 						string? str_err = reader_err.ReadLine();
 						if(!string.IsNullOrEmpty(str_err))
@@ -2101,14 +2384,16 @@ namespace ddns_tool
 						{
 							if(server_ip == null)
 							{
-								add_log("[Error] Server 地址/端口 错误", Color.Red);
+								// 1342: Server 地址/端口 错误
+								add_log($"[Error] {ddns_lib.LANGUAGES.txt(1342)}", Color.Red);
 								reset_domains_status();
 								return;
 							}
 
 							if(server_port == 0)
 							{
-								add_log("[Error] Server 端口错误", Color.Red);
+								// 1343: Server 端口错误
+								add_log($"[Error] {ddns_lib.LANGUAGES.txt(1343)}", Color.Red);
 								reset_domains_status();
 								return;
 							}
@@ -2120,7 +2405,11 @@ namespace ddns_tool
 																CONFIG.REMOTE_SERVER.m_s_pwd );
 						if(!res)
 						{
-							add_log($"[Error] 连接到远程服务器 ({CONFIG.REMOTE_SERVER.m_s_addr}) 失败", Color.Red);
+							// 1344: 连接到远程服务器 ({0:s}) 失败
+							string log_txt = string.Format(	ddns_lib.LANGUAGES.txt(1344),
+															CONFIG.REMOTE_SERVER.m_s_addr );
+
+							add_log($"[Error] {log_txt}", Color.Red);
 							reset_domains_status();
 							return;
 						}
@@ -2177,10 +2466,20 @@ namespace ddns_tool
 					EVENTS.On_Set_Progress(domain.m_domain, ddns_lib.e_Progress.Failed);
 
 					if(domain.IPv4.m_err_msg.Length > 0)
-						add_log($"[Error] {domain.m_domain} : 更新 IPv4 失败（{domain.IPv4.m_err_msg}）", Color.Red);
+					{
+						// 1345: 更新 IP{0:s} 失败（{1:s}）
+						string log_txt = string.Format(ddns_lib.LANGUAGES.txt(1345), "v4", domain.IPv4.m_err_msg);
+
+						add_log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					}
 
 					if(domain.IPv6.m_err_msg.Length > 0)
-						add_log($"[Error] {domain.m_domain} : 更新 IPv6 失败（{domain.IPv6.m_err_msg}）", Color.Red);
+					{
+						// 1345: 更新 IP{0:s} 失败（{1:s}）
+						string log_txt = string.Format(ddns_lib.LANGUAGES.txt(1345), "v6", domain.IPv6.m_err_msg);
+
+						add_log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					}
 				}
 				else
 				{
@@ -2188,7 +2487,12 @@ namespace ddns_tool
 
 					if(updated_IPv4 || updated_IPv6)
 					{
-						add_log($"{domain.m_domain} : 更新成功。IPv4 = {domain.IPv4.m_current_IP}, IPv6 = {domain.IPv6.m_current_IP}", Color.Green);
+						// 1346: 更新成功。IPv4 = {0:s}, IPv6 = {1:s}
+						string log_txt = string.Format(	ddns_lib.LANGUAGES.txt(1346),
+														domain.IPv4.m_current_IP,
+														domain.IPv6.m_current_IP );
+
+						add_log($"{domain.m_domain} : {log_txt}", Color.Green);
 
 						if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote)
 						{
@@ -2226,8 +2530,16 @@ namespace ddns_tool
 				}
 			}	// for
 
-			add_log($"{IP_change_domains.Count} 成功，{failed_count} 失败，{skip_count} 已跳过，{m_all_domains_for_update} 总计",
-					(failed_count == 0) ? Color.DarkOrange : Color.Red);
+			{
+				// 1347: {0:d} 成功，{1:d} 失败，{2:d} 已跳过，{3:d} 总计
+				string log_txt = string.Format(	ddns_lib.LANGUAGES.txt(1347),
+												IP_change_domains.Count,
+												failed_count,
+												skip_count,
+												m_all_domains_for_update );
+
+				add_log(log_txt, (failed_count == 0) ? Color.DarkOrange : Color.Red);
+			}
 
 			if(IP_change_domains.Count > 0)
 			{

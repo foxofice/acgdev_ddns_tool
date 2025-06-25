@@ -153,7 +153,7 @@
 			// checkBox_dynv6__Auto_IPv6
 			// 
 			checkBox_dynv6__Auto_IPv6.AutoSize = true;
-			checkBox_dynv6__Auto_IPv6.Location = new Point(90, 6);
+			checkBox_dynv6__Auto_IPv6.Location = new Point(6, 26);
 			checkBox_dynv6__Auto_IPv6.Margin = new Padding(3, 2, 3, 2);
 			checkBox_dynv6__Auto_IPv6.Name = "checkBox_dynv6__Auto_IPv6";
 			checkBox_dynv6__Auto_IPv6.Size = new Size(78, 16);
@@ -301,7 +301,7 @@
 			MinimizeBox = false;
 			Name = "frm_Domain";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "添加域名";
+			Text = "添加";
 			Load += frm_Domain_Load;
 			tabControl_Type.ResumeLayout(false);
 			tabPage_Godaddy.ResumeLayout(false);

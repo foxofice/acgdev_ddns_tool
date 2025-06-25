@@ -23,6 +23,8 @@ namespace ddns_tool
 		private void frm_IP_Change_Popup_Load(object sender, EventArgs e)
 		{
 			this.Icon = res_Main.logo;
+
+			update_language_text();
 		}
 		//--------------------------------------------------
 		private void frm_IP_Change_Popup_FormClosing(object sender, FormClosingEventArgs e)
@@ -65,5 +67,20 @@ namespace ddns_tool
 				listView_Main.Items.Add(LVI);
 			}	// for
 		}
+
+		#region 多语言
+		/*==============================================================
+		 * 更新多语言文本
+		 *==============================================================*/
+		void update_language_text()
+		{
+			this.Text					= ddns_lib.LANGUAGES.txt(300);	// 300: IP发生变化的域名
+			columnHeader_Domain.Text	= ddns_lib.LANGUAGES.txt(301);	// 301: 域名
+
+			// 302: IP{0:s}变化
+			columnHeader_IPv4.Text		= string.Format(ddns_lib.LANGUAGES.txt(302), "v4");
+			columnHeader_IPv6.Text		= string.Format(ddns_lib.LANGUAGES.txt(302), "v6");
+		}
+		#endregion
 	};
 }	// namespace ddns_tool

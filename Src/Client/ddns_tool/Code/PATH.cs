@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,14 @@ namespace ddns_tool
 				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
 			return relativePath;
+		}
+
+		/*==============================================================
+		 * 打开所在的文件夹
+		 *==============================================================*/
+		internal static void	open_dir(string dir)
+		{
+			Process.Start("explorer.exe", dir);
 		}
 	};
 }	// namespace ddns_tool

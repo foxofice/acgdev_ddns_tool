@@ -73,6 +73,10 @@
 			notifyIcon_Main = new NotifyIcon(components);
 			contextMenuStrip_NotifyIcon = new ContextMenuStrip(components);
 			ToolStripMenuItem_Open = new ToolStripMenuItem();
+			ToolStripMenuItem_Languages = new ToolStripMenuItem();
+			toolStripMenuItem_Languages_CurrentCulture = new ToolStripMenuItem();
+			toolStripSeparator2 = new ToolStripSeparator();
+			toolStripMenuItem3 = new ToolStripSeparator();
 			ToolStripMenuItem_Exit = new ToolStripMenuItem();
 			tabControl_Main = new TabControl();
 			tabPage_Update_Type = new TabPage();
@@ -131,7 +135,7 @@
 			listView_Security = new ListView();
 			columnHeader_Security = new ColumnHeader();
 			contextMenuStrip_Security = new ContextMenuStrip(components);
-			ToolStripMenuItem_Security_Add = new ToolStripMenuItem();
+			ToolStripMenuItem__Security_Add = new ToolStripMenuItem();
 			ToolStripMenuItem__Security_Del = new ToolStripMenuItem();
 			tabPage_Update_Action = new TabPage();
 			groupBox_Action_IP_Change_PlaySound = new GroupBox();
@@ -512,11 +516,11 @@
 			// numericUpDown_Logs_MaxLines
 			// 
 			numericUpDown_Logs_MaxLines.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-			numericUpDown_Logs_MaxLines.Location = new Point(101, 287);
+			numericUpDown_Logs_MaxLines.Location = new Point(125, 287);
 			numericUpDown_Logs_MaxLines.Margin = new Padding(3, 2, 3, 2);
 			numericUpDown_Logs_MaxLines.Maximum = new decimal(new int[] { int.MaxValue, 0, 0, 0 });
 			numericUpDown_Logs_MaxLines.Name = "numericUpDown_Logs_MaxLines";
-			numericUpDown_Logs_MaxLines.Size = new Size(57, 21);
+			numericUpDown_Logs_MaxLines.Size = new Size(60, 21);
 			numericUpDown_Logs_MaxLines.TabIndex = 2;
 			numericUpDown_Logs_MaxLines.TextAlign = HorizontalAlignment.Center;
 			numericUpDown_Logs_MaxLines.Value = new decimal(new int[] { 10000, 0, 0, 0 });
@@ -609,23 +613,48 @@
 			// contextMenuStrip_NotifyIcon
 			// 
 			contextMenuStrip_NotifyIcon.Font = new Font("新宋体", 9F);
-			contextMenuStrip_NotifyIcon.Items.AddRange(new ToolStripItem[] { ToolStripMenuItem_Open, ToolStripMenuItem_Exit });
+			contextMenuStrip_NotifyIcon.Items.AddRange(new ToolStripItem[] { ToolStripMenuItem_Open, ToolStripMenuItem_Languages, toolStripMenuItem3, ToolStripMenuItem_Exit });
 			contextMenuStrip_NotifyIcon.Name = "contextMenuStrip_NotifyIcon";
-			contextMenuStrip_NotifyIcon.Size = new Size(119, 48);
+			contextMenuStrip_NotifyIcon.Size = new Size(161, 76);
 			// 
 			// ToolStripMenuItem_Open
 			// 
 			ToolStripMenuItem_Open.Font = new Font("新宋体", 9F, FontStyle.Bold);
 			ToolStripMenuItem_Open.Name = "ToolStripMenuItem_Open";
-			ToolStripMenuItem_Open.Size = new Size(118, 22);
+			ToolStripMenuItem_Open.Size = new Size(160, 22);
 			ToolStripMenuItem_Open.Text = "打开";
 			ToolStripMenuItem_Open.Click += ToolStripMenuItem_Open_Click;
+			// 
+			// ToolStripMenuItem_Languages
+			// 
+			ToolStripMenuItem_Languages.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItem_Languages_CurrentCulture, toolStripSeparator2 });
+			ToolStripMenuItem_Languages.Image = res_Main.Languages;
+			ToolStripMenuItem_Languages.Name = "ToolStripMenuItem_Languages";
+			ToolStripMenuItem_Languages.Size = new Size(160, 22);
+			ToolStripMenuItem_Languages.Text = "语言(Languages)";
+			// 
+			// toolStripMenuItem_Languages_CurrentCulture
+			// 
+			toolStripMenuItem_Languages_CurrentCulture.Enabled = false;
+			toolStripMenuItem_Languages_CurrentCulture.Name = "toolStripMenuItem_Languages_CurrentCulture";
+			toolStripMenuItem_Languages_CurrentCulture.Size = new Size(184, 22);
+			toolStripMenuItem_Languages_CurrentCulture.Text = "当前区域设置(xx-xx)";
+			// 
+			// toolStripSeparator2
+			// 
+			toolStripSeparator2.Name = "toolStripSeparator2";
+			toolStripSeparator2.Size = new Size(181, 6);
+			// 
+			// toolStripMenuItem3
+			// 
+			toolStripMenuItem3.Name = "toolStripMenuItem3";
+			toolStripMenuItem3.Size = new Size(157, 6);
 			// 
 			// ToolStripMenuItem_Exit
 			// 
 			ToolStripMenuItem_Exit.Image = res_Main.Exit;
 			ToolStripMenuItem_Exit.Name = "ToolStripMenuItem_Exit";
-			ToolStripMenuItem_Exit.Size = new Size(118, 22);
+			ToolStripMenuItem_Exit.Size = new Size(160, 22);
 			ToolStripMenuItem_Exit.Text = "退出程序";
 			ToolStripMenuItem_Exit.Click += ToolStripMenuItem_Exit_Click;
 			// 
@@ -835,10 +864,10 @@
 			// textBox_Settings_IPv6
 			// 
 			textBox_Settings_IPv6.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			textBox_Settings_IPv6.Location = new Point(173, 46);
+			textBox_Settings_IPv6.Location = new Point(191, 46);
 			textBox_Settings_IPv6.Name = "textBox_Settings_IPv6";
 			textBox_Settings_IPv6.ReadOnly = true;
-			textBox_Settings_IPv6.Size = new Size(341, 21);
+			textBox_Settings_IPv6.Size = new Size(323, 21);
 			textBox_Settings_IPv6.TabIndex = 3;
 			textBox_Settings_IPv6.TextChanged += textBox_Settings_IPv6_TextChanged;
 			// 
@@ -860,10 +889,10 @@
 			radioButton_Settings_IPv6__From_URL.Checked = true;
 			radioButton_Settings_IPv6__From_URL.Location = new Point(6, 21);
 			radioButton_Settings_IPv6__From_URL.Name = "radioButton_Settings_IPv6__From_URL";
-			radioButton_Settings_IPv6__From_URL.Size = new Size(161, 16);
+			radioButton_Settings_IPv6__From_URL.Size = new Size(155, 16);
 			radioButton_Settings_IPv6__From_URL.TabIndex = 0;
 			radioButton_Settings_IPv6__From_URL.TabStop = true;
-			radioButton_Settings_IPv6__From_URL.Text = "通过互联网获取公网 IPv6";
+			radioButton_Settings_IPv6__From_URL.Text = "通过 URL 获取公网 IPv6";
 			radioButton_Settings_IPv6__From_URL.UseVisualStyleBackColor = true;
 			radioButton_Settings_IPv6__From_URL.CheckedChanged += radioButton_Settings_IPv6__CheckedChanged;
 			// 
@@ -883,9 +912,9 @@
 			// 
 			comboBox_Settings_IPv6__From_URL.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			comboBox_Settings_IPv6__From_URL.FormattingEnabled = true;
-			comboBox_Settings_IPv6__From_URL.Location = new Point(173, 20);
+			comboBox_Settings_IPv6__From_URL.Location = new Point(191, 20);
 			comboBox_Settings_IPv6__From_URL.Name = "comboBox_Settings_IPv6__From_URL";
-			comboBox_Settings_IPv6__From_URL.Size = new Size(341, 20);
+			comboBox_Settings_IPv6__From_URL.Size = new Size(323, 20);
 			comboBox_Settings_IPv6__From_URL.TabIndex = 1;
 			comboBox_Settings_IPv6__From_URL.SelectedIndexChanged += comboBox_Settings_IPv6__From_URL_SelectedIndexChanged;
 			// 
@@ -907,10 +936,10 @@
 			// textBox_Settings_IPv4
 			// 
 			textBox_Settings_IPv4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			textBox_Settings_IPv4.Location = new Point(173, 46);
+			textBox_Settings_IPv4.Location = new Point(191, 46);
 			textBox_Settings_IPv4.Name = "textBox_Settings_IPv4";
 			textBox_Settings_IPv4.ReadOnly = true;
-			textBox_Settings_IPv4.Size = new Size(341, 21);
+			textBox_Settings_IPv4.Size = new Size(323, 21);
 			textBox_Settings_IPv4.TabIndex = 3;
 			textBox_Settings_IPv4.TextChanged += textBox_Settings_IPv4_TextChanged;
 			// 
@@ -942,9 +971,9 @@
 			// 
 			comboBox_Settings_IPv4__From_URL.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			comboBox_Settings_IPv4__From_URL.FormattingEnabled = true;
-			comboBox_Settings_IPv4__From_URL.Location = new Point(173, 20);
+			comboBox_Settings_IPv4__From_URL.Location = new Point(191, 20);
 			comboBox_Settings_IPv4__From_URL.Name = "comboBox_Settings_IPv4__From_URL";
-			comboBox_Settings_IPv4__From_URL.Size = new Size(341, 20);
+			comboBox_Settings_IPv4__From_URL.Size = new Size(323, 20);
 			comboBox_Settings_IPv4__From_URL.TabIndex = 1;
 			comboBox_Settings_IPv4__From_URL.SelectedIndexChanged += comboBox_Settings_IPv4__From_URL_SelectedIndexChanged;
 			// 
@@ -954,10 +983,10 @@
 			radioButton_Settings_IPv4__From_URL.Checked = true;
 			radioButton_Settings_IPv4__From_URL.Location = new Point(6, 21);
 			radioButton_Settings_IPv4__From_URL.Name = "radioButton_Settings_IPv4__From_URL";
-			radioButton_Settings_IPv4__From_URL.Size = new Size(161, 16);
+			radioButton_Settings_IPv4__From_URL.Size = new Size(155, 16);
 			radioButton_Settings_IPv4__From_URL.TabIndex = 0;
 			radioButton_Settings_IPv4__From_URL.TabStop = true;
-			radioButton_Settings_IPv4__From_URL.Text = "通过互联网获取公网 IPv4";
+			radioButton_Settings_IPv4__From_URL.Text = "通过 URL 获取公网 IPv4";
 			radioButton_Settings_IPv4__From_URL.UseVisualStyleBackColor = true;
 			radioButton_Settings_IPv4__From_URL.CheckedChanged += radioButton_Settings_IPv4__CheckedChanged;
 			// 
@@ -967,11 +996,11 @@
 			tabPage_Security.Controls.Add(button_Security_Del);
 			tabPage_Security.Controls.Add(button_Security_Add);
 			tabPage_Security.Controls.Add(listView_Security);
-			tabPage_Security.Location = new Point(4, 22);
+			tabPage_Security.Location = new Point(4, 26);
 			tabPage_Security.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Security.Name = "tabPage_Security";
 			tabPage_Security.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Security.Size = new Size(532, 270);
+			tabPage_Security.Size = new Size(532, 266);
 			tabPage_Security.TabIndex = 2;
 			tabPage_Security.Text = "安全设置";
 			tabPage_Security.UseVisualStyleBackColor = true;
@@ -1219,9 +1248,9 @@
 			// 
 			// textBox_Security__Property__Name
 			// 
-			textBox_Security__Property__Name.Location = new Point(89, 20);
+			textBox_Security__Property__Name.Location = new Point(95, 20);
 			textBox_Security__Property__Name.Name = "textBox_Security__Property__Name";
-			textBox_Security__Property__Name.Size = new Size(150, 21);
+			textBox_Security__Property__Name.Size = new Size(144, 21);
 			textBox_Security__Property__Name.TabIndex = 1;
 			textBox_Security__Property__Name.TextChanged += textBox_Security__Property__Name_TextChanged;
 			// 
@@ -1236,7 +1265,6 @@
 			// 
 			// button_Security_Del
 			// 
-			button_Security_Del.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 			button_Security_Del.Enabled = false;
 			button_Security_Del.Location = new Point(35, 242);
 			button_Security_Del.Name = "button_Security_Del";
@@ -1248,7 +1276,6 @@
 			// 
 			// button_Security_Add
 			// 
-			button_Security_Add.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 			button_Security_Add.Location = new Point(6, 242);
 			button_Security_Add.Name = "button_Security_Add";
 			button_Security_Add.Size = new Size(23, 23);
@@ -1259,7 +1286,6 @@
 			// 
 			// listView_Security
 			// 
-			listView_Security.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
 			listView_Security.Columns.AddRange(new ColumnHeader[] { columnHeader_Security });
 			listView_Security.ContextMenuStrip = contextMenuStrip_Security;
 			listView_Security.FullRowSelect = true;
@@ -1282,17 +1308,17 @@
 			// contextMenuStrip_Security
 			// 
 			contextMenuStrip_Security.Font = new Font("新宋体", 9F);
-			contextMenuStrip_Security.Items.AddRange(new ToolStripItem[] { ToolStripMenuItem_Security_Add, ToolStripMenuItem__Security_Del });
+			contextMenuStrip_Security.Items.AddRange(new ToolStripItem[] { ToolStripMenuItem__Security_Add, ToolStripMenuItem__Security_Del });
 			contextMenuStrip_Security.Name = "contextMenuStrip_Security";
 			contextMenuStrip_Security.Size = new Size(95, 48);
 			// 
-			// ToolStripMenuItem_Security_Add
+			// ToolStripMenuItem__Security_Add
 			// 
-			ToolStripMenuItem_Security_Add.Image = res_Main.Add;
-			ToolStripMenuItem_Security_Add.Name = "ToolStripMenuItem_Security_Add";
-			ToolStripMenuItem_Security_Add.Size = new Size(94, 22);
-			ToolStripMenuItem_Security_Add.Text = "添加";
-			ToolStripMenuItem_Security_Add.Click += ToolStripMenuItem_Security_Add_Click;
+			ToolStripMenuItem__Security_Add.Image = res_Main.Add;
+			ToolStripMenuItem__Security_Add.Name = "ToolStripMenuItem__Security_Add";
+			ToolStripMenuItem__Security_Add.Size = new Size(94, 22);
+			ToolStripMenuItem__Security_Add.Text = "添加";
+			ToolStripMenuItem__Security_Add.Click += ToolStripMenuItem__Security_Add_Click;
 			// 
 			// ToolStripMenuItem__Security_Del
 			// 
@@ -1314,11 +1340,11 @@
 			tabPage_Update_Action.Controls.Add(numericUpDown_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_AutoAction_Interval);
 			tabPage_Update_Action.Controls.Add(checkBox_Action_UpdateIP);
-			tabPage_Update_Action.Location = new Point(4, 22);
+			tabPage_Update_Action.Location = new Point(4, 26);
 			tabPage_Update_Action.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Update_Action.Name = "tabPage_Update_Action";
 			tabPage_Update_Action.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Update_Action.Size = new Size(532, 270);
+			tabPage_Update_Action.Size = new Size(532, 266);
 			tabPage_Update_Action.TabIndex = 3;
 			tabPage_Update_Action.Text = "更新操作";
 			tabPage_Update_Action.UseVisualStyleBackColor = true;
@@ -1338,9 +1364,9 @@
 			// button_Action_IP_Change_StopSound
 			// 
 			button_Action_IP_Change_StopSound.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			button_Action_IP_Change_StopSound.Location = new Point(439, 20);
+			button_Action_IP_Change_StopSound.Location = new Point(414, 20);
 			button_Action_IP_Change_StopSound.Name = "button_Action_IP_Change_StopSound";
-			button_Action_IP_Change_StopSound.Size = new Size(75, 23);
+			button_Action_IP_Change_StopSound.Size = new Size(100, 23);
 			button_Action_IP_Change_StopSound.TabIndex = 12;
 			button_Action_IP_Change_StopSound.Text = "停止播放";
 			button_Action_IP_Change_StopSound.UseVisualStyleBackColor = true;
@@ -1349,7 +1375,7 @@
 			// button_Action_IP_Change_PlaySound
 			// 
 			button_Action_IP_Change_PlaySound.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			button_Action_IP_Change_PlaySound.Location = new Point(401, 20);
+			button_Action_IP_Change_PlaySound.Location = new Point(376, 20);
 			button_Action_IP_Change_PlaySound.Name = "button_Action_IP_Change_PlaySound";
 			button_Action_IP_Change_PlaySound.Size = new Size(32, 23);
 			button_Action_IP_Change_PlaySound.TabIndex = 11;
@@ -1363,7 +1389,7 @@
 			textBox_Action_IP_Change_PlaySound.Location = new Point(6, 22);
 			textBox_Action_IP_Change_PlaySound.Name = "textBox_Action_IP_Change_PlaySound";
 			textBox_Action_IP_Change_PlaySound.ReadOnly = true;
-			textBox_Action_IP_Change_PlaySound.Size = new Size(389, 21);
+			textBox_Action_IP_Change_PlaySound.Size = new Size(364, 21);
 			textBox_Action_IP_Change_PlaySound.TabIndex = 10;
 			textBox_Action_IP_Change_PlaySound.TextChanged += textBox_Action_IP_Change_PlaySound_TextChanged;
 			// 
@@ -1460,7 +1486,7 @@
 			// 
 			// numericUpDown_Action_AutoAction_Interval
 			// 
-			numericUpDown_Action_AutoAction_Interval.Location = new Point(216, 26);
+			numericUpDown_Action_AutoAction_Interval.Location = new Point(258, 26);
 			numericUpDown_Action_AutoAction_Interval.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
 			numericUpDown_Action_AutoAction_Interval.Name = "numericUpDown_Action_AutoAction_Interval";
 			numericUpDown_Action_AutoAction_Interval.Size = new Size(60, 21);
@@ -1502,18 +1528,17 @@
 			tabPage_Fix_hosts.Controls.Add(textBox_Fix_hosts__Path);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Content);
 			tabPage_Fix_hosts.Controls.Add(label_Fix_hosts__Path);
-			tabPage_Fix_hosts.Location = new Point(4, 22);
+			tabPage_Fix_hosts.Location = new Point(4, 26);
 			tabPage_Fix_hosts.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Fix_hosts.Name = "tabPage_Fix_hosts";
 			tabPage_Fix_hosts.Padding = new Padding(3, 2, 3, 2);
-			tabPage_Fix_hosts.Size = new Size(532, 270);
+			tabPage_Fix_hosts.Size = new Size(532, 266);
 			tabPage_Fix_hosts.TabIndex = 4;
 			tabPage_Fix_hosts.Text = "修正 hosts";
 			tabPage_Fix_hosts.UseVisualStyleBackColor = true;
 			// 
 			// textBox_Fix_hosts__Content
 			// 
-			textBox_Fix_hosts__Content.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			textBox_Fix_hosts__Content.HideSelection = false;
 			textBox_Fix_hosts__Content.Location = new Point(6, 68);
 			textBox_Fix_hosts__Content.Multiline = true;
@@ -1558,9 +1583,9 @@
 			label_Fix_hosts__Path.AutoSize = true;
 			label_Fix_hosts__Path.Location = new Point(6, 6);
 			label_Fix_hosts__Path.Name = "label_Fix_hosts__Path";
-			label_Fix_hosts__Path.Size = new Size(377, 12);
+			label_Fix_hosts__Path.Size = new Size(293, 12);
 			label_Fix_hosts__Path.TabIndex = 0;
-			label_Fix_hosts__Path.Text = "如果出现访问部分域名不正常，可以尝试修改 hosts。修改以下文件：";
+			label_Fix_hosts__Path.Text = "如果出现访问部分域名不正常，可以尝试修改 hosts：";
 			// 
 			// groupBox_Settings_Preview
 			// 
@@ -1595,7 +1620,7 @@
 			// label_Settings_Preview__Timeout_Val
 			// 
 			label_Settings_Preview__Timeout_Val.AutoSize = true;
-			label_Settings_Preview__Timeout_Val.Location = new Point(95, 197);
+			label_Settings_Preview__Timeout_Val.Location = new Point(119, 197);
 			label_Settings_Preview__Timeout_Val.Name = "label_Settings_Preview__Timeout_Val";
 			label_Settings_Preview__Timeout_Val.Size = new Size(17, 12);
 			label_Settings_Preview__Timeout_Val.TabIndex = 0;
@@ -1604,7 +1629,7 @@
 			// label_Settings_Preview__DNS_Server_Val
 			// 
 			label_Settings_Preview__DNS_Server_Val.AutoSize = true;
-			label_Settings_Preview__DNS_Server_Val.Location = new Point(95, 177);
+			label_Settings_Preview__DNS_Server_Val.Location = new Point(119, 177);
 			label_Settings_Preview__DNS_Server_Val.Name = "label_Settings_Preview__DNS_Server_Val";
 			label_Settings_Preview__DNS_Server_Val.Size = new Size(41, 12);
 			label_Settings_Preview__DNS_Server_Val.TabIndex = 0;
@@ -1613,7 +1638,7 @@
 			// label_Settings_Preview__DNS_Lookup_First_Val
 			// 
 			label_Settings_Preview__DNS_Lookup_First_Val.AutoSize = true;
-			label_Settings_Preview__DNS_Lookup_First_Val.Location = new Point(95, 157);
+			label_Settings_Preview__DNS_Lookup_First_Val.Location = new Point(119, 157);
 			label_Settings_Preview__DNS_Lookup_First_Val.Name = "label_Settings_Preview__DNS_Lookup_First_Val";
 			label_Settings_Preview__DNS_Lookup_First_Val.Size = new Size(17, 12);
 			label_Settings_Preview__DNS_Lookup_First_Val.TabIndex = 0;
@@ -1622,7 +1647,7 @@
 			// label_Settings_Preview__Action_AutoUpdate_Val
 			// 
 			label_Settings_Preview__Action_AutoUpdate_Val.AutoSize = true;
-			label_Settings_Preview__Action_AutoUpdate_Val.Location = new Point(95, 137);
+			label_Settings_Preview__Action_AutoUpdate_Val.Location = new Point(119, 137);
 			label_Settings_Preview__Action_AutoUpdate_Val.Name = "label_Settings_Preview__Action_AutoUpdate_Val";
 			label_Settings_Preview__Action_AutoUpdate_Val.Size = new Size(47, 12);
 			label_Settings_Preview__Action_AutoUpdate_Val.TabIndex = 0;
@@ -1631,7 +1656,7 @@
 			// label_Settings_Preview__Action_UpdateIP_Val
 			// 
 			label_Settings_Preview__Action_UpdateIP_Val.AutoSize = true;
-			label_Settings_Preview__Action_UpdateIP_Val.Location = new Point(95, 117);
+			label_Settings_Preview__Action_UpdateIP_Val.Location = new Point(119, 117);
 			label_Settings_Preview__Action_UpdateIP_Val.Name = "label_Settings_Preview__Action_UpdateIP_Val";
 			label_Settings_Preview__Action_UpdateIP_Val.Size = new Size(17, 12);
 			label_Settings_Preview__Action_UpdateIP_Val.TabIndex = 0;
@@ -1640,7 +1665,7 @@
 			// label_Settings_Preview__Security_Val
 			// 
 			label_Settings_Preview__Security_Val.AutoSize = true;
-			label_Settings_Preview__Security_Val.Location = new Point(95, 97);
+			label_Settings_Preview__Security_Val.Location = new Point(119, 97);
 			label_Settings_Preview__Security_Val.Name = "label_Settings_Preview__Security_Val";
 			label_Settings_Preview__Security_Val.Size = new Size(83, 12);
 			label_Settings_Preview__Security_Val.TabIndex = 0;
@@ -1649,7 +1674,7 @@
 			// label_Settings_Preview__Set_IPv6_Val
 			// 
 			label_Settings_Preview__Set_IPv6_Val.AutoSize = true;
-			label_Settings_Preview__Set_IPv6_Val.Location = new Point(95, 77);
+			label_Settings_Preview__Set_IPv6_Val.Location = new Point(119, 77);
 			label_Settings_Preview__Set_IPv6_Val.Name = "label_Settings_Preview__Set_IPv6_Val";
 			label_Settings_Preview__Set_IPv6_Val.Size = new Size(125, 12);
 			label_Settings_Preview__Set_IPv6_Val.TabIndex = 0;
@@ -1658,7 +1683,7 @@
 			// label_Settings_Preview__Set_IPv4_Val
 			// 
 			label_Settings_Preview__Set_IPv4_Val.AutoSize = true;
-			label_Settings_Preview__Set_IPv4_Val.Location = new Point(95, 57);
+			label_Settings_Preview__Set_IPv4_Val.Location = new Point(119, 57);
 			label_Settings_Preview__Set_IPv4_Val.Name = "label_Settings_Preview__Set_IPv4_Val";
 			label_Settings_Preview__Set_IPv4_Val.Size = new Size(125, 12);
 			label_Settings_Preview__Set_IPv4_Val.TabIndex = 0;
@@ -1667,7 +1692,7 @@
 			// label_Settings_Preview__Ping_Val
 			// 
 			label_Settings_Preview__Ping_Val.AutoSize = true;
-			label_Settings_Preview__Ping_Val.Location = new Point(95, 37);
+			label_Settings_Preview__Ping_Val.Location = new Point(119, 37);
 			label_Settings_Preview__Ping_Val.Name = "label_Settings_Preview__Ping_Val";
 			label_Settings_Preview__Ping_Val.Size = new Size(23, 12);
 			label_Settings_Preview__Ping_Val.TabIndex = 0;
@@ -1676,7 +1701,7 @@
 			// label_Settings_Preview__Update_Type_Val
 			// 
 			label_Settings_Preview__Update_Type_Val.AutoSize = true;
-			label_Settings_Preview__Update_Type_Val.Location = new Point(95, 17);
+			label_Settings_Preview__Update_Type_Val.Location = new Point(119, 17);
 			label_Settings_Preview__Update_Type_Val.Name = "label_Settings_Preview__Update_Type_Val";
 			label_Settings_Preview__Update_Type_Val.Size = new Size(137, 12);
 			label_Settings_Preview__Update_Type_Val.TabIndex = 0;
@@ -1732,9 +1757,9 @@
 			label_Settings_Preview__Security.AutoSize = true;
 			label_Settings_Preview__Security.Location = new Point(6, 97);
 			label_Settings_Preview__Security.Name = "label_Settings_Preview__Security";
-			label_Settings_Preview__Security.Size = new Size(65, 12);
+			label_Settings_Preview__Security.Size = new Size(107, 12);
 			label_Settings_Preview__Security.TabIndex = 0;
-			label_Settings_Preview__Security.Text = "安全设置：";
+			label_Settings_Preview__Security.Text = "Security Profile:";
 			// 
 			// label_Settings_Preview__Set_IPv6
 			// 
@@ -1776,7 +1801,7 @@
 			// 
 			linkLabel_WebSite.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 			linkLabel_WebSite.AutoSize = true;
-			linkLabel_WebSite.Location = new Point(564, 758);
+			linkLabel_WebSite.Location = new Point(601, 760);
 			linkLabel_WebSite.Name = "linkLabel_WebSite";
 			linkLabel_WebSite.Size = new Size(29, 12);
 			linkLabel_WebSite.TabIndex = 7;
@@ -1788,7 +1813,7 @@
 			// 
 			linkLabel_Github.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 			linkLabel_Github.AutoSize = true;
-			linkLabel_Github.Location = new Point(599, 758);
+			linkLabel_Github.Location = new Point(554, 760);
 			linkLabel_Github.Name = "linkLabel_Github";
 			linkLabel_Github.Size = new Size(41, 12);
 			linkLabel_Github.TabIndex = 7;
@@ -1846,7 +1871,7 @@
 			Margin = new Padding(3, 2, 3, 2);
 			Name = "frm_MainForm";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "AcgDev DDNS Tool v0.04";
+			Text = "AcgDev DDNS Tool v0.05";
 			FormClosing += frm_MainForm_FormClosing;
 			Load += frm_MainForm_Load;
 			groupBox_Domains.ResumeLayout(false);
@@ -2052,9 +2077,13 @@
 		private System.Windows.Forms.Timer timer_Update;
 		private System.Windows.Forms.Timer timer_Ping;
 		private ContextMenuStrip contextMenuStrip_Security;
-		private ToolStripMenuItem ToolStripMenuItem_Security_Add;
+		private ToolStripMenuItem ToolStripMenuItem__Security_Add;
 		private ToolStripMenuItem ToolStripMenuItem__Security_Del;
 		internal TextBox textBox_Action_Custom_DNS_List;
 		private System.Windows.Forms.Timer timer_Save_Log;
+		private ToolStripMenuItem ToolStripMenuItem_Languages;
+		private ToolStripSeparator toolStripMenuItem3;
+		private ToolStripMenuItem toolStripMenuItem_Languages_CurrentCulture;
+		private ToolStripSeparator toolStripSeparator2;
 	}
 }

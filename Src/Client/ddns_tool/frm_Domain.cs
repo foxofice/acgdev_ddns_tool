@@ -98,14 +98,16 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void frm_Domain_Load(object sender, EventArgs e)
 		{
+			update_language_text();
+
 			if(CONFIG.find_domain(m_domain.m_domain) == null)
 			{
-				this.Text = "添加";
+				this.Text = ddns_lib.LANGUAGES.txt(200);	// 200: 添加
 				this.Icon = IMAGE.image_to_ico(res_Main.Add);
 			}
 			else
 			{
-				this.Text = "修改";
+				this.Text = ddns_lib.LANGUAGES.txt(201);	// 201: 修改
 				this.Icon = IMAGE.image_to_ico(res_Main.Edit);
 			}
 
@@ -190,7 +192,8 @@ namespace ddns_tool
 
 				if(is_exists)
 				{
-					MessageBox.Show($"{textBox_Domain.Text} 已存在，请重新输入");
+					// 252: {0:s} 已存在，请重新输入
+					MessageBox.Show(string.Format(ddns_lib.LANGUAGES.txt(252), textBox_Domain.Text));
 					textBox_Domain.Focus();
 					return;
 				}
@@ -222,5 +225,31 @@ namespace ddns_tool
 			this.DialogResult = DialogResult.OK;
 			this.Close();
 		}
+
+		#region 多语言
+		/*==============================================================
+		 * 更新多语言文本
+		 *==============================================================*/
+		void update_language_text()
+		{
+			label_Domain.Text				= ddns_lib.LANGUAGES.txt(202);	// 202: 域名：
+			label_Type.Text					= ddns_lib.LANGUAGES.txt(203);	// 203: 类型：
+			label_Godaddy__TTL.Text			= ddns_lib.LANGUAGES.txt(250);	// 250: TTL（秒，可省略）：
+
+			// 251: 自动 IP{0:s}
+			checkBox_dynv6__Auto_IPv4.Text	= string.Format(ddns_lib.LANGUAGES.txt(251), "v4");
+			checkBox_dynv6__Auto_IPv6.Text	= string.Format(ddns_lib.LANGUAGES.txt(251), "v6");
+
+			label_dynu__TTL.Text			= ddns_lib.LANGUAGES.txt(250);	// 250: TTL（秒，可省略）：
+
+			label_Security_Profile.Text		= ddns_lib.LANGUAGES.txt(204);	// 204: 安全配置：
+
+			// 205: 是否更新 IP{0:s}
+			checkBox_IPv4_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(205), "v4");
+			checkBox_IPv6_Enable.Text		= string.Format(ddns_lib.LANGUAGES.txt(205), "v6");
+
+			button_OK.Text					= ddns_lib.LANGUAGES.txt(50);	// 50: 确定
+		}
+		#endregion
 	};
 }	// namespace ddns_tool
