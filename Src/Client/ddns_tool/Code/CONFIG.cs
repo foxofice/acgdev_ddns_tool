@@ -12,8 +12,8 @@ namespace ddns_tool
 {
 	internal class CONFIG
 	{
-		const string			m_k_CONFIG_FILE		= "Files/config.txt";	// 配置文件的文件名
-		const string			m_k_CONFIG_FILE_TMP	= "Files/config.tmp";	// 配置文件的文件名（临时）
+		const string			m_k_CONFIG_FILE		= "Files\\config.txt";	// 配置文件的文件名
+		const string			m_k_CONFIG_FILE_TMP	= "Files\\config.tmp";	// 配置文件的文件名（临时）
 		internal static bool	m_s_dirty			= false;				// 设置是否已改变
 
 		enum e_Header
