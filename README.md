@@ -11,3 +11,4 @@
 ![НиЭМ1](doc/images/01.png)
 ![НиЭМ2](doc/images/02.png)
 ![НиЭМ3](doc/images/03.png)
+![НиЭМ4](doc/images/04.png)
