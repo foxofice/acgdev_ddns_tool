@@ -979,7 +979,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Domains_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 0, 198, 60, 102, 273, 66 };
+			int[] widths = { 0, 198, 60, 102, 273, 90 };
 
 			for(int i = 1; i < widths.Length; ++i)
 				listView_Domains.Columns[i].Width = widths[i];
