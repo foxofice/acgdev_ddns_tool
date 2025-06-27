@@ -962,7 +962,12 @@ namespace ddns_tool
 				sb.AppendLine();
 			}	// for
 
-			File.WriteAllText(m_k_CONFIG_FILE, sb.ToString(), Encoding.UTF8);
+			File.WriteAllText(m_k_CONFIG_FILE_TMP, sb.ToString(), Encoding.UTF8);
+
+			if(File.Exists(m_k_CONFIG_FILE))
+				File.Delete(m_k_CONFIG_FILE);
+
+			File.Move(m_k_CONFIG_FILE_TMP, m_k_CONFIG_FILE);
 
 			// 127: 保存配置文件 {0:s}
 			frm_MainForm.m_s_Mainform.add_log(string.Format(ddns_lib.LANGUAGES.txt(127), m_k_CONFIG_FILE), Color.Blue);
