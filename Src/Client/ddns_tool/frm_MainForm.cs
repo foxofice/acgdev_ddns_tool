@@ -1205,7 +1205,7 @@ namespace ddns_tool
 				while(LVI.SubItems.Count < listView_Logs.Columns.Count)
 					LVI.SubItems.Add("");
 
-				LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("G").Replace("/", ".");
+				LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("yyyy.MM.dd HH:mm.ss");
 				LVI.SubItems[(int)e_Column_Log.Log].Text	= txt;
 
 				LVI.ForeColor								= c;
