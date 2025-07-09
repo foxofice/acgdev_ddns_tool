@@ -36,7 +36,8 @@ namespace diff_copy
 				FileInfo fi_src = new FileInfo(src_file);
 				FileInfo fi_dst = new FileInfo(dst_file);
 
-				if(fi_src.LastWriteTime == fi_dst.LastWriteTime)
+				if(	fi_src.Length			== fi_dst.Length	&&
+					fi_src.LastWriteTime	== fi_dst.LastWriteTime )
 					do_copy = false;
 			}
 

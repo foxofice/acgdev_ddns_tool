@@ -75,22 +75,11 @@ namespace ddns_tool
 		}
 
 		/*==============================================================
-		 * 执行委托
-		 *==============================================================*/
-		public void invoke(Action func)
-		{
-			if(this.InvokeRequired)
-				this.Invoke(func);
-			else
-				func();
-		}
-
-		/*==============================================================
 		 * 锁定控件（UI 线程安全）
 		 *==============================================================*/
 		void lock_controls(bool enabled)
 		{
-			invoke(() =>
+			FORMS.invoke(() =>
 			{
 				//【更新方式】
 				radioButton_Settings_Type__Local.Enabled		= enabled;
@@ -369,7 +358,7 @@ namespace ddns_tool
 				m_s_Mainform.add_log(ddns_lib.LANGUAGES.txt(1321));	// 1321: 已断开 Server 的连接
 				m_s_Mainform.update__done();
 
-				m_s_Mainform.invoke(() =>
+				FORMS.invoke(() =>
 				{
 					m_s_Mainform.textBox_Settings_RemoteServer__Ping.Clear();
 				});
@@ -388,7 +377,7 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void Recv_Ping(double ping)
 			{
-				m_s_Mainform.invoke(() =>
+				FORMS.invoke(() =>
 				{
 					m_s_Mainform.textBox_Settings_RemoteServer__Ping.Text = (ping * 1000).ToString("F3");
 					m_s_Mainform.Update_Settings_Preview__Ping();
@@ -457,7 +446,7 @@ namespace ddns_tool
 			 *==============================================================*/
 			internal static void On_Set_Progress(string domain, ddns_lib.e_Progress progress)
 			{
-				m_s_Mainform.invoke(() =>
+				FORMS.invoke(() =>
 				{
 					ListViewItem? LVI = m_s_Mainform.find_LVI__Domain(domain);
 
@@ -1209,7 +1198,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		internal void add_log(string txt, Color c = default)
 		{
-			invoke(() =>
+			FORMS.invoke(() =>
 			{
 				ListViewItem LVI = new();
 
@@ -2274,7 +2263,7 @@ namespace ddns_tool
 						add_log(string.Format(ddns_lib.LANGUAGES.txt(1340), th.m_ip_type, ip));
 						th.m_get_ip_ok = true;
 
-						invoke(() =>
+						FORMS.invoke(() =>
 						{
 							th.m_textBox_Settings_IP.Text = ip.Trim();
 						});
@@ -2522,7 +2511,7 @@ namespace ddns_tool
 									remote_accept_ipv4		= domain.IPv4.m_current_IP;
 									CONFIG.SET_IP.m_s_IPv4	= domain.IPv4.m_current_IP;
 
-									invoke(() =>
+									FORMS.invoke(() =>
 									{
 										textBox_Settings_IPv4.Text	= domain.IPv4.m_current_IP;
 									});
@@ -2536,7 +2525,7 @@ namespace ddns_tool
 									remote_accept_ipv6		= domain.IPv6.m_current_IP;
 									CONFIG.SET_IP.m_s_IPv6	= domain.IPv6.m_current_IP;
 
-									invoke(() =>
+									FORMS.invoke(() =>
 									{
 										textBox_Settings_IPv6.Text	= domain.IPv6.m_current_IP;
 									});
@@ -2565,7 +2554,7 @@ namespace ddns_tool
 				// IP变动时，弹出提示窗口
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Popup)
 				{
-					invoke(() =>
+					FORMS.invoke(() =>
 					{
 						m_IP_Change_Popup.set_domains(IP_change_domains);
 						FORMS.active_form(m_IP_Change_Popup);
@@ -2575,14 +2564,14 @@ namespace ddns_tool
 				// IP变动时，播放音乐
 				if(CONFIG.UPDATE_ACTION.m_s_IP_Change_Play_Sound)
 				{
-					invoke(() =>
+					FORMS.invoke(() =>
 					{
 						SOUND.Stop();
 						SOUND.Play(CONFIG.UPDATE_ACTION.m_s_IP_Change_Sound_Path);
 					});
 				}
 
-				invoke(update_All_LVI__Domain);
+				FORMS.invoke(update_All_LVI__Domain);
 				CONFIG.m_s_dirty = true;
 			}
 

@@ -961,6 +961,7 @@ namespace ddns_tool
 
 				sb.AppendLine();
 			}	// for
+			//====================【域名列表】====================(End)
 
 			File.WriteAllText(m_k_CONFIG_FILE_TMP, sb.ToString(), Encoding.UTF8);
 
@@ -971,7 +972,6 @@ namespace ddns_tool
 
 			// 127: 保存配置文件 {0:s}
 			frm_MainForm.m_s_Mainform.add_log(string.Format(ddns_lib.LANGUAGES.txt(127), m_k_CONFIG_FILE), Color.Blue);
-			//====================【域名列表】====================(End)
 
 			m_s_dirty = false;
 		}
