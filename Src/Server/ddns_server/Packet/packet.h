@@ -77,6 +77,14 @@ void	send_Login_Result(struct NNN::Socket::s_SessionData *sd, es_Result result);
 */
 void	send_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*sd,
 									const std::vector<struct s_Domain>	&domains );
+
+// Server ·¢ËÍ Log
+/*
+	S xxxx <packet_len>.USHORT <aes_data>.?B
+
+	<aes_data> = { <log>.?B(wchar*) <r>.B <g>.B <b>.B }
+*/
+void	send_Log(struct NNN::Socket::s_SessionData *sd, const WCHAR *log, UINT rgb);
 #pragma endregion
 
 //================================================================================

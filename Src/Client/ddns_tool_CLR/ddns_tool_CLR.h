@@ -79,6 +79,10 @@ public:
 	ADD_CLR_EVENT_STATIC(	Recv_Update_Domains_Result,
 							NNN_PARAMS(List<ddns_lib::c_Domain^> ^domains),
 							domains );
+
+	ADD_CLR_EVENT_STATIC(	Recv_Log,
+							NNN_PARAMS(System::String ^log, Color color),
+							log, color );
 #pragma endregion
 
 	// add_log ÊÂ¼þ

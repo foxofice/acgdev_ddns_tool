@@ -78,6 +78,10 @@ PARSE_FUNC(recv_Login_Result);
 // 请参见：ddns_server::Packet::send_Update_Domains_Result()
 PARSE_FUNC(recv_Update_Domains_Result);
 
+// Server 发送 Log
+// 请参见：ddns_server::Packet::send_Log()
+PARSE_FUNC(recv_Log);
+
 #undef PARSE_FUNC
 #pragma endregion
 

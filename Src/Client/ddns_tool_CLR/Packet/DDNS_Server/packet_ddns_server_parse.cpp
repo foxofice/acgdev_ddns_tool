@@ -66,6 +66,9 @@ void parse_packet()
 
 		// Server 发送「更新域名的 A/AAAA 记录的结果」
 		SWITCH_LINE(ES_HEADER::Server_Update_Domains_Result,	recv_Update_Domains_Result);
+
+		// Server 发送 Log
+		SWITCH_LINE(ES_HEADER::Server_Log,						recv_Log);
 		}	// switch
 
 #undef SWITCH_LINE
@@ -202,6 +205,26 @@ es_Parse_Result recv_Update_Domains_Result(struct NNN::Socket::s_SessionData *sd
 		}	// for
 
 		CLR::Event_Recv_Update_Domains_Result(gc_domains);
+	}
+
+	return ret;
+}
+
+
+/*==============================================================
+ * Server 发送 Log
+ * recv_Log()
+ *==============================================================*/
+es_Parse_Result recv_Log(struct NNN::Socket::s_SessionData *sd)
+{
+	WCHAR	log[4096];
+	UINT	rgb;
+
+	es_Parse_Result ret = PACKET::recv_Log(sd, g_KeyIV.m_Key, g_KeyIV.m_IV, log, rgb);
+
+	if(ret == es_Parse_Result::OK)
+	{
+		CLR::Event_Recv_Log(gcnew System::String(log), Color::FromArgb((int)rgb));
 	}
 
 	return ret;

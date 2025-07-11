@@ -388,7 +388,7 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 								sd->m_port );
 
 	// 执行更新
-	ddns_server_CLR::update_domains(domains, DNS_Lookup_First, DNS_Server_List.empty() ? nullptr : &DNS_Server_List, timeout);
+	ddns_server_CLR::update_domains(domains, DNS_Lookup_First, DNS_Server_List.empty() ? nullptr : &DNS_Server_List, timeout, sd);
 
 	// 回发结果
 	send_Update_Domains_Result(sd, domains);

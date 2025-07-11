@@ -196,5 +196,47 @@ es_Parse_Result recv_Update_Domains_Result(	struct NNN::Socket::s_SessionData	*s
 	return es_Parse_Result::OK;
 }
 
+
+/*==============================================================
+ * Server 发送 Log
+ * recv_Log()
+ *==============================================================*/
+es_Parse_Result recv_Log(	struct NNN::Socket::s_SessionData	*sd,
+							const BYTE							Key[AES_KEY_LEN],
+							const BYTE							IV[AES_IV_LEN],
+							__out WCHAR							log[4096],
+							__out UINT							&rgb )
+{
+	BYTE								packet_data[USHRT_MAX];
+	struct NNN::Buffer::s_BinaryReader	br(packet_data);
+	USHORT								packet_len	= 0;
+
+	// 读取 packet_data
+	NNN_PACKET_READ_DATA(sd->RECV_DATA.m_buffer);
+
+	// 解析数据
+	USHORT aes_data_len = (USHORT)(packet_len - br.m_offset);
+
+	const BYTE *aes_data = br.read_array(aes_data_len);
+
+	BYTE								data[USHRT_MAX];
+	struct NNN::Buffer::s_BinaryReader	br_data(data);
+
+	HRESULT hr = NNN::Encrypt::Rijndael_Decrypt(aes_data, aes_data_len, Key, IV, data);
+	if(FAILED(hr))
+		return es_Parse_Result::Error;
+
+	// 解析 aes_data 的解密数据
+	br_data.read_wchar2(log, (aes_data_len - 3) / 2);
+
+	BYTE r = br_data.read<BYTE>();
+	BYTE g = br_data.read<BYTE>();
+	BYTE b = br_data.read<BYTE>();
+
+	rgb = (0xff << 24) + (r << 16) + (g << 8) + b;
+
+	return es_Parse_Result::OK;
+}
+
 }	// namespace Packet
 }	// namespace ddns_server__Client

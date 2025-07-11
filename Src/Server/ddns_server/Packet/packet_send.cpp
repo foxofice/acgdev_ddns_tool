@@ -220,5 +220,57 @@ void send_Update_Domains_Result(struct NNN::Socket::s_SessionData	*sd,
 	Socket::g_server->Send(packet_data, packet_len, sd);
 }
 
+
+/*==============================================================
+ * Server 发送 Log
+ * send_Log()
+ *==============================================================*/
+void send_Log(struct NNN::Socket::s_SessionData *sd, const WCHAR *log, UINT rgb)
+{
+	BYTE								packet_data[USHRT_MAX];
+	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
+
+	// 合法性判定
+	struct s_AES_KeyIV *KeyIV = (struct s_AES_KeyIV*)sd->M_SD_DATA__KEY_IV.load();
+	if(KeyIV == nullptr)
+		return;
+
+	// 填充数据
+	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_Log, xor_val);
+
+	bw.write<BYTE>(header_encode);
+	bw.write<BYTE>(xor_val);
+
+	USHORT &packet_len = *bw.write<USHORT>(0);
+
+	BYTE								aes_data[USHRT_MAX];
+	struct NNN::Buffer::s_BinaryWriter	bw_aes(aes_data);
+
+	// 填充 aes_data
+	bw_aes.write_wchar2(log, wcslen(log));
+
+	BYTE r = (rgb >> 16) & 0xff;
+	BYTE g = (rgb >> 8) & 0xff;
+	BYTE b = rgb & 0xff;
+
+	bw_aes.write(r);
+	bw_aes.write(g);
+	bw_aes.write(b);
+
+	HRESULT hr = NNN::Encrypt::Rijndael_Encrypt(aes_data,
+												bw_aes.m_offset,
+												KeyIV->m_Key,
+												KeyIV->m_IV,
+												packet_data + bw.m_offset);
+	if(FAILED(hr))
+		return;
+
+	packet_len = (USHORT)(bw.m_offset + bw_aes.m_offset);
+
+	// 发送
+	Socket::g_server->Send(packet_data, packet_len, sd);
+}
+
 }	// namespace Packet
 }	// namespace DDNS_Server

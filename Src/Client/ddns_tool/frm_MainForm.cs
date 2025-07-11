@@ -82,13 +82,13 @@ namespace ddns_tool
 			FORMS.invoke(() =>
 			{
 				//【更新方式】
-				radioButton_Settings_Type__Local.Enabled		= enabled;
-				radioButton_Settings_Type__Remote.Enabled		= enabled;
+				radioButton_Settings_Method__Local.Enabled		= enabled;
+				radioButton_Settings_Method__Remote.Enabled		= enabled;
 
 				// 远程 Server 设置
-				textBox_Settings_RemoteServer__Addr.ReadOnly	= !enabled || !radioButton_Settings_Type__Remote.Checked;
-				textBox_Settings_RemoteServer__User.ReadOnly	= !enabled || !radioButton_Settings_Type__Remote.Checked;
-				textBox_Settings_RemoteServer__Pwd.ReadOnly		= !enabled || !radioButton_Settings_Type__Remote.Checked;
+				textBox_Settings_RemoteServer__Addr.ReadOnly	= !enabled || !radioButton_Settings_Method__Remote.Checked;
+				textBox_Settings_RemoteServer__User.ReadOnly	= !enabled || !radioButton_Settings_Method__Remote.Checked;
+				textBox_Settings_RemoteServer__Pwd.ReadOnly		= !enabled || !radioButton_Settings_Method__Remote.Checked;
 
 				//【设置 IP】
 				radioButton_Settings_IPv6__From_URL.Enabled		= enabled;
@@ -246,8 +246,8 @@ namespace ddns_tool
 			//========== 更新方式 ==========(Start)
 			tabPage_Update_Type.Text						= ddns_lib.LANGUAGES.txt(700);	// 700: 更新方式
 
-			radioButton_Settings_Type__Local.Text			= ddns_lib.LANGUAGES.txt(701);	// 701: 本地更新（直连）
-			radioButton_Settings_Type__Remote.Text			= ddns_lib.LANGUAGES.txt(702);	// 702: 远程更新（由远程 Server 执行更新）
+			radioButton_Settings_Method__Local.Text			= ddns_lib.LANGUAGES.txt(701);	// 701: 本地更新（直连）
+			radioButton_Settings_Method__Remote.Text			= ddns_lib.LANGUAGES.txt(702);	// 702: 远程更新（由远程 Server 执行更新）
 
 			groupBox_Settings_RemoteServer.Text				= ddns_lib.LANGUAGES.txt(703);	// 703: 远程 Server 设置
 			label_Settings_RemoteServer__Addr.Text			= ddns_lib.LANGUAGES.txt(704);	// 704: Server 地址/端口：
@@ -434,6 +434,14 @@ namespace ddns_tool
 			}
 
 			/*==============================================================
+			 * Recv_Log
+			 *==============================================================*/
+			internal static void Recv_Log(string log, Color color)
+			{
+				m_s_Mainform.add_log(log, color, true);
+			}
+
+			/*==============================================================
 			 * On_add_log
 			 *==============================================================*/
 			internal static void On_add_log(string txt, Color c)
@@ -574,6 +582,7 @@ namespace ddns_tool
 			ddns_tool_CLR.CLR.Event_Recv_Ping					+= EVENTS.Recv_Ping;
 			ddns_tool_CLR.CLR.Event_Recv_LoginResult			+= EVENTS.Recv_LoginResult;
 			ddns_tool_CLR.CLR.Event_Recv_Update_Domains_Result	+= EVENTS.Recv_Update_Domains_Result;
+			ddns_tool_CLR.CLR.Event_Recv_Log					+= EVENTS.Recv_Log;
 			ddns_tool_CLR.CLR.Event_On_add_log					+= EVENTS.On_add_log;
 
 			ddns_lib.LIB.EVENTS.Event_On_AddLog					+= EVENTS.On_add_log;
@@ -591,10 +600,10 @@ namespace ddns_tool
 			checkBox_Logs__Save_To_File.Checked	= CONFIG.LOG.m_s_Save_To_File;
 
 			//【更新方式】
-			switch(CONFIG.m_s_update_type)
+			switch(CONFIG.m_s_update_method)
 			{
-			case CONFIG.e_Update_Type.Local:	radioButton_Settings_Type__Local.Checked	= true;	break;
-			case CONFIG.e_Update_Type.Remote:	radioButton_Settings_Type__Remote.Checked	= true;	break;
+			case CONFIG.e_Update_Method.Local:	radioButton_Settings_Method__Local.Checked	= true;	break;
+			case CONFIG.e_Update_Method.Remote:	radioButton_Settings_Method__Remote.Checked	= true;	break;
 			}	// switch
 
 			// 远程 Server 设置
@@ -730,7 +739,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void timer_Ping_Tick(object sender, EventArgs e)
 		{
-			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote && CONFIG.REMOTE_SERVER.m_s_auto_ping)
+			if(CONFIG.m_s_update_method == CONFIG.e_Update_Method.Remote && CONFIG.REMOTE_SERVER.m_s_auto_ping)
 				ddns_tool_CLR.CLR.send_Ping();
 		}
 
@@ -1196,7 +1205,7 @@ namespace ddns_tool
 		/*==============================================================
 		 * 添加日志记录（UI 线程安全）
 		 *==============================================================*/
-		internal void add_log(string txt, Color c = default)
+		internal void add_log(string txt, Color c = default, bool server_log = false)
 		{
 			FORMS.invoke(() =>
 			{
@@ -1204,6 +1213,15 @@ namespace ddns_tool
 
 				while(LVI.SubItems.Count < listView_Logs.Columns.Count)
 					LVI.SubItems.Add("");
+
+				if(server_log)
+				{
+					LVI.BackColor	= Color.Black;
+					txt				= $"<SERVER> {txt}";
+
+					if(c.ToArgb() == Color.Black.ToArgb())
+						c = Color.LightGray;
+				}
 
 				LVI.SubItems[(int)e_Column_Log.Time].Text	= DateTime.Now.ToString("yyyy.MM.dd HH:mm.ss");
 				LVI.SubItems[(int)e_Column_Log.Log].Text	= txt;
@@ -1310,13 +1328,13 @@ namespace ddns_tool
 		/*==============================================================
 		 * 更新方式改变
 		 *==============================================================*/
-		private void radioButton_Settings_Type__CheckedChanged(object sender, EventArgs e)
+		private void radioButton_Settings_Method__CheckedChanged(object sender, EventArgs e)
 		{
-			CONFIG.m_s_update_type = (radioButton_Settings_Type__Local.Checked ? CONFIG.e_Update_Type.Local : CONFIG.e_Update_Type.Remote);
+			CONFIG.m_s_update_method = (radioButton_Settings_Method__Local.Checked ? CONFIG.e_Update_Method.Local : CONFIG.e_Update_Method.Remote);
 
-			textBox_Settings_RemoteServer__Addr.ReadOnly	= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
-			textBox_Settings_RemoteServer__User.ReadOnly	= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
-			textBox_Settings_RemoteServer__Pwd.ReadOnly		= (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local);
+			textBox_Settings_RemoteServer__Addr.ReadOnly	= (CONFIG.m_s_update_method == CONFIG.e_Update_Method.Local);
+			textBox_Settings_RemoteServer__User.ReadOnly	= (CONFIG.m_s_update_method == CONFIG.e_Update_Method.Local);
+			textBox_Settings_RemoteServer__Pwd.ReadOnly		= (CONFIG.m_s_update_method == CONFIG.e_Update_Method.Local);
 
 			UpdateUI_radioButton_Settings_IP__Accept_IP();
 
@@ -1403,7 +1421,7 @@ namespace ddns_tool
 				}
 			}
 
-			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local)
+			if(CONFIG.m_s_update_method == CONFIG.e_Update_Method.Local)
 			{
 				auto_reset_radioButton_IPv4();
 				auto_reset_radioButton_IPv6();
@@ -1428,13 +1446,13 @@ namespace ddns_tool
 			case System.Net.Sockets.AddressFamily.InterNetwork:
 				auto_reset_radioButton_IPv6();
 
-				radioButton_Settings_IPv4__Accept_IP.Enabled = (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote);
+				radioButton_Settings_IPv4__Accept_IP.Enabled = (CONFIG.m_s_update_method == CONFIG.e_Update_Method.Remote);
 				break;
 
 			case System.Net.Sockets.AddressFamily.InterNetworkV6:
 				auto_reset_radioButton_IPv4();
 
-				radioButton_Settings_IPv6__Accept_IP.Enabled = (CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote);
+				radioButton_Settings_IPv6__Accept_IP.Enabled = (CONFIG.m_s_update_method == CONFIG.e_Update_Method.Remote);
 				break;
 			}	// switch
 		}
@@ -2021,7 +2039,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		void Update_Settings_Preview__Update_Type()
 		{
-			if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Local)
+			if(CONFIG.m_s_update_method == CONFIG.e_Update_Method.Local)
 				label_Settings_Preview__Update_Type_Val.Text = ddns_lib.LANGUAGES.txt(701);	// 701: 本地更新（直连）
 			else
 				label_Settings_Preview__Update_Type_Val.Text = CONFIG.REMOTE_SERVER.m_s_addr;
@@ -2193,7 +2211,7 @@ namespace ddns_tool
 			CONFIG.SET_IP.m_s_IPv4 = textBox_Settings_IPv4.Text;
 			CONFIG.SET_IP.m_s_IPv6 = textBox_Settings_IPv6.Text;
 
-			if(	CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote	&&
+			if(	CONFIG.m_s_update_method == CONFIG.e_Update_Method.Remote	&&
 				!ddns_tool_CLR.CLR.is_connected() )
 			{
 				if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP)
@@ -2357,9 +2375,9 @@ namespace ddns_tool
 					}	// for
 				}
 
-				switch(CONFIG.m_s_update_type)
+				switch(CONFIG.m_s_update_method)
 				{
-				case CONFIG.e_Update_Type.Local:
+				case CONFIG.e_Update_Method.Local:
 					ddns_lib.LIB.update_domains(CONFIG.m_s_domains_list,
 												CONFIG.UPDATE_ACTION.m_s_DNS_Lookup_First,
 												(m_DNS_List.Count == 0) ? null : m_DNS_List,
@@ -2368,7 +2386,7 @@ namespace ddns_tool
 					update__done();
 					break;
 
-				case CONFIG.e_Update_Type.Remote:
+				case CONFIG.e_Update_Method.Remote:
 					// 自动连接到服务器
 					if(!ddns_tool_CLR.CLR.is_connected())
 					{
@@ -2502,7 +2520,7 @@ namespace ddns_tool
 
 						add_log($"{domain.m_domain} : {log_txt}", Color.Green);
 
-						if(CONFIG.m_s_update_type == CONFIG.e_Update_Type.Remote)
+						if(CONFIG.m_s_update_method == CONFIG.e_Update_Method.Remote)
 						{
 							if(CONFIG.SET_IP.m_s_type_IPv4 == CONFIG.e_IP_Get_Type.Server_Accept_IP && updated_IPv4)
 							{

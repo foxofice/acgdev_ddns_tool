@@ -6,6 +6,7 @@
 
 #include "../CLR.h"
 #include "ddns_server_CLR.h"
+#include "../../Server/ddns_server/Packet/packet.h"
 
 using namespace System;
 using namespace System::Threading;
@@ -15,6 +16,8 @@ using namespace System::Net;
 
 namespace ddns_server_CLR
 {
+
+LPCALLBACK_SEND_LOG	g_Send_Log_Func	= nullptr;
 
 /*==============================================================
  * 添加日志
@@ -27,12 +30,33 @@ void Add_Log(String ^txt, Color /*c*/)
 
 
 /*==============================================================
+ * 发送日志
+ * Send_Log()
+ *==============================================================*/
+void Send_Log(UINT64 sd, String ^txt, Color color)
+{
+	if(g_Send_Log_Func != nullptr)
+	{
+		WCHAR txt_[4096];
+		NNN::CLR::TO_CPP::String_to_wchar(txt, txt_);
+
+		g_Send_Log_Func((struct NNN::Socket::s_SessionData*)sd, txt_, color.ToArgb());
+	}
+}
+
+
+/*==============================================================
  * 初始化
  * DoInit()
  *==============================================================*/
-void DoInit(const WCHAR *culture)
+void DoInit(LPCALLBACK_SEND_LOG send_log_func, const WCHAR *culture)
 {
-	ddns_lib::LIB::EVENTS::Event_On_AddLog += gcnew ddns_lib::LIB::EVENTS::e_Add_Log(&Add_Log);
+	g_Send_Log_Func				= send_log_func;
+
+	using EVENTS = ddns_lib::LIB::EVENTS;
+
+	EVENTS::Event_On_AddLog		+= gcnew EVENTS::e_Add_Log(&Add_Log);
+	EVENTS::Event_On_SendLog	+= gcnew EVENTS::e_Send_Log(&Send_Log);
 
 	// 多语言
 	ddns_lib::LANGUAGES::read_list();
@@ -47,7 +71,8 @@ void DoInit(const WCHAR *culture)
 void update_domains(__inout std::vector<struct s_Domain>	&domains,
 					bool									DNS_Lookup_First,
 					__in_opt const std::vector<std::string>	*DNS_Server_List,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
-					int										timeout)
+					int										timeout,
+					struct NNN::Socket::s_SessionData		*sd_SendLog)		// 发送 Log 的 sd（Server 用）
 {
 	List<ddns_lib::c_Domain^> ^gc_domains = gcnew List<ddns_lib::c_Domain^>((int)domains.size());
 
@@ -73,7 +98,11 @@ void update_domains(__inout std::vector<struct s_Domain>	&domains,
 			gc_DNS_Server_List->Add(gcnew System::String(dns.c_str()));
 	}
 
-	ddns_lib::LIB::update_domains(gc_domains, DNS_Lookup_First, gc_DNS_Server_List, timeout);
+	ddns_lib::LIB::update_domains(	gc_domains,
+									DNS_Lookup_First,
+									gc_DNS_Server_List,
+									timeout,
+									(UINT64)sd_SendLog );
 
 	// 处理结果
 	for(int i=0; i<gc_domains->Count; ++i)

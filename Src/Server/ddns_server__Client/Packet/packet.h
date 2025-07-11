@@ -89,6 +89,14 @@ PARSE_FUNC(	recv_Update_Domains_Result,
 			const BYTE							IV[AES_IV_LEN],
 			__out std::vector<struct s_Domain>	&domains );
 
+// Server 发送 Log
+// 请参见：ddns_server::Packet::send_Log()
+PARSE_FUNC(	recv_Log,
+			const BYTE							Key[AES_KEY_LEN],
+			const BYTE							IV[AES_IV_LEN],
+			__out WCHAR							log[4096],
+			__out UINT							&rgb );
+
 #undef PARSE_FUNC
 #pragma endregion
 

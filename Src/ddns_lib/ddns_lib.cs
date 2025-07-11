@@ -147,9 +147,59 @@ namespace ddns_lib
 				if(Event_Set_Progress != null)
 					Event_Set_Progress(domain, progress);
 			}
+
+			public delegate void e_Send_Log(UInt64 sd, string txt, Color c);
+			public static event e_Send_Log? Event_On_SendLog = null;
+
+			public static void Send_Log(UInt64 sd, string txt, Color c)
+			{
+				if(Event_On_SendLog != null)
+					Event_On_SendLog(sd, txt, c);
+			}
 		};
 
-		private static SocketsHttpHandler	m_s_HttpHandler	= new SocketsHttpHandler();
+		/*==============================================================
+		 * 更新 IP 记录
+		 *==============================================================*/
+		public static void update_domains(	List<c_Domain>	domains,
+											bool			DNS_Lookup_First,		// IP变动时，先解析域名再执行更新
+											List<string>?	DNS_Server_List	= null,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
+											int				timeout			= 15 * 1000,
+											UInt64			sd				= 0 )
+		{
+			c_Update_Session us = new c_Update_Session(	domains,
+														DNS_Lookup_First,
+														DNS_Server_List,
+														timeout,
+														sd );
+
+			us.update_domains();
+		}
+	};
+
+	class c_Update_Session
+	{
+		// 构造函数
+		internal c_Update_Session(	List<c_Domain>	domains,
+									bool			DNS_Lookup_First,		// IP变动时，先解析域名再执行更新
+									List<string>?	DNS_Server_List	= null,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
+									int				timeout			= 15 * 1000,
+									UInt64			sd				= 0 )
+		{
+			m_domains			= domains;
+			m_DNS_Lookup_First	= DNS_Lookup_First;
+			m_DNS_Server_List	= DNS_Server_List;
+			m_timeout			= timeout;
+			m_sd				= sd;
+		}
+
+		List<c_Domain>		m_domains;
+		bool				m_DNS_Lookup_First	= true;
+		List<string>?		m_DNS_Server_List	= null;
+		int					m_timeout			= 15 * 1000;
+		UInt64				m_sd				= 0;
+
+		SocketsHttpHandler	m_HttpHandler		= new SocketsHttpHandler();
 
 		class c_DNS_Lookup_af
 		{
@@ -167,10 +217,10 @@ namespace ddns_lib
 		/// <param name="same_ipv4">IPv4 是否相同（m_input_IPv4 是否跟解析结果相同）</param>
 		/// <param name="same_ipv6">IPv6 是否相同（m_input_IPv6 是否跟解析结果相同）</param>
 		/// <returns>解析成功返回 true，否则返回 false</returns>
-		static bool DNS_Lookup(	c_Domain	domain,
-								string		DNS_Server,
-								out bool	same_ipv4,
-								out bool	same_ipv6 )
+		bool DNS_Lookup(c_Domain	domain,
+						string		DNS_Server,
+						out bool	same_ipv4,
+						out bool	same_ipv6)
 		{
 			same_ipv4 = false;
 			same_ipv6 = false;
@@ -211,8 +261,10 @@ namespace ddns_lib
 				catch(Exception ex)
 				{
 					// 0: DNS_Lookup failed ({0:s})
-					EVENTS.Add_Log(	$"[Error] {domain.m_domain} : {string.Format(LANGUAGES.txt(0), ex.Message)}",
-									Color.Red );
+					string log_txt = $"[Error] {domain.m_domain} : {string.Format(LANGUAGES.txt(0), ex.Message)}";
+
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					return false;
 				}
 			}
@@ -224,7 +276,10 @@ namespace ddns_lib
 				if(!res)
 				{
 					// 1: DNS_Lookup failed
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : {LANGUAGES.txt(1)}", Color.Red);
+					string log_txt = $"[Error] {domain.m_domain} : {LANGUAGES.txt(1)}";
+
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					return false;
 				}
 
@@ -244,9 +299,10 @@ namespace ddns_lib
 					if(af.m_error_msg.Length > 0)
 					{
 						// 2: DNS_Lookup({0:s}) {1:s}
-						string log_txt = string.Format(LANGUAGES.txt(2), af.m_af_name, af.m_error_msg);
+						string log_txt = $"[Warning] {domain.m_domain} : {string.Format(LANGUAGES.txt(2), af.m_af_name, af.m_error_msg)}";
 
-						EVENTS.Add_Log($"[Warning] {domain.m_domain} : {log_txt}", Color.DarkOrange);
+						LIB.EVENTS.Add_Log(log_txt, Color.DarkOrange);
+						LIB.EVENTS.Send_Log(m_sd, log_txt, Color.DarkOrange);
 					}
 
 					foreach(string ip in af.m_ip_list!)
@@ -276,7 +332,7 @@ namespace ddns_lib
 		/// <param name="domain">域名</param>
 		/// <param name="update_ipv6">true = 更新 ipv6、false = 更新 ipv4</param>
 		/// <returns>IP有效则返回 true；否则返回 false</returns>
-		static bool check_IP(string ip, string domain, bool update_ipv6)
+		bool check_IP(string ip, string domain, bool update_ipv6)
 		{
 			if(ip.Length == 0)
 				return false;
@@ -284,7 +340,10 @@ namespace ddns_lib
 			if(!IPAddress.TryParse(ip, out IPAddress? address))
 			{
 				// 3: 无效的 IP 格式（{0:s}）
-				EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(3), ip)}", Color.Red);
+				string log_txt = $"[Error] {domain} : {string.Format(LANGUAGES.txt(3), ip)}";
+
+				LIB.EVENTS.Add_Log(log_txt, Color.Red);
+				LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 				return false;
 			}
 
@@ -293,7 +352,10 @@ namespace ddns_lib
 				if(address.AddressFamily != AddressFamily.InterNetworkV6)
 				{
 					// 4: 无效的 IP{0:s}（{1:s}）
-					EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v6", ip)}", Color.Red);
+					string log_txt = $"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v6", ip)}";
+
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					return false;
 				}
 			}
@@ -302,7 +364,10 @@ namespace ddns_lib
 				if(address.AddressFamily != AddressFamily.InterNetwork)
 				{
 					// 4: 无效的 IP{0:s}（{1:s}）
-					EVENTS.Add_Log($"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v4", ip)}", Color.Red);
+					string log_txt = $"[Error] {domain} : {string.Format(LANGUAGES.txt(4), "v4", ip)}";
+
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					return false;
 				}
 			}
@@ -321,7 +386,7 @@ namespace ddns_lib
 		/// <param name="domain">要更新的域名</param>
 		/// <param name="update_ipv4">是否更新 ipv4</param>
 		/// <param name="update_ipv6">是否更新 ipv6</param>
-		static void update_domain_Godaddy(c_Domain domain, bool update_ipv4, bool update_ipv6)
+		void update_domain_Godaddy(c_Domain domain, bool update_ipv4, bool update_ipv6)
 		{
 			c_update_domain_Godaddy_setting[] settings = new[]
 			{
@@ -332,7 +397,7 @@ namespace ddns_lib
 			string name			= domain.m_domain.Substring(0, domain.m_domain.IndexOf('.'));
 			string root_donmain	= domain.m_domain.Substring(domain.m_domain.IndexOf('.') + 1);
 
-			HttpClient client = new(m_s_HttpHandler);
+			HttpClient client = new(m_HttpHandler);
 
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 			client.DefaultRequestHeaders.TryAddWithoutValidation(	"Authorization",
@@ -369,9 +434,16 @@ namespace ddns_lib
 				StringContent	sc	= new(sb_json.ToString(), Encoding.UTF8, "application/json");
 
 				// 5: 连接到 {0:s}
-				EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(5), url)}", Color.Black);
+				string log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(5), url)}";
+
+				LIB.EVENTS.Add_Log(log_txt, Color.Black);
+				LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Black);
+
 				// 6: 正在更新「{1:s} 记录」……
-				EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(6), setting.m_record_type)}", Color.Black);
+				log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(6), setting.m_record_type)}";
+
+				LIB.EVENTS.Add_Log(log_txt, Color.Black);
+				LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Black);
 
 				try
 				{
@@ -383,11 +455,12 @@ namespace ddns_lib
 						setting.m_domain_af.m_err_msg		= "";
 
 						// 7: 更新「{0:s} 记录」成功（{1:s}）
-						string log_txt = string.Format(	LANGUAGES.txt(7),
-														setting.m_record_type,
-														setting.m_domain_af.m_input_IP );
+						log_txt = $"{domain.m_domain} : {string.Format(	LANGUAGES.txt(7),
+																		setting.m_record_type,
+																		setting.m_domain_af.m_input_IP )}";
 
-						EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Green);
+						LIB.EVENTS.Add_Log(log_txt, Color.Green);
+						LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Green);
 					}
 					else
 					{
@@ -396,14 +469,15 @@ namespace ddns_lib
 						setting.m_domain_af.m_err_msg = err_msg;
 
 						// 8: 更新「{0:s} 记录」失败（{1:s}）[ip = {2:s}, StatusCode = {3:s}，ReasonPhrase = {4:s}]
-						string log_txt = string.Format(	LANGUAGES.txt(8),
-														setting.m_record_type,
-														err_msg,
-														setting.m_domain_af.m_input_IP,
-														response.StatusCode.ToString(),
-														response.ReasonPhrase ); 
+						log_txt = $"[Error] {domain.m_domain} : {string.Format(	LANGUAGES.txt(8),
+																				setting.m_record_type,
+																				err_msg,
+																				setting.m_domain_af.m_input_IP,
+																				response.StatusCode.ToString(),
+																				response.ReasonPhrase )}";
 
-						EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+						LIB.EVENTS.Add_Log(log_txt, Color.Red);
+						LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					}
 				}
 				catch(Exception ex)
@@ -413,12 +487,13 @@ namespace ddns_lib
 					setting.m_domain_af.m_err_msg = err_msg;
 
 					// 9: 更新「{0:s}记录」失败（{1:s}）[ip = {2:s}]
-					string log_txt = string.Format(	LANGUAGES.txt(9),
-													setting.m_record_type,
-													err_msg,
-													setting.m_domain_af.m_input_IP );
+					log_txt = $"[Error] {domain.m_domain} : {string.Format(	LANGUAGES.txt(9),
+																			setting.m_record_type,
+																			err_msg,
+																			setting.m_domain_af.m_input_IP )}";
 
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 				}
 			}	// for
 		}
@@ -436,12 +511,12 @@ namespace ddns_lib
 		/// <param name="domain">要更新的域名</param>
 		/// <param name="update_ipv4">是否更新 ipv4</param>
 		/// <param name="update_ipv6">是否更新 ipv6</param>
-		static void update_domain_dynv6(c_Domain domain, bool update_ipv4, bool update_ipv6)
+		void update_domain_dynv6(c_Domain domain, bool update_ipv4, bool update_ipv6)
 		{
 			// https://ipv4.dynv6.com/api/update?zone=xxx.dynv6.net&ipv4=auto&token=...
 			// https://ipv6.dynv6.com/api/update?zone=xxx.dynv6.net&ipv6=auto&token=...
 
-			HttpClient client = new(m_s_HttpHandler);
+			HttpClient client = new(m_HttpHandler);
 
 			c_update_domain_dynv6_setting[] settings = new[]
 			{
@@ -480,20 +555,22 @@ namespace ddns_lib
 						setting.m_domain_af.m_current_IP = ip;
 
 					// 10: ({0:s}) 网站返回更新结果：{1:s}
-					string log_txt = string.Format(LANGUAGES.txt(10), setting.m_af_name, str_res);
+					string log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(10), setting.m_af_name, str_res)}";
 
-					EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Black);
+					LIB.EVENTS.Add_Log(log_txt, Color.Black);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Black);
 				}
 				catch(Exception ex)
 				{
 					// 11: 更新「{0:s}记录」失败（{1:s}）[{2:s} = {3:s}]
-					string log_txt = string.Format(	LANGUAGES.txt(11),
-													setting.m_record_type,
-													(ex.InnerException == null) ? "" : ex.InnerException.Message,
-													setting.m_af_name,
-													ip );
+					string log_txt = $"[Error] {domain.m_domain} : {string.Format(	LANGUAGES.txt(11),
+																					setting.m_record_type,
+																					(ex.InnerException == null) ? "" : ex.InnerException.Message,
+																					setting.m_af_name,
+																					ip )}";
 
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 				}
 			}	// for
 		}
@@ -502,14 +579,14 @@ namespace ddns_lib
 		/// <param name="domain">要更新的域名</param>
 		/// <param name="update_ipv4">是否更新 ipv4</param>
 		/// <param name="update_ipv6">是否更新 ipv6</param>
-		static void update_domain_dynu(c_Domain domain, bool update_ipv4, bool update_ipv6)
+		void update_domain_dynu(c_Domain domain, bool update_ipv4, bool update_ipv6)
 		{
 			// 文档：https://www.dynu.com/zh-CN/Support/API#/dns/dnsIdPost
 
 			if(!update_ipv4 && !update_ipv6)
 				return;
 
-			HttpClient client = new(m_s_HttpHandler);
+			HttpClient client = new(m_HttpHandler);
 
 			// 请求头
 			client.DefaultRequestHeaders.Add("accept", "application/json");
@@ -535,9 +612,10 @@ namespace ddns_lib
 				catch(Exception ex)
 				{
 					// 12: 获取「域名ID」失败（{0:s}）
-					string log_txt = string.Format(LANGUAGES.txt(12), ex.Message);
+					string log_txt = $"[Error] {domain.m_domain} : {string.Format(LANGUAGES.txt(12), ex.Message)}";
 
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 					return;
 				}
 			}
@@ -616,9 +694,10 @@ namespace ddns_lib
 					}
 
 					// 13: 更新「{0:s} 记录」成功（{1:s}）（远程返回结果：{2:s}）
-					string log_txt = string.Format(LANGUAGES.txt(13), all_record_type, all_ip, msg);
+					string log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(13), all_record_type, all_ip, msg)}";
 
-					EVENTS.Add_Log($"{domain.m_domain} : {log_txt}", Color.Green);
+					LIB.EVENTS.Add_Log(log_txt, Color.Green);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Green);
 				}
 				else
 				{
@@ -629,14 +708,15 @@ namespace ddns_lib
 						domain.IPv6.m_err_msg = msg;
 
 					// 8: 更新「{0:s} 记录」失败（{1:s}）[ip = {2:s}，StatusCode = {3:s}，ReasonPhrase = {4:s}]
-					string log_txt = string.Format(	LANGUAGES.txt(8),
-													all_record_type,
-													msg,
-													all_ip,
-													response.StatusCode.ToString(),
-													response.ReasonPhrase );
+					string log_txt = $"[Error] {domain.m_domain} : {string.Format(	LANGUAGES.txt(8),
+																					all_record_type,
+																					msg,
+																					all_ip,
+																					response.StatusCode.ToString(),
+																					response.ReasonPhrase )}";
 
-					EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+					LIB.EVENTS.Add_Log(log_txt, Color.Red);
+					LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 				}
 			}
 			catch(Exception ex)
@@ -650,9 +730,10 @@ namespace ddns_lib
 					domain.IPv6.m_err_msg = err_msg;
 
 				// 9: 更新「{0:s}记录」失败（{1:s}）[ip = {2:s}]
-				string log_txt = string.Format(LANGUAGES.txt(9), all_record_type, err_msg, all_ip);
+				string log_txt = $"[Error] {domain.m_domain} : {string.Format(LANGUAGES.txt(9), all_record_type, err_msg, all_ip)}";
 
-				EVENTS.Add_Log($"[Error] {domain.m_domain} : {log_txt}", Color.Red);
+				LIB.EVENTS.Add_Log(log_txt, Color.Red);
+				LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Red);
 			}
 		}
 
@@ -660,22 +741,19 @@ namespace ddns_lib
 		/*==============================================================
 		 * 更新 IP 记录
 		 *==============================================================*/
-		public static void update_domains(	List<c_Domain>	domains,
-											bool			DNS_Lookup_First,		// IP变动时，先解析域名再执行更新
-											List<string>?	DNS_Server_List	= null,	// 自定义DNS服务器（列表元素为 "" 时，表示系统默认 DNS）
-											int				timeout			= 15 * 1000 )
+		internal void update_domains()
 		{
 			//m_s_HttpHandler.MaxConnectionsPerServer = 1000;
 			//m_s_HttpHandler.SslOptions.EnabledSslProtocols = System.Security.Authentication.SslProtocols.Tls12 | System.Security.Authentication.SslProtocols.Tls13;
 
 			List<Thread> threads = new();
 
-			if(DNS_Server_List == null)
-				DNS_Server_List = new List<string> { "" };
+			if(m_DNS_Server_List == null)
+				m_DNS_Server_List = new List<string> { "" };
 
-			for(int i=0; i<domains.Count; ++i)
+			for(int i=0; i<m_domains.Count; ++i)
 			{
-				if(!domains[i].IPv4.m_enabled && !domains[i].IPv6.m_enabled)
+				if(!m_domains[i].IPv4.m_enabled && !m_domains[i].IPv6.m_enabled)
 					continue;
 
 				Thread th = new((object? o) =>
@@ -686,15 +764,15 @@ namespace ddns_lib
 					domain.IPv6.m_same_ip = false;
 
 					// 先解析域名
-					if(DNS_Lookup_First && DNS_Server_List != null)
+					if(m_DNS_Lookup_First && m_DNS_Server_List != null)
 					{
-						EVENTS.Set_Progress(domain.m_domain, e_Progress.DNS_Lookup);
+						LIB.EVENTS.Set_Progress(domain.m_domain, e_Progress.DNS_Lookup);
 
 						bool ok = false;
 
-						for(int m=0; m<DNS_Server_List.Count; ++m)
+						for(int m=0; m<m_DNS_Server_List.Count; ++m)
 						{
-							string dns_server = DNS_Server_List[m];
+							string dns_server = m_DNS_Server_List[m];
 
 							if(dns_server == "\"\"")
 								dns_server = "";
@@ -708,23 +786,29 @@ namespace ddns_lib
 
 						if(!ok)
 						{
-							EVENTS.Set_Progress(domain.m_domain, e_Progress.None);
+							LIB.EVENTS.Set_Progress(domain.m_domain, e_Progress.None);
 							return;
 						}
 					}
 
-					EVENTS.Set_Progress(domain.m_domain, e_Progress.Updating);
+					LIB.EVENTS.Set_Progress(domain.m_domain, e_Progress.Updating);
 
 					if(domain.IPv4.m_enabled && domain.IPv4.m_same_ip)
 					{
 						// 14: IP{0:s} 没变化，无需更新
-						EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v4")}", Color.Black);
+						string log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v4")}";
+
+						LIB.EVENTS.Add_Log(log_txt, Color.Black);
+						LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Black);
 					}
 
 					if(domain.IPv6.m_enabled && domain.IPv6.m_same_ip)
 					{
 						// 14: IP{0:s} 没变化，无需更新
-						EVENTS.Add_Log($"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v6")}", Color.Black);
+						string log_txt = $"{domain.m_domain} : {string.Format(LANGUAGES.txt(14), "v6")}";
+
+						LIB.EVENTS.Add_Log(log_txt, Color.Black);
+						LIB.EVENTS.Send_Log(m_sd, log_txt, Color.Black);
 					}
 
 					switch(domain.m_type)
@@ -748,18 +832,18 @@ namespace ddns_lib
 						break;
 					}	// switch
 
-					EVENTS.Set_Progress(domain.m_domain, e_Progress.Done);
+					LIB.EVENTS.Set_Progress(domain.m_domain, e_Progress.Done);
 				});
 
 				threads.Add(th);
 
-				th.Start(domains[i]);
+				th.Start(m_domains[i]);
 			}	// for
 
 			foreach(Thread th in threads)
 			{
-				if(timeout > 0)
-					th.Join(timeout);
+				if(m_timeout > 0)
+					th.Join(m_timeout);
 				else
 					th.Join();
 			}	// for

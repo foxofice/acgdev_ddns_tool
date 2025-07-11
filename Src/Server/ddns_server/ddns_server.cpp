@@ -50,6 +50,16 @@ static void display_logo()
 
 
 /*==============================================================
+ * SendLog 回调函数
+ * On_SendLog()
+ *==============================================================*/
+static void CALLBACK On_SendLog(struct NNN::Socket::s_SessionData *sd, const WCHAR *log, DWORD rgb)
+{
+	Packet::send_Log(sd, log, rgb);
+}
+
+
+/*==============================================================
  * 初始化/清理
  * DoInit()
  * DoFinal()
@@ -74,7 +84,7 @@ HRESULT DoInit()
 	V_RETURN( Socket::DoInit() );
 
 	// 初始化 ddns_server_CLR
-	ddns_server_CLR::DoInit(Config::g_config->LANGUAGES.m_culture.c_str());
+	ddns_server_CLR::DoInit(On_SendLog, Config::g_config->LANGUAGES.m_culture.c_str());
 
 	return S_OK;
 }

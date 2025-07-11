@@ -91,8 +91,8 @@
 			label_Settings_RemoteServer__Pwd = new Label();
 			label_Settings_RemoteServer__User = new Label();
 			label_Settings_RemoteServer__Addr = new Label();
-			radioButton_Settings_Type__Remote = new RadioButton();
-			radioButton_Settings_Type__Local = new RadioButton();
+			radioButton_Settings_Method__Remote = new RadioButton();
+			radioButton_Settings_Method__Local = new RadioButton();
 			tabPage_Set_IP = new TabPage();
 			groupBox_Set_IPv6 = new GroupBox();
 			textBox_Settings_IPv6 = new TextBox();
@@ -676,8 +676,8 @@
 			// tabPage_Update_Type
 			// 
 			tabPage_Update_Type.Controls.Add(groupBox_Settings_RemoteServer);
-			tabPage_Update_Type.Controls.Add(radioButton_Settings_Type__Remote);
-			tabPage_Update_Type.Controls.Add(radioButton_Settings_Type__Local);
+			tabPage_Update_Type.Controls.Add(radioButton_Settings_Method__Remote);
+			tabPage_Update_Type.Controls.Add(radioButton_Settings_Method__Local);
 			tabPage_Update_Type.Location = new Point(4, 22);
 			tabPage_Update_Type.Margin = new Padding(3, 2, 3, 2);
 			tabPage_Update_Type.Name = "tabPage_Update_Type";
@@ -809,29 +809,29 @@
 			label_Settings_RemoteServer__Addr.TabIndex = 104;
 			label_Settings_RemoteServer__Addr.Text = "Server 地址/端口：";
 			// 
-			// radioButton_Settings_Type__Remote
+			// radioButton_Settings_Method__Remote
 			// 
-			radioButton_Settings_Type__Remote.AutoSize = true;
-			radioButton_Settings_Type__Remote.Location = new Point(6, 27);
-			radioButton_Settings_Type__Remote.Name = "radioButton_Settings_Type__Remote";
-			radioButton_Settings_Type__Remote.Size = new Size(227, 16);
-			radioButton_Settings_Type__Remote.TabIndex = 102;
-			radioButton_Settings_Type__Remote.Text = "远程更新（由远程 Server 执行更新）";
-			radioButton_Settings_Type__Remote.UseVisualStyleBackColor = true;
-			radioButton_Settings_Type__Remote.CheckedChanged += radioButton_Settings_Type__CheckedChanged;
+			radioButton_Settings_Method__Remote.AutoSize = true;
+			radioButton_Settings_Method__Remote.Location = new Point(6, 27);
+			radioButton_Settings_Method__Remote.Name = "radioButton_Settings_Method__Remote";
+			radioButton_Settings_Method__Remote.Size = new Size(227, 16);
+			radioButton_Settings_Method__Remote.TabIndex = 102;
+			radioButton_Settings_Method__Remote.Text = "远程更新（由远程 Server 执行更新）";
+			radioButton_Settings_Method__Remote.UseVisualStyleBackColor = true;
+			radioButton_Settings_Method__Remote.CheckedChanged += radioButton_Settings_Method__CheckedChanged;
 			// 
-			// radioButton_Settings_Type__Local
+			// radioButton_Settings_Method__Local
 			// 
-			radioButton_Settings_Type__Local.AutoSize = true;
-			radioButton_Settings_Type__Local.Checked = true;
-			radioButton_Settings_Type__Local.Location = new Point(6, 5);
-			radioButton_Settings_Type__Local.Name = "radioButton_Settings_Type__Local";
-			radioButton_Settings_Type__Local.Size = new Size(119, 16);
-			radioButton_Settings_Type__Local.TabIndex = 101;
-			radioButton_Settings_Type__Local.TabStop = true;
-			radioButton_Settings_Type__Local.Text = "本地更新（直连）";
-			radioButton_Settings_Type__Local.UseVisualStyleBackColor = true;
-			radioButton_Settings_Type__Local.CheckedChanged += radioButton_Settings_Type__CheckedChanged;
+			radioButton_Settings_Method__Local.AutoSize = true;
+			radioButton_Settings_Method__Local.Checked = true;
+			radioButton_Settings_Method__Local.Location = new Point(6, 5);
+			radioButton_Settings_Method__Local.Name = "radioButton_Settings_Method__Local";
+			radioButton_Settings_Method__Local.Size = new Size(119, 16);
+			radioButton_Settings_Method__Local.TabIndex = 101;
+			radioButton_Settings_Method__Local.TabStop = true;
+			radioButton_Settings_Method__Local.Text = "本地更新（直连）";
+			radioButton_Settings_Method__Local.UseVisualStyleBackColor = true;
+			radioButton_Settings_Method__Local.CheckedChanged += radioButton_Settings_Method__CheckedChanged;
 			// 
 			// tabPage_Set_IP
 			// 
@@ -1871,7 +1871,7 @@
 			Margin = new Padding(3, 2, 3, 2);
 			Name = "frm_MainForm";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "AcgDev DDNS Tool v0.07";
+			Text = "AcgDev DDNS Tool v0.08";
 			FormClosing += frm_MainForm_FormClosing;
 			Load += frm_MainForm_Load;
 			groupBox_Domains.ResumeLayout(false);
@@ -1978,8 +1978,8 @@
 		private TabPage tabPage_Security;
 		private TabPage tabPage_Update_Action;
 		private TabPage tabPage_Fix_hosts;
-		private RadioButton radioButton_Settings_Type__Remote;
-		private RadioButton radioButton_Settings_Type__Local;
+		private RadioButton radioButton_Settings_Method__Remote;
+		private RadioButton radioButton_Settings_Method__Local;
 		private GroupBox groupBox_Settings_RemoteServer;
 		private TextBox textBox_Settings_RemoteServer__Addr;
 		private Label label_Settings_RemoteServer__Addr;

@@ -31,6 +31,8 @@ enum struct es_Header : BYTE
 	//【登录验证后】
 	Client_Update_Domains,			// Client 发送「更新域名的 A/AAAA 记录」
 	Server_Update_Domains_Result,	// Server 发送「更新域名的 A/AAAA 记录的结果」
+
+	Server_Log,						// Server 发送 Log
 };
 
 }	// namespace Packet
