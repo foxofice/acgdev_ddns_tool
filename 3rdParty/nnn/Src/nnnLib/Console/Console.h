@@ -14,44 +14,22 @@
 #include "../../common/common.h"
 #include "Console-macro.h"
 
-// 前置声明
-namespace NNN
-{
-namespace Thread
-{
-	struct s_LockDetector;
-}	// namespace Thread
-}	// namespace NNN
-
 namespace NNN
 {
 namespace Console
 {
 
 // 初始化/清理
-HRESULT					DoInit();
-HRESULT					DoFinal();
+HRESULT			DoInit();
+HRESULT			DoFinal();
 
-// 获取当前线程的 string（纯文本，不带格式）
-NNN_API std::string*	get_current_string();
-
-// 锁定/解锁 printf/wprintf
-NNN_API void			console_lock();
-NNN_API void			console_unlock();
-
-// 用特殊格式输出控制台信息
-NNN_API void			show_message(const char *format, ...);
-NNN_API void			show_message_stderr(const char *format, ...);
-
-NNN_API void			show_message_func(bool is_stderr, const char *fmt, va_list argptr);
-
-// 设置/获取是否把 show_message()、show_message_stderr() 每次打印的纯文本（不带格式）记录下来（默认 false）
-NNN_API void			set_record_last_text(bool record_last_text);
-NNN_API bool			get_record_last_text();
+// 返回一个去除了 ANSI 控制码的纯文本字符串
+// （默认不启用 8-bit C1 控制码以避免误伤 UTF‑8。若确需支持 8-bit C1 控制（0x80–0x9F），可设置 enable_c1_controls = true）
+NNN_API char*	remove_ansi_code(const char *str, __out char *buffer, bool enable_c1_controls = false);
 
 #if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
 // 获取命令行程序的输出
-NNN_API bool			get_cmd_output(const WCHAR *cmd, __out std::wstring &output);
+NNN_API bool	get_cmd_output(const WCHAR *cmd, __out std::wstring &output);
 #endif	// NNN_PLATFORM_WIN32
 
 }	// namespace Console

@@ -14,7 +14,6 @@
 
 #include "../../common/common.h"
 #include "../Buffer/s_Obj_Pool.h"
-#include "../Text/s_StringKey.h"
 #include "../Thread/s_CriticalSection.h"
 #include "../Thread/c_Lock.h"
 
@@ -31,6 +30,9 @@ struct s_array_ptr
 	inline ~s_array_ptr()				{ SAFE_DELETE_ARRAY(m_p); }
 
 	T	*m_p;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_array_ptr);
 };
 
 // 指针（自动释放）
@@ -41,12 +43,18 @@ struct s_ptr
 	inline ~s_ptr()					{ SAFE_DELETE(m_p); }
 
 	T	*m_p;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_ptr);
 };
 
 // 文本数组（只分配一次内存）
 struct s_TxtArrayA
 {
 	// 构造函数/析构函数
+	inline s_TxtArrayA()
+	{
+	}
 	NNN_API ~s_TxtArrayA()
 	{
 		SAFE_DELETE_ARRAY(m_txt_list);
@@ -57,12 +65,18 @@ struct s_TxtArrayA
 	UINT	m_list_count	= 0;
 
 	char	*m_buffer		= nullptr;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_TxtArrayA);
 };
 
 // 文本数组（只分配一次内存）
 struct s_TxtArrayW
 {
 	// 构造函数/析构函数
+	inline s_TxtArrayW()
+	{
+	}
 	NNN_API ~s_TxtArrayW()
 	{
 		SAFE_DELETE_ARRAY(m_txt_list);
@@ -73,6 +87,9 @@ struct s_TxtArrayW
 	UINT	m_list_count	= 0;
 
 	WCHAR	*m_buffer		= nullptr;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_TxtArrayW);
 };
 
 // 文本数组（分配多次内存）
@@ -109,6 +126,9 @@ struct s_TxtListA
 	}
 
 	std::vector<char*>	m_txt_list;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_TxtListA);
 };
 
 // 文本数组（分配多次内存）
@@ -145,6 +165,9 @@ struct s_TxtListW
 	}
 
 	std::vector<WCHAR*>	m_txt_list;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(s_TxtListW);
 };
 
 // 自动执行 CleanUp
@@ -156,6 +179,9 @@ public:
 
 private:
 	std::function<void()> m_func;
+
+private:
+	DISALLOW_COPY_AND_ASSIGN(c_CleanUp);
 };
 
 }	// namespace STL

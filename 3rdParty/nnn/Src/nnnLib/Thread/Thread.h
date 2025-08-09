@@ -11,9 +11,9 @@
 
 #include "../../common/common-macro.h"
 
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#if !defined(WIN32) && !defined(_WIN32)
 #include <pthread.h>
-#endif	// NNN_PLATFORM
+#endif	// !WIN32 && !_WIN32
 
 #include "../../common/common.h"
 

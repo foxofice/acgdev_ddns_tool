@@ -12,9 +12,9 @@
 #include "common-macro.h"
 #include "common-inl.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 #include <Windows.h>
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #include "WinStyle.h"
 #include "WinStyle/WinError.h"
@@ -23,6 +23,7 @@
 #include "s_Unknown.h"
 
 #include "wp8_inc.h"
+#include "C.h"
 
 #undef min	// use __min instead
 #undef max	// use __max instead

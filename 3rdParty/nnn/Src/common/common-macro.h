@@ -37,11 +37,11 @@
 	#endif
 #endif	// NNN_PLATFORM
 
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#if !defined(WIN32) && !defined(_WIN32)
 	#ifndef __GCC__
 	#define __GCC__
 	#endif
-#endif	// !NNN_PLATFORM_WIN32 && !NNN_PLATFORM_WP8
+#endif	// !WIN32 && !_WIN32
 
 // 自动加入相关宏定义
 #if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
@@ -79,7 +79,7 @@
 
 //========== 导入/导出 ==========(Start)
 // NNN_IMPORT
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
 		#define NNN_IMPORT __declspec(dllimport)
 	#else	// NNN_PLATFORM_WP8
@@ -88,22 +88,22 @@
 #else
 	// gcc
 	#define NNN_IMPORT	__attribute__ ((visibility("default")))
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 // NNN_EXPORT
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#define NNN_EXPORT __declspec(dllexport)
 #else
 	// gcc
 	#define NNN_EXPORT	__attribute__ ((visibility("default")))
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 // NNN_DLLLOCAL
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#define NNN_DLLLOCAL
 #else
 	#define NNN_DLLLOCAL	__attribute__ ((visibility("hidden")))
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #ifndef NNN_API
 	#ifdef NNN_EXPORTS
@@ -170,11 +170,11 @@
 	#define _ALLOW_KEYWORD_MACROS
 #endif	// _MSC_VER
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 #ifndef __cplusplus
 #define inline __inline
 #endif	// !__cplusplus
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
 #ifndef _WIN32_WINNT
@@ -244,9 +244,11 @@
 
 #endif	// __GCC__ || _MSC_VER < 1700
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#define NOMINMAX	//取消 min/max 宏
+
+#if defined(WIN32) || defined(_WIN32)
 #include <assert.h>
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 // 普通宏定义
 #ifndef SAFE_DELETE
@@ -290,31 +292,6 @@
 	#endif
 #endif
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_LINUX)
-#ifndef NNN_NO_CONSOLE_THREAD_SAFE
-	#include <stdio.h>
-	#include <wchar.h>
-
-	#undef printf
-	#define printf(...)							\
-			{									\
-				NNN::Console::console_lock();	\
-				printf(__VA_ARGS__);			\
-				fflush(stdout);					\
-				NNN::Console::console_unlock();	\
-			}
-
-	#undef wprintf
-	#define wprintf(...)						\
-			{									\
-				NNN::Console::console_lock();	\
-				wprintf(__VA_ARGS__);			\
-				fflush(stdout);					\
-				NNN::Console::console_unlock();	\
-			}
-#endif	// !NNN_NO_CONSOLE_THREAD_SAFE
-#endif	// NNN_PLATFORM
-
 #undef min	// use __min instead
 #undef max	// use __max instead
 
@@ -326,7 +303,7 @@
 	#endif
 #endif
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#include <stdlib.h>
 #else
 	// Minimum and maximum macros
@@ -336,7 +313,7 @@
 	#ifndef __min
 		#define __min(a,b) (((a) < (b)) ? (a) : (b))
 	#endif
-#endif	// NNN_PLATFORM
+#endif	// WIN32 || _WIN32
 
 // Caps values to min/max
 #define cap_value(a, min, max) ((a > max) ? max : (a < min) ? min : a)
@@ -394,24 +371,118 @@ inline T ts_cap_value(T a, T min, T max)
 
 // hash_map/hash_set
 #ifdef __cplusplus
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
-	//#include <hash_map>
-	//#include <hash_set>
 	#include <unordered_map>
 	#include <unordered_set>
+
+	using namespace std::string_view_literals;	// 引入 sv 后缀
+
+#if _HAS_CXX20
+	struct s_StringHashA
+	{
+		using is_transparent = void;	// 启用透明哈希
+
+		size_t operator()(std::string_view sv) const
+		{
+			return std::hash<std::string_view>{}(sv);
+		}
+
+		size_t operator()(const std::string& s) const
+		{
+			return std::hash<std::string>{}(s);
+		}
+
+		size_t operator()(const char *s) const
+		{
+			return std::hash<std::string_view>{}(s);
+		}
+	};
+
+	struct s_StringHashW
+	{
+		using is_transparent = void;	// 启用透明哈希
+
+		size_t operator()(std::wstring_view sv) const
+		{
+			return std::hash<std::wstring_view>{}(sv);
+		}
+
+		size_t operator()(const std::wstring& s) const
+		{
+			return std::hash<std::wstring>{}(s);
+		}
+
+		size_t operator()(const wchar_t *s) const
+		{
+			return std::hash<std::wstring_view>{}(s);
+		}
+	};
+
+	//========== HashMapSelector ==========(Start)
+	template <typename Key, typename Value>
+	struct HashMapSelector
+	{
+		using Type = std::unordered_map<Key, Value>;
+	};
+
+	// 特化 Key 是 std::string 的版本
+	template <typename Value>
+	struct HashMapSelector<std::string, Value>
+	{
+		using Type = std::unordered_map<std::string, Value, s_StringHashA, std::equal_to<>>;
+	};
+
+	// 特化 Key 是 std::wstring 的版本
+	template <typename Value>
+	struct HashMapSelector<std::wstring, Value>
+	{
+		using Type = std::unordered_map<std::wstring, Value, s_StringHashW, std::equal_to<>>;
+	};
+	//========== HashMapSelector ==========(End)
+	//========== HashSetSelector ==========(Start)
+	template <typename Key>
+	struct HashSetSelector
+	{
+		using Type = std::unordered_set<Key>;
+	};
+
+	// 特化 std::string
+	template <>
+	struct HashSetSelector<std::string>
+	{
+		using Type = std::unordered_set<std::string, s_StringHashA, std::equal_to<>>;
+	};
+
+	// 特化 std::wstring
+	template <>
+	struct HashSetSelector<std::wstring>
+	{
+		using Type = std::unordered_set<std::wstring, s_StringHashW, std::equal_to<>>;
+	};
+	//========== HashSetSelector ==========(End)
+
+	// 定义类型别名
+	template <typename Key, typename Value>
+	using NNN_HASH_MAP = typename HashMapSelector<Key, Value>::Type;
+
+	template <typename Key>
+	using NNN_HASH_SET = typename HashSetSelector<Key>::Type;
+#else
+#if defined(WIN32) || defined(_WIN32)
+	//#include <hash_map>
+	//#include <hash_set>
+
 	#define NNN_HASH_MAP	std::unordered_map	// 在 vs2015 中，unordered_map 比 hash_map 快 7~14%
 	#define NNN_HASH_SET	std::unordered_set
 #else
 	//#include <ext/hash_map>
 	//#include <ext/hash_set>
-	//#define NNN_HASH_MAP	__gnu_cxx::hash_map	// 在 gcc 中，hash_map 比 unordered_map 快 183%~213%（200% 左右）
-	//#define NNN_HASH_SET	__gnu_cxx::hash_set
 
-	#include <unordered_map>
-	#include <unordered_set>
-	#define NNN_HASH_MAP std::unordered_map
-	#define NNN_HASH_SET std::unordered_set
-#endif	// NNN_PLATFORM
+	//#define NNN_HASH_MAP	__gnu_cxx::hash_map	// 在 gcc（版本???）中，hash_map 比 unordered_map 快 183%~213%（200% 左右）
+	//#define NNN_HASH_SET	__gnu_cxx::hash_set
+	#define NNN_HASH_MAP	std::unordered_map
+	#define NNN_HASH_SET	std::unordered_set
+#endif	// WIN32 || _WIN32
+#endif	// _HAS_CXX20
 #endif	// __cplusplus
 
 #if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
@@ -443,11 +514,11 @@ inline T ts_cap_value(T a, T min, T max)
 #define SETP_GETP_MEMBER(type, member)	SETP_MEMBER(type, member)			GETP_MEMBER(type, member)
 
 // 字节对齐
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#define NNN_ALIGN(n)	__declspec(align(n))
 #else
 	#define NNN_ALIGN(n)	__attribute__((aligned(n)))
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 //========== 打印/写入错误日志 ==========(Start)
 #if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
@@ -467,58 +538,22 @@ inline T ts_cap_value(T a, T min, T max)
 	#define	NNN_WRITE_LOG(filename, txt)
 #endif	// NNN_PLATFORM
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
-	#define _STRCPY		strcpy_s
-	#define _WCSCPY		wcscpy_s
-	#define _STRCAT		strcat_s
-	#define _WCSCAT		wcscat_s
-	#define _SPRINTF	sprintf_s
-	#define _SWPRINTF	swprintf_s
+#if defined(WIN32) || defined(_WIN32)
 	#define _SSCANF		sscanf_s
 	#define _SWSCANF	swscanf_s
-	#define	_VSNPRINTF	vsnprintf_s
-	#define	_VSNWPRINTF	_vsnwprintf_s
 
-	#define	_MEMMOVE(dst, src, size)	memmove_s(dst, size, src, size)
-
-	#ifndef strcasecmp
-	#define strcasecmp	_stricmp
-	#endif
-
-	#ifndef snprintf
-	#define snprintf	_snprintf
-	#endif
-
-	#ifndef vsnprintf
-	#define vsnprintf	_vsnprintf
-	#endif
+	//#ifndef snprintf
+	//#define snprintf	_snprintf
+	//#endif
 #else
-	#define _STRCPY		strcpy
-	#define _WCSCPY		wcscpy
-	#define _STRCAT		strcat
-	#define _WCSCAT		wcscat
-	#define _SPRINTF	sprintf
-	#define _SWPRINTF	swprintf
 	#define _SSCANF		sscanf
 	#define _SWSCANF	swscanf
-	#define	_VSNPRINTF	vsnprintf
-	#define	_VSNWPRINTF	vsnwprintf
-
-	#define	_MEMMOVE(dst, src, size)	memmove(dst, src, size)
-
-	#ifndef _wcsicmp
-	#define _wcsicmp wcscasecmp
-	#endif
-
-	#ifndef stricmp
-	#define stricmp strcasecmp
-	#endif
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #define	NNN_LOG_ERROR_FUNC(filename, format, ...)	\
 		{	\
 			char err_log_[4096];	\
-			_SPRINTF(err_log_, "[Warning] %s() line:%d - " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);	\
+			C::sprintf(err_log_, _countof(err_log_), "[Warning] %s() line:%d - " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);	\
 			\
 			NNN_WRITE_LOG(filename, err_log_);	\
 			NNN_PRINT_LOG(err_log_);			\
@@ -527,7 +562,7 @@ inline T ts_cap_value(T a, T min, T max)
 #define NNN_PRINT_ERROR_FUNC(format, ...)	\
 		{	\
 			char err_log_[4096];	\
-			_SPRINTF(err_log_, "[Warning] %s() line:%d - " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);	\
+			C::sprintf(err_log_, countof(err_log_), "[Warning] %s() line:%d - " format, __FUNCTION__, __LINE__, ##__VA_ARGS__);	\
 			\
 			NNN_PRINT_LOG(err_log_);	\
 		}
@@ -536,12 +571,12 @@ inline T ts_cap_value(T a, T min, T max)
 // 重定义 new
 #ifdef __cplusplus
 	#if defined(DEBUG) || defined(_DEBUG)
-		#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+		#if defined(WIN32) || defined(_WIN32)
 			#define new new(_CLIENT_BLOCK, __FILE__, __LINE__)
 
 			#define _CRTDBG_MAP_ALLOC
 			#include <crtdbg.h>
-		#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+		#endif	// WIN32 || _WIN32
 	#else
 		// 修正 Linux 的 STL 的 new 重载版本跟这里的 new 重载冲突
 		#if (NNN_PLATFORM == NNN_PLATFORM_LINUX)
@@ -560,10 +595,10 @@ inline T ts_cap_value(T a, T min, T max)
 	#include <thread>
 #endif	// NNN_PLATFORM_ANDROID
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 #include <WinSock2.h>
 #include <Windows.h>
-#endif	// NNN_PLATFORM_WIN32
+#endif	// WIN32 || _WIN32
 #endif	// __cplusplus
 
 #define NNN_PARAMS(...)	__VA_ARGS__

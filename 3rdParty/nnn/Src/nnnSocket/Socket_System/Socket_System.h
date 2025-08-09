@@ -28,9 +28,9 @@ NNN_API HRESULT		DoInit();
 NNN_API HRESULT		DoFinal();
 
 // 枚举所有协议（成功的话，dwCount 将返回协议数）
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 NNN_API HRESULT		EnumProtocols(__out WSAPROTOCOL_INFO **wsapi, __out DWORD *dwCount);
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 // 建立套接字
 NNN_API HRESULT		Socket(	__out SOCKET	&s,
@@ -264,8 +264,8 @@ NNN_API HRESULT		make_connect(	__out SOCKET	&s,
 
 //======================================================================
 
-// dwError -> std::string
-NNN_API inline std::string	GetErrorTxt(DWORD dwError)
+// dwError -> const char*
+NNN_API inline const char*	GetErrorTxt(DWORD dwError, __out char error_msg_tmp[64])
 {
 	switch(dwError)
 	{
@@ -285,10 +285,10 @@ NNN_API inline std::string	GetErrorTxt(DWORD dwError)
 	case WSAESHUTDOWN:			return "WSAESHUTDOWN";
 	case WSAEWOULDBLOCK:		return "WSAEWOULDBLOCK";	// 经常发生的错误？
 	case WSANOTINITIALISED:		return "WSANOTINITIALISED";
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	case WSA_IO_PENDING:		return "WSA_IO_PENDING";	// 经常发生的错误
 	case WSA_OPERATION_ABORTED:	return "WSA_OPERATION_ABORTED";
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 	case WSAEACCES:				return "WSAEACCES";
 	case WSAEADDRNOTAVAIL:		return "WSAEADDRNOTAVAIL";
@@ -307,12 +307,11 @@ NNN_API inline std::string	GetErrorTxt(DWORD dwError)
 	case WSAEALREADY:			return "WSAEALREADY";
 	case WSAECONNREFUSED:		return "WSAECONNREFUSED";
 	case WSAEPROTONOSUPPORT:	return "WSAEPROTONOSUPPORT";
-	}
+	}	// switch
 
-	char error_msg[64];
-	_SPRINTF(error_msg, "ErrorCode(%u)", dwError);
+	C::SPRINTF(error_msg_tmp, 64, "ErrorCode(%u)", dwError);
 
-	return error_msg;
+	return error_msg_tmp;
 }
 
 //======================================================================

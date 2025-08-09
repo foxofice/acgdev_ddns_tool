@@ -38,5 +38,22 @@ namespace ddns_tool
 			else
 				return func();
 		}
+
+		/*==============================================================
+		 * 设置 DoubleBuffered
+		 *==============================================================*/
+		internal static void	Set_DoubleBuffered(Control c, bool enabled)
+		{
+			if(c == null)
+				return;
+
+			var propertyInfo = typeof(Control).GetProperty(	"DoubleBuffered", 
+															System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
+
+			if(propertyInfo == null)
+				return;
+
+			propertyInfo.SetValue(c, enabled);
+		}
 	};
 }	// namespace ddns_tool

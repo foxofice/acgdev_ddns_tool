@@ -11,7 +11,7 @@
 
 #include "../../common/common.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 
 namespace NNN
 {
@@ -42,6 +42,6 @@ struct s_OVERLAPPED
 }	// namespace Socket
 }	// namespace NNN
 
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #endif	// _NNNSOCKET___SOCKET_SYSTEM___S_OVERLAPPED_H_

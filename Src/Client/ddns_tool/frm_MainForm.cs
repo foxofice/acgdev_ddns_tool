@@ -679,6 +679,9 @@ namespace ddns_tool
 			set_next_Auto_Update_Time();
 
 			Update_Settings_Preview__All();
+
+			FORMS.Set_DoubleBuffered(listView_Domains, true);
+			FORMS.Set_DoubleBuffered(listView_Logs, true);
 		}
 		//--------------------------------------------------
 		private void frm_MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -702,13 +705,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void linkLabel_WebSite_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			ProcessStartInfo psi = new()
-			{
-				FileName		= "https://www.AcgDev.com",
-				UseShellExecute	= true	// 确保 URL 由 shell 处理（默认浏览器）
-			};
-
-			Process.Start(psi);
+			COMMON.OpenURL("https://www.AcgDev.com");
 		}
 
 		/*==============================================================
@@ -716,13 +713,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void linkLabel_Github_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			ProcessStartInfo psi = new()
-			{
-				FileName		= "https://github.com/foxofice/acgdev_ddns_tool",
-				UseShellExecute	= true	// 确保 URL 由 shell 处理（默认浏览器）
-			};
-
-			Process.Start(psi);
+			COMMON.OpenURL("https://github.com/foxofice/acgdev_ddns_tool");
 		}
 		#endregion
 
@@ -1711,13 +1702,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void linkLabel_Security__LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			ProcessStartInfo psi = new()
-			{
-				FileName		= (sender as LinkLabel)!.Text,
-				UseShellExecute	= true	// 确保 URL 由 shell 处理（默认浏览器）
-			};
-
-			Process.Start(psi);
+			COMMON.OpenURL((sender as LinkLabel)!.Text);
 		}
 
 		/*==============================================================

@@ -13,9 +13,9 @@
 #include <map>
 
 #include "../../common/common.h"
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#if !defined(WIN32) && !defined(_WIN32)
 #include <pthread.h>
-#endif	// !NNN_PLATFORM_WIN32 && !NNN_PLATFORM_WP8
+#endif	// !WIN32 && !_WIN32
 
 #include "../../nnnLib/nnnLib.h"
 #include "../../nnnSocket/Socket_System/s_SessionData.h"
@@ -168,6 +168,7 @@ public:
 
 	// 获取 session 列表
 	NNN_API void					get_sessions_list(__out NNN_HASH_MAP<UINT64, struct s_SessionData*> &list);
+	NNN_API void					get_sessions_list(__out struct Buffer::s_StackBuffer<struct s_SessionData*, 4096> &list, __out size_t &count);
 
 protected:
 	// 工作者线程（IOCP/EPOLL 使用）

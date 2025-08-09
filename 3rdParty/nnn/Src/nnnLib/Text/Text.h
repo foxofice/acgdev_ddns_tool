@@ -28,12 +28,24 @@ namespace Text
 {
 
 // 把字符串转换为小写（直接修改）
-NNN_API void			StringToLowerDirect(__inout char *txt);
-NNN_API void			StringToLowerDirect(__inout WCHAR *txt);
+NNN_API void			StringToLowerInPlace(__inout WCHAR *txt);
+NNN_API void			StringToLowerInPlace_ASCII(__inout char *txt);
+NNN_API void			StringToLowerInPlace_Unicode(__inout char *txt);
+
+// 把字符串转换为小写（返回 output）
+NNN_API const WCHAR*	StringToLower(const WCHAR *txt, __out WCHAR *output);
+NNN_API const char*		StringToLower_ASCII(const char *txt, __out char *output);
+NNN_API const char*		StringToLower_Unicode(const char *txt, __out char *output);
 
 // 把字符串转换为大写（直接修改）
-NNN_API void			StringToUpperDirect(__inout char *txt);
-NNN_API void			StringToUpperDirect(__inout WCHAR *txt);
+NNN_API void			StringToUpperInPlace(__inout WCHAR *txt);
+NNN_API void			StringToUpperInPlace_ASCII(__inout char *txt);
+NNN_API void			StringToUpperInPlace_Unicode(__inout char *txt);
+
+// 把字符串转换为大写（返回 output）
+NNN_API const WCHAR*	StringToUpper(const WCHAR *txt, __out WCHAR *output);
+NNN_API const char*		StringToUpper_ASCII(const char *txt, __out char *output);
+NNN_API const char*		StringToUpper_Unicode(const char *txt, __out char *output);
 
 // wchar* <--> char*（OutputBuffer_CharsCount 是字符数，不是字节数）
 NNN_API HRESULT			wchar2char(const WCHAR *input, __out char **output, __out_opt int *output_chars_count);
@@ -80,7 +92,9 @@ NNN_API HRESULT			Unicode_2_UTF8(const WCHAR *input, __out char **output, __out_
 
 // UTF8 <--> Ansi
 NNN_API HRESULT			UTF8_2_Ansi(const char *input, __out char **output, __out_opt int *output_chars_count);
+NNN_API HRESULT			UTF8_2_Ansi(const char *input, __out char output[4096]);
 NNN_API HRESULT			Ansi_2_UTF8(const char *input, __out char **output, __out_opt int *output_chars_count);
+NNN_API HRESULT			Ansi_2_UTF8(const char *input, __out char output[4096]);
 
 // 判断指定文本是否 UTF8 编码
 NNN_API bool			IsTextUTF8(const char *str, size_t length);

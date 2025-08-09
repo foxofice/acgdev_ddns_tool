@@ -150,7 +150,7 @@ void cleanup()
 {
 	// «Â¿Ì
 	DDNS_Server::DoFinal();
-	NNN::DoFinal();
+	NNN::DoFinal_nnnLib();
 }
 
 
@@ -165,8 +165,8 @@ int main()
 	NNN::Misc::MemoryLeakCheck();
 #endif	// NNN_PLATFORM_WIN32
 
-	NNN::DoInit();
-	NNN::Misc::CoreDump::enable_core_dump(struct NNN::Misc::CoreDump::s_CoreDump_settings(L"ddns_server.dmp"));
+	NNN::DoInit_nnnLib();
+	NNN::Misc::CoreDump::enable_core_dump(NNN::Misc::CoreDump::s_CoreDump_settings(L"ddns_server.dmp"));
 
 	atexit(cleanup);
 

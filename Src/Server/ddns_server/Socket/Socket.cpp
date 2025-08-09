@@ -40,7 +40,7 @@ static void CALLBACK OnAccept(struct NNN::Socket::s_SessionData *sd)
 	{
 		char ip_buffer[46];
 
-		Log::ShowMessage(	"Accept : " NNN_CL_VALUE "%s:%u" NNN_CL_RESET "\n",
+		Log::ShowMessage(	"Accept : " NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET "\n",
 							sd->GetClientIP(ip_buffer), sd->m_port );
 	}
 
@@ -67,7 +67,7 @@ static void CALLBACK OnDisconnecting(struct NNN::Socket::s_SessionData *sd)
 	{
 		char ip_buffer[46];
 
-		Log::ShowMessage(	"Disconnect : " NNN_CL_VALUE "%s:%u" NNN_CL_RESET "\n",
+		Log::ShowMessage(	"Disconnect : " NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET "\n",
 							sd->GetClientIP(ip_buffer), sd->m_port );
 	}
 
@@ -119,7 +119,7 @@ HRESULT DoInit()
 	V( NNN::Socket::DoInit() );
 	if(FAILED(hr))
 	{
-		Log::ShowFatalError("Init '" NNN_CL_VALUE "Socket" NNN_CL_RESET "' failed! [%s : %s() - line %d]\n",
+		Log::ShowFatalError("Init '" NNN_CL_VALUE "Socket" NNN_ANSI_RESET "' failed! [%s : %s() - line %d]\n",
 							__FILE__, __FUNCTION__, __LINE__);
 		return hr;
 	}
@@ -139,7 +139,7 @@ HRESULT DoInit()
 
 	LOGINING_SESSIONS.m_sessions	= new NNN_HASH_SET<UINT64>();
 
-	Log::ShowStatus("Init '" NNN_CL_VALUE "Socket" NNN_CL_RESET "' OK.\n");
+	Log::ShowStatus("Init '" NNN_CL_VALUE "Socket" NNN_ANSI_RESET "' OK.\n");
 	return S_OK;
 }
 //--------------------------------------------------
@@ -175,13 +175,13 @@ HRESULT Start()
 
 	if(FAILED(hr))
 	{
-		Log::ShowError(	"Open server failed!! (port = " NNN_CL_VALUE "%u" NNN_CL_RESET ") [%s : %s() - line %d]\n",
+		Log::ShowError(	"Open server failed!! (port = " NNN_CL_VALUE "%u" NNN_ANSI_RESET ") [%s : %s() - line %d]\n",
 						param.m_port,
 						__FILE__, __FUNCTION__, __LINE__ );
 		return hr;
 	}
 
-	Log::ShowStatus("Server is running. (port = " NNN_CL_VALUE "%u" NNN_CL_RESET ")\n",
+	Log::ShowStatus("Server is running. (port = " NNN_CL_VALUE "%u" NNN_ANSI_RESET ")\n",
 					param.m_port);
 
 	g_running_state = es_State::Running;

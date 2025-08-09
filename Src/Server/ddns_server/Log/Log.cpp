@@ -33,8 +33,6 @@ HRESULT DoInit()
 		WRITE_FILE_BUFFER.m_buffer->reserve(512 * 1024);	// 初始 512K
 	}
 
-	NNN::Console::set_record_last_text(true);
-
 	return S_OK;
 }
 //--------------------------------------------------
@@ -64,9 +62,10 @@ void DoWork()
 			char	log_filename[MAX_PATH];
 			tm		tm_	= NNN::Time::get_current_tm();
 
-			_SPRINTF(	log_filename,
-						Config::g_config->LOG.m_filename,
-						tm_.tm_year + 1900, tm_.tm_mon + 1, tm_.tm_mday );
+			NNN::C::sprintf(log_filename,
+							_countof(log_filename),
+							Config::g_config->LOG.m_filename,
+							tm_.tm_year + 1900, tm_.tm_mon + 1, tm_.tm_mday);
 
 			NNN::IO::File::append_file(log_filename, WRITE_FILE_BUFFER.m_buffer->c_str());
 			WRITE_FILE_BUFFER.m_buffer->clear();
@@ -100,35 +99,35 @@ static void _vShowMessage(es_MsgType flag, const char *format, va_list ap)
 		break;
 
 	case es_MsgType::Status:	// Bright Green（良好的东西）
-		_STRCAT(prefix, NNN_CL_STATUS "[Status] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_STATUS "[Status] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::SQL:	// Bright Violet（输出 SQL 相关的东西）
-		_STRCAT(prefix, NNN_CL_SQL "[SQL] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_SQL "[SQL] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::Info:	// Bright White（变量信息）
-		_STRCAT(prefix, NNN_CL_INFO "[Info] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_INFO "[Info] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::Notice:	// Bright White（轻于警告）
-		_STRCAT(prefix, NNN_CL_NOTICE "[Notice] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_NOTICE "[Notice] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::Warning:	// Bright Yellow
-		_STRCAT(prefix, NNN_CL_WARNING "[Warning] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_WARNING "[Warning] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::Debug:	// Bright Cyan（重要的东西！）
-		_STRCAT(prefix, NNN_CL_DEBUG "[Debug] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_DEBUG "[Debug] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::Error:	// Bright Red（常规错误）
-		_STRCAT(prefix, NNN_CL_ERROR "[Error] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_ERROR "[Error] " NNN_ANSI_RESET);
 		break;
 
 	case es_MsgType::FatalError:	// Bright Red（致命错误，如果可能的话请调用 abort();）
-		_STRCAT(prefix, NNN_CL_FATAL_ERROR "[Fatal Error] " NNN_CL_RESET);
+		NNN::C::strcpy(prefix, NNN_CL_FATAL_ERROR "[Fatal Error] " NNN_ANSI_RESET);
 		break;
 	}	// switch
 
@@ -136,17 +135,17 @@ static void _vShowMessage(es_MsgType flag, const char *format, va_list ap)
 	std::string log;
 	log.reserve(1024);
 
-	{
-		NNN::Console::console_lock();
+	char txt[4096];
+	NNN::C::strcpy(txt, prefix);
 
-		NNN::Console::show_message("%s", prefix);
-		log += *NNN::Console::get_current_string();
+	size_t len = strlen(txt);
+	NNN::C::vsnprintf(txt + len, _countof(txt) - len, _countof(txt) - len - 1, format, ap);
 
-		NNN::Console::show_message_func(false, format, ap);
-		log += *NNN::Console::get_current_string();
+	printf("%s", txt);
 
-		NNN::Console::console_unlock();
-	}
+	char plain_txt[4096];
+	NNN::Console::remove_ansi_code(txt, plain_txt);
+	log += plain_txt;
 	//========== 打印日志 ==========(End)
 
 	//========== 写入文件 ==========(Start)
@@ -162,7 +161,7 @@ static void _vShowMessage(es_MsgType flag, const char *format, va_list ap)
 						_countof(time_prefix),
 						Config::g_config->LOG.m_timestamp_format,
 						&tm_ );
-			_STRCAT(time_prefix, " ");
+			NNN::C::strcat(time_prefix, " ");
 		}
 
 		NNN::Thread::c_Lock l(WRITE_FILE_BUFFER.m_cs);

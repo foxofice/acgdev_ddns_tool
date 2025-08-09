@@ -63,15 +63,15 @@ void parse_packet(struct NNN::Socket::s_SessionData *sd)
 		switch(res)
 		{
 		case es_Parse_Result::Unknown:
-			Log::ShowDebug("Unknown packet " NNN_CL_VALUE "%u" NNN_CL_RESET "! ", header);
+			Log::ShowDebug("Unknown packet " NNN_CL_VALUE "%u" NNN_ANSI_RESET "! ", header);
 			break;
 
 		case es_Parse_Result::Attack:
-			Log::ShowDebug("Packet " NNN_CL_VALUE "%u" NNN_CL_RESET " attack!! ", header);
+			Log::ShowDebug("Packet " NNN_CL_VALUE "%u" NNN_ANSI_RESET " attack!! ", header);
 			break;
 
 		case es_Parse_Result::Error:
-			Log::ShowDebug("Packet " NNN_CL_VALUE "%u" NNN_CL_RESET " parse error!!!! ", header);
+			Log::ShowDebug("Packet " NNN_CL_VALUE "%u" NNN_ANSI_RESET " parse error!!!! ", header);
 			break;
 		}	// switch
 
@@ -125,7 +125,7 @@ es_Parse_Result recv_Login_Data(struct NNN::Socket::s_SessionData *sd)
 		{
 			char ip_buffer[46];
 
-			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_CL_RESET " re-login\n",
+			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " re-login\n",
 								sd->GetClientIP(ip_buffer), sd->m_port );
 		}
 
@@ -154,7 +154,7 @@ es_Parse_Result recv_Login_Data(struct NNN::Socket::s_SessionData *sd)
 		{
 			char ip_buffer[46];
 
-			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_CL_RESET " login failed (decrypt failed)\n",
+			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " login failed (decrypt failed)\n",
 								sd->GetClientIP(ip_buffer), sd->m_port );
 		}
 
@@ -175,7 +175,7 @@ es_Parse_Result recv_Login_Data(struct NNN::Socket::s_SessionData *sd)
 		{
 			char ip_buffer[46];
 
-			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_CL_RESET " login failed (no KeyIV)\n",
+			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " login failed (no KeyIV)\n",
 								sd->GetClientIP(ip_buffer), sd->m_port );
 		}
 
@@ -190,7 +190,7 @@ es_Parse_Result recv_Login_Data(struct NNN::Socket::s_SessionData *sd)
 		{
 			char ip_buffer[46];
 
-			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_CL_RESET " login failed (KeyIV not match)\n",
+			Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " login failed (KeyIV not match)\n",
 								sd->GetClientIP(ip_buffer), sd->m_port );
 		}
 
@@ -209,7 +209,7 @@ es_Parse_Result recv_Login_Data(struct NNN::Socket::s_SessionData *sd)
 	{
 		char ip_buffer[46];
 
-		Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_CL_RESET " login ok\n",
+		Log::ShowMessage(	NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " login ok\n",
 							sd->GetClientIP(ip_buffer), sd->m_port );
 	}
 
@@ -235,7 +235,7 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 	if(sd->M_SD_DATA__LOGIN_DONE == 0)
 	{
 		char ip_buffer[46];
-		Log::ShowError(	"Update Domains failed! " NNN_CL_VALUE "%s:%u" NNN_CL_RESET " not logged in\n",
+		Log::ShowError(	"Update Domains failed! " NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " not logged in\n",
 						sd->GetClientIP(ip_buffer), sd->m_port );
 
 		return es_Parse_Result::Attack;
@@ -245,7 +245,7 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 	if(KeyIV == nullptr)
 	{
 		char ip_buffer[46];
-		Log::ShowError(	"Update Domains failed! " NNN_CL_VALUE "%s:%u" NNN_CL_RESET " has no KeyIV\n",
+		Log::ShowError(	"Update Domains failed! " NNN_CL_VALUE "%s:%u" NNN_ANSI_RESET " has no KeyIV\n",
 						sd->GetClientIP(ip_buffer), sd->m_port );
 
 		return es_Parse_Result::Error;
@@ -383,9 +383,9 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 	}	// for
 
 	char client_ip[46];
-	NNN::Console::show_message(	NNN_CL_GREEN "========== %s:%u update domains ==========(Start)" NNN_CL_RESET "\n",
-								sd->GetClientIP(client_ip),
-								sd->m_port );
+	printf(	NNN_ANSI_GREEN "========== %s:%u update domains ==========(Start)" NNN_ANSI_RESET "\n",
+			sd->GetClientIP(client_ip),
+			sd->m_port );
 
 	// 执行更新
 	ddns_server_CLR::update_domains(domains, DNS_Lookup_First, DNS_Server_List.empty() ? nullptr : &DNS_Server_List, timeout, sd);
@@ -393,9 +393,9 @@ es_Parse_Result recv_Update_Domains(struct NNN::Socket::s_SessionData *sd)
 	// 回发结果
 	send_Update_Domains_Result(sd, domains);
 
-	NNN::Console::show_message(	NNN_CL_BLUE "========== %s:%u update domains ==========(End)" NNN_CL_RESET "\n",
-								client_ip,
-								sd->m_port );
+	printf(	NNN_ANSI_BLUE "========== %s:%u update domains ==========(End)" NNN_ANSI_RESET "\n",
+			client_ip,
+			sd->m_port );
 
 	return es_Parse_Result::OK;
 }

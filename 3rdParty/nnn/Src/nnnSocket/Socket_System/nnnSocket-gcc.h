@@ -12,7 +12,7 @@
 #include "../../common/common-macro.h"
 #include "nnnSocket-inc.h"
 
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#if !defined(WIN32) && !defined(_WIN32)
 #include "../../common/common.h"
 
 typedef int	SOCKET;
@@ -126,6 +126,6 @@ typedef int	SOCKET;
 inline DWORD WSAGetLastError()	{ return (DWORD)errno; }
 */
 
-#endif	// !NNN_PLATFORM_WIN32 && !NNN_PLATFORM_WP8
+#endif	// !WIN32 && !_WIN32
 
 #endif	// _NNNSOCKET___NNNSOCKET_GCC_H_

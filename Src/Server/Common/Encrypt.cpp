@@ -33,7 +33,7 @@ void gen_KeyIV(	const WCHAR	*txt1,
 	bw.write_wchar2(txt1, wcslen(txt1));
 	bw.write_wchar2(txt2, wcslen(txt2));
 
-	BYTE sha384[SHA384_LEN];
+	BYTE sha384[NNN::Hash::SHA384_LEN];
 	NNN::Hash::ComputeHash(NNN::Hash::es_HashType::SHA384, data, bw.m_offset, sha384);
 
 	CopyMemory(Key,	sha384,					AES_KEY_LEN);

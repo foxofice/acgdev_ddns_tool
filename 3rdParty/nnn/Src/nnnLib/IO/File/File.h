@@ -35,13 +35,13 @@ NNN_API HRESULT	get_file_size(const WCHAR *filename, __out __int64 *size);
 NNN_API HRESULT	get_file_size(const char *filename, __out __int64 *size);
 
 // 获取文件信息
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 NNN_API HRESULT	get_file_info(const WCHAR *filename, __out struct _stat64 *fi);
 NNN_API HRESULT	get_file_info(const char *filename, __out struct _stat64 *fi);
 #else
 NNN_API HRESULT	get_file_info(const WCHAR *filename, __out struct stat *fi);
 NNN_API HRESULT	get_file_info(const char *filename, __out struct stat *fi);
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 //==================== 读取文件 ====================(Start)
 // 读取文件内容

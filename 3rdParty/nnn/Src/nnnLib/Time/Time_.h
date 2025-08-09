@@ -12,12 +12,12 @@
 #include "../../common/common-macro.h"
 
 #include <time.h>
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#include <Windows.h>
 #else
 	#include <unistd.h>
 	#include <sys/time.h>
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #include "../../common/common.h"
 
@@ -39,11 +39,11 @@ NNN_API inline tm		timet_to_tm(time_t time_)
 {
 	tm ret;
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	localtime_s(&ret, &time_);
 #else
 	ret = *localtime(&time_);
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 	return ret;
 }
@@ -52,7 +52,7 @@ NNN_API inline tm		timet_to_tm(time_t time_)
 NNN_API inline time_t	get_current_time()	{ return time(nullptr); }
 NNN_API inline tm		get_current_tm()	{ return timet_to_tm(get_current_time()); }
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 // FILETIME <--> __int64
 NNN_API __int64			FileTime_to_Int64(FILETIME time);
 NNN_API FILETIME		Int64_to_FileTime(__int64 value);
@@ -64,7 +64,7 @@ NNN_API FILETIME		SystemTime_to_FileTime(SYSTEMTIME time);
 // FILETIME <--> time_t
 NNN_API time_t			FileTime_to_timet(FILETIME time);
 NNN_API FILETIME		timet_to_FileTime(time_t time);
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
 // SYSTEMTIME <--> tm

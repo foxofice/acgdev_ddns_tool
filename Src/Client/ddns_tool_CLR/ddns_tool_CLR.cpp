@@ -69,7 +69,7 @@ bool CLR::DoInit()
 	// ÄÚ´æÐ¹Â©¼ì²â
 	NNN::Misc::MemoryLeakCheck();
 
-	hr = NNN::DoInit();
+	hr = NNN::DoInit_nnnLib();
 	if(FAILED(hr))
 		return false;
 
@@ -107,7 +107,7 @@ void CLR::DoFinal()
 
 	// ÇåÀí
 	NNN::Socket::DoFinal();
-	NNN::DoFinal();
+	NNN::DoFinal_nnnLib();
 }
 
 

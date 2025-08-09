@@ -15,7 +15,6 @@
 #include "Algorithm/s_SliceLoop.h"
 #include "Android/Android.h"
 #include "Buffer/Buffer.h"
-#include "C/C.h"
 #include "Compress/Compress.h"
 #include "Config/Config.h"
 #include "Console/Console.h"
@@ -32,8 +31,6 @@
 #include "Process/Process.h"
 #include "STL/STL.h"
 #include "Text/Text.h"
-#include "Text/s_StringKey.h"
-#include "Text/s_WStringKey.h"
 #include "Web/Web.h"
 
 #include "Thread/Thread.h"
@@ -54,8 +51,8 @@ namespace NNN
 {
 
 // 初始化/清理
-NNN_API HRESULT	DoInit();
-NNN_API HRESULT	DoFinal();
+NNN_API HRESULT	DoInit_nnnLib();
+NNN_API HRESULT	DoFinal_nnnLib();
 
 }	// namespace NNN
 

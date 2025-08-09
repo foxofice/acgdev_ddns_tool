@@ -15,7 +15,6 @@ set DST_DIR=%2
 %EXE%	%SRC_DIR%\nnnSocket.dll			%DST_DIR%\nnnSocket.dll
 %EXE%	%SRC_DIR%\nnnSocketServer.dll	%DST_DIR%\nnnSocketServer.dll
 %EXE%	%SRC_DIR%\OpenSSL.dll			%DST_DIR%\OpenSSL.dll
-%EXE%	%SRC_DIR%\TinyXML2.dll			%DST_DIR%\TinyXML2.dll
 %EXE%	%SRC_DIR%\zlib.dll				%DST_DIR%\zlib.dll
 %EXE%	%SRC_DIR%\zstd.dll				%DST_DIR%\zstd.dll
 

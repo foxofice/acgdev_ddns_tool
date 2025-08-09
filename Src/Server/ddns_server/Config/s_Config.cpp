@@ -58,13 +58,13 @@ void s_Config::Reset()
 	//==================================================
 	// 日志记录
 	//==================================================
-	_STRCPY(LOG.m_filename,	"Logs/%04d%02d%02d.log");
+	NNN::C::strcpy(LOG.m_filename,	"Logs/%04d%02d%02d.log");
 
 	LOG.m_console_silent_flag		= 0;
 	LOG.m_write_file_silent_flag	= 0;
 	LOG.m_write_file_interval		= 1000;
 
-	_STRCPY(LOG.m_timestamp_format,	"%Y.%m.%d %H:%M:%S");
+	NNN::C::strcpy(LOG.m_timestamp_format,	"%Y.%m.%d %H:%M:%S");
 
 	LOG.m_show_accept_client		= true;
 	LOG.m_show_disconnect_client	= true;
@@ -85,7 +85,7 @@ HRESULT s_Config::Read_Config(const WCHAR conf_filename[MAX_PATH], bool reset)
 	if(!NNN::IO::File::exists(conf_filename))
 	{
 		Log::ShowError(	"File '" NNN_CL_VALUE "%s"
-						NNN_CL_RESET "' not found! [%s : %s() - line %d]\n",
+						NNN_ANSI_RESET "' not found! [%s : %s() - line %d]\n",
 						char_conf_filename,
 						__FILE__, __FUNCTION__, __LINE__ );
 		return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
@@ -98,14 +98,14 @@ HRESULT s_Config::Read_Config(const WCHAR conf_filename[MAX_PATH], bool reset)
 	if(FAILED(hr))
 	{
 		Log::ShowError(	"Read '" NNN_CL_VALUE "%s"
-						NNN_CL_RESET "' failed! [%s : %s() - line %d]\n",
+						NNN_ANSI_RESET "' failed! [%s : %s() - line %d]\n",
 						char_conf_filename,
 						__FILE__, __FUNCTION__, __LINE__ );
 		return hr;
 	}
 
 	// 正在读取
-	Log::ShowStatus("Reading '" NNN_CL_VALUE "%s" NNN_CL_RESET "' ...\n", char_conf_filename);
+	Log::ShowStatus("Reading '" NNN_CL_VALUE "%s" NNN_ANSI_RESET "' ...\n", char_conf_filename);
 
 	// 重置
 	if(reset)
@@ -254,14 +254,14 @@ HRESULT s_Config::Read_Config(const WCHAR conf_filename[MAX_PATH], bool reset)
 		NNN::Text::wchar2char(w1, char_w1, _countof(char_w1), nullptr);
 
 		Log::ShowWarning(	"Unknown option '" NNN_CL_VALUE "%s"
-							NNN_CL_RESET "' in file '" NNN_CL_VALUE "%s"
-							NNN_CL_RESET "' [%s : %s() - line %d]\n",
+							NNN_ANSI_RESET "' in file '" NNN_CL_VALUE "%s"
+							NNN_ANSI_RESET "' [%s : %s() - line %d]\n",
 							char_w1, char_conf_filename,
 							__FILE__, __FUNCTION__, __LINE__ );
 	}
 
 	// 读取成功
-	Log::ShowStatus("Read '" NNN_CL_VALUE "%s" NNN_CL_RESET "' done.\n", char_conf_filename);
+	Log::ShowStatus("Read '" NNN_CL_VALUE "%s" NNN_ANSI_RESET "' done.\n", char_conf_filename);
 
 	return S_OK;
 }

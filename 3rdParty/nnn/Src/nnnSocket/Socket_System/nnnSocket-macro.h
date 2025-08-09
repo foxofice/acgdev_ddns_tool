@@ -13,13 +13,13 @@
 
 #include "../../common/common-macro.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	#ifndef ETHER_ADDR_LEN
 	#define ETHER_ADDR_LEN 6
 	#endif	// ETHER_ADDR_LEN
 #else
 	#include <net/ethernet.h>
-#endif	// NNN_PLATFORM
+#endif	// WIN32 || _WIN32
 
 // 支持的 I/O 模型
 #define NNN_SOCKET_SUPPORT_SELECT	1

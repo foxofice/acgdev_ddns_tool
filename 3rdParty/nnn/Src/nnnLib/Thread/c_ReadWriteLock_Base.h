@@ -26,9 +26,9 @@
 
 #include "../../common/common-macro.h"
 
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#if !defined(WIN32) && !defined(_WIN32)
 #include <pthread.h>
-#endif	// !NNN_PLATFORM_WIN32 && !NNN_PLATFORM_WP8
+#endif	// !WIN32 && !_WIN32
 
 #include "../../common/common.h"
 
@@ -80,7 +80,7 @@ protected:
 
 	struct s_AtomicLock		m_lock_data;					// 锁定以上数据
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	CRITICAL_SECTION	m_cs;
 	CONDITION_VARIABLE	m_cv_read;
 	CONDITION_VARIABLE	m_cv_write;
@@ -88,7 +88,7 @@ protected:
 	pthread_mutex_t		m_mutex;
 	pthread_cond_t		m_cv_read;
 	pthread_cond_t		m_cv_write;
-#endif	// NNN_PLATFORM
+#endif	// WIN32 || _WIN32
 
 protected:
 	// 发送信号通知所有挂起的读取线程

@@ -21,8 +21,12 @@ namespace NNN
 namespace Data
 {
 
+class c_DataSet;	// 前置声明
+
 class c_DataTable
 {
+	friend c_DataSet;
+
 public:
 	// 构造函数/析构函数
 	NNN_API						c_DataTable();
@@ -34,7 +38,7 @@ public:
 
 	// 设置/获取表名
 	NNN_API void				SetTableName(const WCHAR *table_name);
-	NNN_API inline std::wstring	GetTableName()	{ return m_TableName; }
+	NNN_API inline const WCHAR*	GetTableName()	{ return m_TableName.c_str(); }
 
 	// 获取行/列数
 	NNN_API inline size_t		RowsCount()		{ return m_Rows.size(); }
@@ -44,8 +48,8 @@ public:
 	NNN_API class c_DataRow*	Rows(size_t index);
 
 	// 获取列
-	NNN_API std::wstring		Columns(size_t index);
-	NNN_API std::wstring		Columns(const WCHAR *column_name);
+	NNN_API const WCHAR*		Columns(size_t index);
+	NNN_API const WCHAR*		Columns(const WCHAR *column_name);
 
 	// 获取列的集合
 	NNN_API class std::vector<std::wstring>* Columns()	{ return &m_Columns; }
@@ -64,19 +68,14 @@ public:
 
 	// 读取 XML 到 DataTable
 	NNN_API HRESULT				ReadXML(const WCHAR *xml_filename);
-	NNN_API HRESULT				ReadXML(const BYTE *content, const UINT len);
+	NNN_API HRESULT				ReadXML(const BYTE *content, const size_t len);
 
 	// 把 DataTable 写入到 XML
-	NNN_API HRESULT				WriteXML(const WCHAR *xml_filename, const WCHAR *name, bool is_utf8 = true);
+	NNN_API HRESULT				WriteXML(const WCHAR *xml_filename, const WCHAR *root_name);
 
-	// 把 DataTable 写入到 XML 的函数（仅填充数据，不实际写入）
-			HRESULT				WriteXML_Func(	const WCHAR *xml_filename,
-												void *xml,	// tinyxml2::XMLDocument* 类型
-												void *root,	// tinyxml2::XMLElement* 类型
-												bool is_utf8 = true );
-
-	// 整理所有行（让每行数据的列最少为 columns_count）
-			void				FixRows(size_t columns_count);
+protected:
+	// 设置每行数据的列最少为 columns_count
+	void						Set_MinColumnsCount(size_t columns_count);
 
 protected:
 	std::wstring					m_TableName;	// 表名

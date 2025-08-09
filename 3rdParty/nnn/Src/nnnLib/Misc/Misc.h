@@ -11,9 +11,9 @@
 
 #include "../../common/common.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 #include <Dbghelp.h>
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 #include "s_CPU_Flags.h"
 
@@ -26,10 +26,10 @@ namespace Misc
 HRESULT			DoInit();
 HRESULT			DoFinal();
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 // 内存泄漏检测
 NNN_API void	MemoryLeakCheck();
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 // 获取 CPU 核心数
 NNN_API int		get_processors_count();

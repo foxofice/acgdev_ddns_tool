@@ -31,8 +31,8 @@ public:
 	NNN_API inline std::vector<std::wstring>*	GetData()	{ return &m_data; }
 
 	// 获取某列的数据
-	NNN_API std::wstring						Items(size_t column_index);
-	NNN_API std::wstring						Items(const WCHAR *column_name);
+	NNN_API const WCHAR*						Items(size_t column_index);
+	NNN_API const WCHAR*						Items(const WCHAR *column_name);
 
 	// 设置某列的数据
 	NNN_API void								SetItem(size_t column_index, const WCHAR *data);

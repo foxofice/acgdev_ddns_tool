@@ -35,9 +35,9 @@ public:
 	NNN_API void	Reset();			// 重置计时器
 	NNN_API void	Start();			// 开始计时器
 	NNN_API void	Stop();				// 停止（或暂停）计时器
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#if defined(WIN32) || defined(_WIN32)
 	NNN_API void	Advance();			// 推进计时器 0.1 秒
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 	NNN_API double	GetAbsoluteTime();	// 获取绝对系统时间
 	NNN_API double	GetTime();			// 获取当前时间
 	NNN_API float	GetElapsedTime();	// 获取自上次调用 GetElapsedTime() 的逝去时间
@@ -64,13 +64,13 @@ protected:
 	// 如果已停止，则返回停止时的时间；否则返回当前时间
 	LARGE_INTEGER	GetAdjustedCurrentTime();
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
-	bool		m_bUsingQPF;
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
 	bool		m_bTimerStopped		= true;
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+
+#if defined(WIN32) || defined(_WIN32)
+	bool		m_bUsingQPF;
+
 	LONGLONG	m_llQPFTicksPerSec	= 0;
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_WP8
+#endif	// WIN32 || _WIN32
 
 	LONGLONG	m_llStopTime		= 0;
 	LONGLONG	m_llLastElapsedTime	= 0;

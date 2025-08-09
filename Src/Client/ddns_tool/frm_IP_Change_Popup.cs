@@ -24,6 +24,7 @@ namespace ddns_tool
 		{
 			this.Icon = IMAGE.get_exe_icon();
 
+			FORMS.Set_DoubleBuffered(listView_Main, true);
 			update_language_text();
 		}
 		//--------------------------------------------------

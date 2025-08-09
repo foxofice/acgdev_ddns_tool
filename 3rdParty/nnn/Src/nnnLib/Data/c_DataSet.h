@@ -14,7 +14,7 @@
 
 #include "../../common/common.h"
 
-#include "c_DataRow.h"
+#include "c_DataTable.h"
 
 namespace NNN
 {
@@ -32,7 +32,7 @@ public:
 	NNN_API void				Reset();
 
 	// 获取数据表
-	NNN_API class c_DataTable*	Tables(UINT index);
+	NNN_API class c_DataTable*	Tables(size_t index);
 	NNN_API class c_DataTable*	Tables(const WCHAR *table_name);
 
 	// 获取数据表的集合
@@ -52,14 +52,14 @@ public:
 	{
 		m_DataSetName = (name == nullptr) ? L"" : name;
 	}
-	NNN_API inline std::wstring	GetDataSetName()	{ return m_DataSetName; }
+	NNN_API inline const WCHAR*	GetDataSetName()	{ return m_DataSetName.c_str(); }
 
 	// 读取 XML 到 DataSet
 	NNN_API HRESULT				ReadXML(const WCHAR *xml_filename);
 	NNN_API HRESULT				ReadXML(const BYTE *content, const UINT len);
 
 	// 把 DataSet 写入到 XML
-	NNN_API HRESULT				WriteXML(const WCHAR *xml_filename, const WCHAR *name, bool is_utf8 = true);
+	NNN_API HRESULT				WriteXML(const WCHAR *xml_filename);
 
 protected:
 	std::wstring					m_DataSetName;	// 数据集名字
