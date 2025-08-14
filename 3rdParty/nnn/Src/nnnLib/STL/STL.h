@@ -10,7 +10,7 @@
 #define _NNNLIB___STL___STL_H_
 
 #include <vector>
-#include <functional>
+#include <utility>	// std::forward
 
 #include "../../common/common.h"
 #include "../Buffer/s_Obj_Pool.h"
@@ -170,15 +170,16 @@ private:
 	DISALLOW_COPY_AND_ASSIGN(s_TxtListW);
 };
 
-// 自动执行 CleanUp
+// 自动执行 CleanUp 清理
+template <typename FUNC>
 class c_CleanUp
 {
 public:
-	inline c_CleanUp(std::function<void()> func) : m_func(func) {}
-	inline ~c_CleanUp() { m_func(); }
+	inline explicit	c_CleanUp(FUNC&& func) : m_func(std::forward<FUNC>(func)) {}
+	inline			~c_CleanUp() { m_func(); }
 
 private:
-	std::function<void()> m_func;
+	FUNC	m_func;
 
 private:
 	DISALLOW_COPY_AND_ASSIGN(c_CleanUp);

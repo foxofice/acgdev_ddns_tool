@@ -19,75 +19,75 @@ namespace C
 {
 
 #pragma region strcpy/wcscpy/STRCPY
-inline void strcpy(char *dest, const char *src)
+inline void strcpy(char *dst, const char *src)
 {
 #if defined(WIN32) || defined(_WIN32)
-	strcpy_s(dest, strlen(src) + 1, src);
+	strcpy_s(dst, strlen(src) + 1, src);
 #else
-	::strcpy(dest, src);
+	::strcpy(dst, src);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline void wcscpy(WCHAR *dest, const WCHAR *src)
+inline void wcscpy(WCHAR *dst, const WCHAR *src)
 {
 #if defined(WIN32) || defined(_WIN32)
-	wcscpy_s(dest, wcslen(src) + 1, src);
+	wcscpy_s(dst, wcslen(src) + 1, src);
 #else
-	::wcscpy(dest, src);
+	::wcscpy(dst, src);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
 /*
- @param	dest	目标字符串缓冲区的位置
- @param	src		以 NULL 结尾的源字符串缓冲区
+ @param	dst	目标字符串缓冲区的位置
+ @param	src	以 NULL 结尾的源字符串缓冲区
  */
 template <typename T>
-inline void STRCPY(T *dest, const T *src)
+inline void STRCPY(T *dst, const T *src)
 {
 	if constexpr (std::is_same_v<T, char>)
 	{
-		strcpy(dest, src);
+		strcpy(dst, src);
 	}
 	else if constexpr (std::is_same_v<T, WCHAR>)
 	{
-		wcscpy(dest, src);
+		wcscpy(dst, src);
 	}
 }
 #pragma endregion
 
 #pragma region strcat/wcscat/STRCAT
-inline void strcat(char *dest, const char *src)
+inline void strcat(char *dst, const char *src)
 {
 #if defined(WIN32) || defined(_WIN32)
-	strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+	strcat_s(dst, strlen(dst) + strlen(src) + 1, src);
 #else
-	::strcat(dest, src);
+	::strcat(dst, src);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline void wcscat(WCHAR *dest, const WCHAR *src)
+inline void wcscat(WCHAR *dst, const WCHAR *src)
 {
 #if defined(WIN32) || defined(_WIN32)
-	wcscat_s(dest, wcslen(dest) + wcslen(src) + 1, src);
+	wcscat_s(dst, wcslen(dst) + wcslen(src) + 1, src);
 #else
-	::wcscat(dest, src);
+	::wcscat(dst, src);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
 /*
- @param	dest	NULL 终止的目标字符串缓冲区
- @param	src		以 NULL 结尾的源字符串缓冲区
+ @param	dst	NULL 终止的目标字符串缓冲区
+ @param	src	以 NULL 结尾的源字符串缓冲区
  */
 template <typename T>
-inline void STRCAT(T *dest, const T *src)
+inline void STRCAT(T *dst, const T *src)
 {
 	if constexpr (std::is_same_v<T, char>)
 	{
-		strcat(dest, src);
+		strcat(dst, src);
 	}
 	else if constexpr (std::is_same_v<T, WCHAR>)
 	{
-		wcscat(dest, src);
+		wcscat(dst, src);
 	}
 }
 #pragma endregion
@@ -149,16 +149,16 @@ inline int SPRINTF(T *_Buffer, size_t _BufferCount, const T *_Format, T_Args... 
 
 #pragma region MEMMOVE
 /*
- @dest		目标对象
- @src		源对象
- @count		要复制的字节数
+ @dst	目标对象
+ @src	源对象
+ @count	要复制的字节数
 */
-inline void MEMMOVE(void *dest, const void *src, size_t count)
+inline void MEMMOVE(void *dst, const void *src, size_t count)
 {
 #if defined(WIN32) || defined(_WIN32)
-	memmove_s(dest, count, src, count);
+	memmove_s(dst, count, src, count);
 #else
-	memmove(dest, src, count);
+	memmove(dst, src, count);
 #endif	// WIN32 || _WIN32
 }
 #pragma endregion

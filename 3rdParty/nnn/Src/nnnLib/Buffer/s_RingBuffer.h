@@ -26,10 +26,7 @@ struct s_RingBuffer
 	{
 		Reset(init_size);
 	}
-	NNN_API	~s_RingBuffer()
-	{
-		SAFE_DELETE_ARRAY(DATA.m_buffer);
-	}
+	NNN_API	~s_RingBuffer();
 
 	// read_data() 移除数据的条件
 	/*
@@ -81,6 +78,9 @@ struct s_RingBuffer
 	// 获取 m_buffer_size
 	NNN_API size_t	get_buffer_size();
 
+	// 保留最小存储长度
+	NNN_API void	reserve(size_t len);
+
 	// 把数据复制到另一个环形缓冲区
 	NNN_API void	CopyTo(struct s_RingBuffer &buffer);
 
@@ -88,6 +88,13 @@ protected:
 	// 取得数据（非线程安全。可能是1段 or 2段数据。data2 = nullptr 时，表示只有1段数据）
 	void	get_data(	__out BYTE* &data1, __out size_t &data1_len,
 						__out BYTE* &data2, __out size_t &data2_len );
+
+	// 写入数据/修改数据的公共函数
+	template <typename UNLOCK_FUNC>
+	inline void	write_data_func(const BYTE	*input_data,
+								size_t		write_offset,
+								size_t		write_len,
+								UNLOCK_FUNC	unlock_func);
 
 	constexpr static size_t	m_s_k_INIT_SIZE	= 1024;	// 初始化大小
 

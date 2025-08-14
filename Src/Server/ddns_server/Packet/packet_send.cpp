@@ -26,7 +26,7 @@ void send_KeepAlive(struct NNN::Socket::s_SessionData *sd)
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_KeepAlive, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -47,7 +47,7 @@ void send_Ping(struct NNN::Socket::s_SessionData *sd, double client_time)
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_Ping, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -72,7 +72,7 @@ void send_KeyIV(struct NNN::Socket::s_SessionData *sd)
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_KeyIV, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -114,7 +114,7 @@ void send_Login_Result(struct NNN::Socket::s_SessionData *sd, es_Result result)
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_Login_Result, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -143,7 +143,7 @@ void send_Update_Domains_Result(struct NNN::Socket::s_SessionData	*sd,
 		return;
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_Update_Domains_Result, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -236,7 +236,7 @@ void send_Log(struct NNN::Socket::s_SessionData *sd, const WCHAR *log, UINT rgb)
 		return;
 
 	// 填充数据
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)es_Header::Server_Log, xor_val);
 
 	bw.write<BYTE>(header_encode);

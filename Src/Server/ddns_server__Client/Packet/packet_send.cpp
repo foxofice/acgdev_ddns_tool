@@ -27,7 +27,7 @@ bool send_Ping(class NNN::Socket::c_Client *client)
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 野割方象
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((BYTE)ES_HEADER::Client_Ping, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -57,7 +57,7 @@ bool send_Login_Data(	class NNN::Socket::c_Client	*client,
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 野割方象
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((USHORT)ES_HEADER::Client_Login_Data, xor_val);
 
 	bw.write<BYTE>(header_encode);
@@ -102,7 +102,7 @@ bool send_Update_Domains(	class NNN::Socket::c_Client				*client,
 	struct NNN::Buffer::s_BinaryWriter	bw(packet_data);
 
 	// 野割方象
-	BYTE xor_val		= (BYTE)(rand() & 0xff);
+	BYTE xor_val		= NNN::Math::fast_rand16() & 0xff;
 	BYTE header_encode	= Common::Encrypt::encode_header((USHORT)ES_HEADER::Client_Update_Domains, xor_val);
 
 	bw.write<BYTE>(header_encode);
