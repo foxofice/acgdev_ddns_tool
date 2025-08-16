@@ -211,6 +211,11 @@ protected:
 	SOCKET						m_listen_socket_ipv4		= INVALID_SOCKET;			// Listen 的 socket（IPv4）
 	SOCKET						m_listen_socket_ipv6		= INVALID_SOCKET;			// Listen 的 socket（IPv6）
 
+#if NNN_SOCKET_SUPPORT_IOCP
+	std::atomic<struct s_SessionData*>	m_last_AcceptEx_IPv4_sd	= nullptr;
+	std::atomic<struct s_SessionData*>	m_last_AcceptEx_IPv6_sd	= nullptr;
+#endif	// NNN_SOCKET_SUPPORT_IOCP
+
 	USHORT						m_port						= 0;						// 本地端口
 
 	std::atomic<es_ServerState>	m_state						= es_ServerState::Stopped;	// 服务器运行状态

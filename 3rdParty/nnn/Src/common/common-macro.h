@@ -267,36 +267,27 @@
 	#define SAFE_CLOSE_HANDLE(p)	{ if((p)!=nullptr) { CloseHandle(p);	(p)=nullptr; } }
 #endif
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) &&	(defined(DEBUG) || defined(_DEBUG))
-	#ifdef DXUT_AUTOLIB
-		#ifndef V
-			#define V(x)           { hr = (x); if( FAILED(hr) ) { NNN::DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
-		#endif
-		#ifndef V_RETURN
-			#define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return NNN::DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
-		#endif
-	#else
-		#ifndef V
-			#define V(x)           { hr = (x); assert(SUCCEEDED(hr)); }
-		#endif
-		#ifndef V_RETURN
-			#define V_RETURN(x)    { hr = (x); assert(SUCCEEDED(hr)); if( FAILED(hr) ) { return hr; } }
-		#endif
-	#endif	// DXUT_AUTOLIB
-#else
+#ifdef DXUT_AUTOLIB
 	#ifndef V
-		#define V(x)           { hr = (x); }
+		#define V(x)           { hr = (x); if( FAILED(hr) ) { NNN::DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
 	#endif
 	#ifndef V_RETURN
-		#define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return hr; } }
+		#define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return NNN::DXUTTrace( __FILE__, (DWORD)__LINE__, hr, L#x, true ); } }
 	#endif
-#endif
+#else
+	#ifndef V
+		#define V(x)           { hr = (x); assert(SUCCEEDED(hr)); }
+	#endif
+	#ifndef V_RETURN
+		#define V_RETURN(x)    { hr = (x); assert(SUCCEEDED(hr)); if( FAILED(hr) ) { return hr; } }
+	#endif
+#endif	// DXUT_AUTOLIB
 
 #undef min	// use __min instead
 #undef max	// use __max instead
 
 #if !defined(MARKUP_SIZEOFWCHAR)
-	#if __SIZEOF_WCHAR_T__ == 4 || __WCHAR_MAX__ > 0x10000
+	#if !defined(WIN32) && !defined(_WIN32) && (__SIZEOF_WCHAR_T__ == 4 || __WCHAR_MAX__ > 0x10000)
 		#define MARKUP_SIZEOFWCHAR 4
 	#else
 		#define MARKUP_SIZEOFWCHAR 2
