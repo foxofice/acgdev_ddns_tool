@@ -45,15 +45,15 @@ public:
 
 #pragma region Send
 	// Client 发送 Ping
-	// 请参见：ddns_server::Packet::recv_Ping()
+	// Link: ../../Server/ddns_server/Packet/packet.h : recv_Ping)
 	static void		send_Ping();
 
 	// Client 发送「登录数据」
-	// 请参见：ddns_server::Packet::recv_Login_Data()
+	// Link: ../../Server/ddns_server/Packet/packet.h : recv_Login_Data)
 	static void		send_Login_Data();
 
 	// Client 发送「更新域名的 A/AAAA 记录」
-	// 请参见：ddns_server::Packet::recv_Update_Domains()
+	// Link: ../../Server/ddns_server/Packet/packet.h : recv_Update_Domains)
 	static void		send_Update_Domains(List<ddns_lib::c_Domain^>	^gc_domains,
 										bool						DNS_Lookup_First,
 										List<System::String^>		^gc_DNS_Server_List,
