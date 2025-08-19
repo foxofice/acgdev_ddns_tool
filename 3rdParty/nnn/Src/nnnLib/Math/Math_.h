@@ -26,7 +26,7 @@ NNN_API UINT			next_p2(UINT val);
 // 线性插值（rate：src_value 和 dst_value 之间的一个值，0.0 ~ 1.0）
 NNN_API inline double	lerp(double src_value, double dst_value, double rate)
 {
-	rate = cap_value(rate, 0.0, 1.0);
+	rate = std::clamp(rate, 0.0, 1.0);
 	return src_value * (1.0 - rate) + dst_value * rate;
 }
 

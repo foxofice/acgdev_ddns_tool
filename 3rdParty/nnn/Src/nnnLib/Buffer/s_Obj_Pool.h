@@ -76,7 +76,7 @@ struct s_Obj_Pool
 			T *obj = m_pool.front().first;
 			m_pool.pop();
 
-			delete_list.push_back(obj);
+			delete_list.push_back(std::move(obj));
 		}	// while
 
 		m_lock.UnLock();

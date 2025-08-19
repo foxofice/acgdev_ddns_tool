@@ -294,50 +294,15 @@
 	#endif
 #endif
 
-#if defined(WIN32) || defined(_WIN32)
-	#include <stdlib.h>
-#else
-	// Minimum and maximum macros
-	#ifndef __max
-		#define __max(a,b) (((a) > (b)) ? (a) : (b))
-	#endif
-	#ifndef __min
-		#define __min(a,b) (((a) < (b)) ? (a) : (b))
-	#endif
-#endif	// WIN32 || _WIN32
+#include <algorithm>
 
-// Caps values to min/max
-#define cap_value(a, min, max) ((a > max) ? max : (a < min) ? min : a)
+//#undef __max
+//#undef __min
+//#define __max	std::max
+//#define __min	std::min
 
-#ifdef __cplusplus
-template<class T>
-inline T ts_max(T a, T b)
-{
-	T tmp_a = (a);
-	T tmp_b = (b);
-
-	return __max(tmp_a, tmp_b);
-}
-
-template<class T>
-inline T ts_min(T a, T b)
-{
-	T tmp_a = (a);
-	T tmp_b = (b);
-
-	return __min(tmp_a, tmp_b);
-}
-
-template<class T>
-inline T ts_cap_value(T a, T min, T max)
-{
-	T tmp_a		= (a);
-	T tmp_min	= (min);
-	T tmp_max	= (max);
-
-	return cap_value(tmp_a, tmp_min, tmp_max);
-}
-#endif	// __cplusplus
+// Caps values to min/max（请使用 std::clamp 代替）
+//#define cap_value(a, min, max) ((a > max) ? max : (a < min) ? min : a)
 
 //#ifndef __swap
 //	//#define __swap(a,b) (((a) == (b)) || (((a) ^= (b)), ((b) ^= (a)), ((a) ^= (b))))

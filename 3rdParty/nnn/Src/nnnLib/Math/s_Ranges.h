@@ -21,23 +21,25 @@ namespace Math
 struct s_Ranges
 {
 	// 构造函数/析构函数
-	NNN_API					s_Ranges();
-	NNN_API virtual			~s_Ranges();
+	NNN_API						s_Ranges();
+	NNN_API virtual				~s_Ranges();
 
 	// 重置数据
-	NNN_API virtual void	Reset();
+	NNN_API virtual void		Reset();
 
 	// 添加一个数据范围
-	NNN_API virtual void	add_range(struct s_Range64 range);
+	NNN_API inline virtual void	add_range(struct s_Range64 &range)	{ add_range(std::move(range)); }
+	NNN_API virtual void		add_range(struct s_Range64 &&range);
 
 	// 移除一个数据范围
-	NNN_API virtual void	remove_range(struct s_Range64 range);
+	NNN_API inline virtual void	remove_range(struct s_Range64 &range)	{ remove_range(std::move(range)); }
+	NNN_API virtual void		remove_range(struct s_Range64 &&range);
 
 	// 查找指定数值是否在范围列表中
-	NNN_API virtual bool	find(UINT64 value);
+	NNN_API virtual bool		find(UINT64 value);
 
 	// 获取所有范围包含多少个数值（比如范围：1~10、101~200，则返回 110）
-	NNN_API virtual UINT64	get_count();
+	NNN_API virtual UINT64		get_count();
 
 	// range.min -> range
 	std::map<UINT64, struct s_Range64>	m_ranges;

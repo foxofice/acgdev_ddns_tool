@@ -23,7 +23,7 @@ struct s_FixRingBuffer
 	// 构造函数/析构函数
 	NNN_API s_FixRingBuffer(size_t max_count)
 	{
-		m_buffer.resize(__max(1, max_count));
+		m_buffer.resize(std::max<size_t>(1, max_count));
 	}
 	NNN_API ~s_FixRingBuffer()
 	{

@@ -122,7 +122,7 @@ struct s_TxtListA
 		if(m_txt_list.size() == m_txt_list.capacity())
 			m_txt_list.reserve(m_txt_list.size() * 2);
 
-		m_txt_list.push_back(add_txt);
+		m_txt_list.push_back(std::move(add_txt));
 	}
 
 	std::vector<char*>	m_txt_list;
@@ -161,7 +161,7 @@ struct s_TxtListW
 		if(m_txt_list.size() == m_txt_list.capacity())
 			m_txt_list.reserve(m_txt_list.size() * 2);
 
-		m_txt_list.push_back(add_txt);
+		m_txt_list.push_back(std::move(add_txt));
 	}
 
 	std::vector<WCHAR*>	m_txt_list;

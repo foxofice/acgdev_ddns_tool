@@ -74,7 +74,7 @@ HRESULT		MoveUpItem(std::vector<T> &v, int index, __inout UINT &count, __out int
 	if(index < 0 || index >= (int)v.size())
 		return E_INVALIDARG;
 
-	int fix_count = cap_value((int)count, 0, index);
+	int fix_count = std::clamp((int)count, 0, index);
 	if(!fix_count)
 		return E_FAIL;
 
@@ -104,7 +104,7 @@ HRESULT		MoveDownItem(std::vector<T> &v, int index, __inout UINT &count, __out i
 	if(index < 0 || index >= (int)v_size)
 		return E_INVALIDARG;
 
-	int fix_count = cap_value((int)count, 0, (int)(v_size - 1) - index);
+	int fix_count = std::clamp((int)count, 0, (int)(v_size - 1) - index);
 	if(fix_count == 0)
 		return E_FAIL;
 
@@ -310,8 +310,8 @@ void	gen_Add_List(const T_new &new_list, const T_old &old_list, __out std::vecto
 		T_key key = (T_key)kvp.first;
 
 		if(old_list.find(key) == old_list.end())
-			add_list.push_back(key);
-	}
+			add_list.push_back(std::move(key));
+	}	// for
 }
 
 // 生成「删除列表」（old_list 存在，但 new_list 不存在）
@@ -326,8 +326,8 @@ void	gen_Del_List(const T_new &new_list, const T_old &old_list, __out std::vecto
 		T_key key = (T_key)kvp.first;
 
 		if(new_list.find(key) == new_list.end())
-			del_list.push_back(key);
-	}
+			del_list.push_back(std::move(key));
+	}	// for
 }
 
 }	// namespace Map
