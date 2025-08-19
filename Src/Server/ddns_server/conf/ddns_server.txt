@@ -40,27 +40,17 @@ languages.culture: zh-CN
 // 日志文件名（YYYYMMDD）
 log.filename: Logs/%04d%02d%02d.log
 
-// 不输出的控制台信息（同时不写入文件）
-// +1:   Status
-// +2:   SQL
-// +4:   Info
-// +8:   Notice
-// +16:  Warning
-// +32:  Debug
-// +64:  Error
-// +128: Fatal Error
-log.console_silent_flag: 0
-
-// 不写入文件的消息
-// +1:   Status
-// +2:   SQL
-// +4:   Info
-// +8:   Notice
-// +16:  Warning
-// +32:  Debug
-// +64:  Error
-// +128: Fatal Error
-log.write_file_silent_flag: 0
+// 控制台信息（留空表示没有任何操作）
+//		+1	= 控制台显示
+//		+2	= 写入到文件
+log.console.Status: 3
+log.console.SQL: 3
+log.console.Info: 3
+log.console.Notice: 3
+log.console.Warning: 3
+log.console.Debug: 3
+log.console.Error: 3
+log.console.Fatal_Error: 3
 
 // 写入日志文件的周期（ms），0 = 立即写入
 log.write_file_interval: 1000

@@ -8,7 +8,6 @@
 #include "../Common/Common.h"
 
 #include "Config/Config.h"
-#include "Session_KeyIV/Session_KeyIV.h"
 #include "Log/Log.h"
 #include "Socket/Socket.h"
 #include "Packet/packet.h"
@@ -17,7 +16,10 @@
 namespace DDNS_Server
 {
 
-std::atomic<es_State>	g_running_state	= es_State::Stopped;	// 服务器运行状态
+std::atomic<es_State>								g_running_state	= es_State::Stopped;	// 服务器运行状态
+
+// 对象池
+struct NNN::Buffer::s_Obj_Pool<struct s_AES_KeyIV>	g_KeyIV_pool;
 
 /*==============================================================
  * 显示 LOGO
@@ -75,9 +77,6 @@ HRESULT DoInit()
 
 	display_logo();
 
-	// 初始化
-	V_RETURN( Session_KeyIV::DoInit() );
-
 	V_RETURN( Config::g_config->Read_Config(Config::g_config->m_config_file) );
 
 	// 初始化 Socket
@@ -95,7 +94,6 @@ HRESULT DoFinal()
 
 	// 各种清理
 	V( Socket::DoFinal() );
-	V( Session_KeyIV::DoFinal() );
 	V( Log::DoFinal() );
 	V( Config::DoFinal() );
 
@@ -138,6 +136,29 @@ void run_server()
 
 	// 关闭服务器
 	V( Socket::Stop() );
+}
+
+/*==============================================================
+ * 创建新的 s_AES_KeyIV*
+ * Create_KeyIV()
+ *==============================================================*/
+struct s_AES_KeyIV* Create_KeyIV()
+{
+	return g_KeyIV_pool.create_object();
+}
+
+
+/*==============================================================
+ * 回收 s_AES_KeyIV*
+ * Release_KeyIV()
+ *==============================================================*/
+void Release_KeyIV(struct s_AES_KeyIV *KeyIV)
+{
+	if(KeyIV != nullptr)
+	{
+		KeyIV->recalc_KeyIV();
+		g_KeyIV_pool.release_object(KeyIV);
+	}
 }
 
 }	// namespace DDNS_Server

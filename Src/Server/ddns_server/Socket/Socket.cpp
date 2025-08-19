@@ -9,7 +9,6 @@
 #include "../Log/Log.h"
 #include "../Config/Config.h"
 #include "../Packet/packet.h"
-#include "../Session_KeyIV/Session_KeyIV.h"
 #include "Socket.h"
 
 namespace DDNS_Server
@@ -77,8 +76,10 @@ static void CALLBACK OnDisconnecting(struct NNN::Socket::s_SessionData *sd)
 		LOGINING_SESSIONS.m_sessions->erase(sd->m_session_id);
 	}
 
+	struct s_AES_KeyIV *key_iv = (struct s_AES_KeyIV*)sd->M_SD_DATA__KEY_IV.load();
+	Release_KeyIV(key_iv);
+
 	sd->Reset_UserData();
-	Session_KeyIV::remove_KeyIV(sd->m_session_id);
 }
 //--------------------------------------------------
 //static void CALLBACK OnDisconnected(struct NNN::Socket::s_SessionData * /*sd*/)

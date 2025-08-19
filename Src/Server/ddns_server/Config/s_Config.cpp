@@ -58,13 +58,20 @@ void s_Config::Reset()
 	//==================================================
 	// 日志记录
 	//==================================================
-	NNN::C::strcpy(LOG.m_filename,	"Logs/%04d%02d%02d.log");
+	strcpy_s(LOG.m_filename,	"Logs/%04d%02d%02d.log");
 
-	LOG.m_console_silent_flag		= 0;
-	LOG.m_write_file_silent_flag	= 0;
+	LOG.m_console_Status			= (UINT)es_Log_Console::ALL;
+	LOG.m_console_SQL				= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Info				= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Notice			= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Warning			= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Debug				= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Error				= (UINT)es_Log_Console::ALL;
+	LOG.m_console_Fatal_Error		= (UINT)es_Log_Console::ALL;
+
 	LOG.m_write_file_interval		= 1000;
 
-	NNN::C::strcpy(LOG.m_timestamp_format,	"%Y.%m.%d %H:%M:%S");
+	strcpy_s(LOG.m_timestamp_format,	"%Y.%m.%d %H:%M:%S");
 
 	LOG.m_show_accept_client		= true;
 	LOG.m_show_disconnect_client	= true;
@@ -190,17 +197,52 @@ HRESULT s_Config::Read_Config(const WCHAR conf_filename[MAX_PATH], bool reset)
 			continue;
 		}
 
-		// 不输出的控制台信息
-		if(!_wcsicmp(w1, L"log.console_silent_flag"))
+		// 控制台信息（留空表示没有任何操作）
+		if(!_wcsicmp(w1, L"log.console.Status"))
 		{
-			LOG.m_console_silent_flag = NNN::Text::ToUINT(w2);
+			LOG.m_console_Status = NNN::Text::ToUINT(w2);
 			continue;
 		}
-
-		// 不写入文件的消息
-		if(!_wcsicmp(w1, L"log.write_file_silent_flag"))
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.SQL"))
 		{
-			LOG.m_write_file_silent_flag = NNN::Text::ToUINT(w2);
+			LOG.m_console_SQL = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Info"))
+		{
+			LOG.m_console_Info = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Notice"))
+		{
+			LOG.m_console_Notice = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Warning"))
+		{
+			LOG.m_console_Warning = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Debug"))
+		{
+			LOG.m_console_Debug = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Error"))
+		{
+			LOG.m_console_Error = NNN::Text::ToUINT(w2);
+			continue;
+		}
+		//--------------------------------------------------
+		if(!_wcsicmp(w1, L"log.console.Fatal_Error"))
+		{
+			LOG.m_console_Fatal_Error = NNN::Text::ToUINT(w2);
 			continue;
 		}
 

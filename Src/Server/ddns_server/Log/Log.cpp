@@ -51,28 +51,29 @@ HRESULT DoFinal()
 void DoWork()
 {
 	// 追加日志到文件
-	static UINT64 s_can_append_log_tick = 0;
+	static UINT64 s_can_DoWork_tick = 0;
 
-	if(s_can_append_log_tick <= NNN::Time::tick64())
+	if(s_can_DoWork_tick > NNN::Time::tick64())
+		return;
+
+	char	log_filename[MAX_PATH];
+	tm		tm_	= NNN::Time::get_current_tm();
+
+	sprintf_s(	log_filename,
+				Config::g_config->LOG.m_filename,
+				tm_.tm_year + 1900, tm_.tm_mon + 1, tm_.tm_mday );
+
 	{
 		NNN::Thread::c_Lock l(WRITE_FILE_BUFFER.m_cs);
 
 		if(!WRITE_FILE_BUFFER.m_buffer->empty())
 		{
-			char	log_filename[MAX_PATH];
-			tm		tm_	= NNN::Time::get_current_tm();
-
-			NNN::C::sprintf(log_filename,
-							_countof(log_filename),
-							Config::g_config->LOG.m_filename,
-							tm_.tm_year + 1900, tm_.tm_mon + 1, tm_.tm_mday);
-
 			NNN::IO::File::append_file(log_filename, WRITE_FILE_BUFFER.m_buffer->c_str());
 			WRITE_FILE_BUFFER.m_buffer->clear();
-
-			s_can_append_log_tick = NNN::Time::tick64() + Config::g_config->LOG.m_write_file_interval;
 		}
 	}
+
+	s_can_DoWork_tick = NNN::Time::tick64() + Config::g_config->LOG.m_write_file_interval;
 }
 
 
@@ -80,96 +81,112 @@ void DoWork()
  * 显示信息（通用函数）
  * _vShowMessage()
  *==============================================================*/
-static void _vShowMessage(es_MsgType flag, const char *format, va_list ap)
+static void _vShowMessage(es_MsgType type, const char *format, va_list ap)
 {
 	if(format == nullptr || format[0] == '\0')
 		return;
 
-	if(Config::g_config->LOG.m_console_silent_flag & (UINT)flag)
-		return;	// 不打印
+	UINT flag = UINT_MAX;
 
 	// 前缀
 	char prefix[100];
 	prefix[0] = '\0';
 
 	// header 前缀
-	switch(flag)
+	switch(type)
 	{
-	case es_MsgType::None:	// 直接 printf 更换
+	case es_MsgType::None:			// 普通消息
 		break;
 
-	case es_MsgType::Status:	// Bright Green（良好的东西）
-		NNN::C::strcpy(prefix, NNN_CL_STATUS "[Status] " NNN_ANSI_RESET);
+	case es_MsgType::Status:		// （良好的东西）
+		flag = Config::g_config->LOG.m_console_Status;
+		strcpy_s(prefix, NNN_CL_STATUS "[Status] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::SQL:	// Bright Violet（输出 SQL 相关的东西）
-		NNN::C::strcpy(prefix, NNN_CL_SQL "[SQL] " NNN_ANSI_RESET);
+	case es_MsgType::SQL:			// （输出 SQL 相关的东西）
+		flag = Config::g_config->LOG.m_console_SQL;
+		strcpy_s(prefix, NNN_CL_SQL "[SQL] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::Info:	// Bright White（变量信息）
-		NNN::C::strcpy(prefix, NNN_CL_INFO "[Info] " NNN_ANSI_RESET);
+	case es_MsgType::Info:			// （变量信息）
+		flag = Config::g_config->LOG.m_console_Info;
+		strcpy_s(prefix, NNN_CL_INFO "[Info] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::Notice:	// Bright White（轻于警告）
-		NNN::C::strcpy(prefix, NNN_CL_NOTICE "[Notice] " NNN_ANSI_RESET);
+	case es_MsgType::Notice:		// （轻于警告）
+		flag = Config::g_config->LOG.m_console_Notice;
+		strcpy_s(prefix, NNN_CL_NOTICE "[Notice] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::Warning:	// Bright Yellow
-		NNN::C::strcpy(prefix, NNN_CL_WARNING "[Warning] " NNN_ANSI_RESET);
+	case es_MsgType::Warning:
+		flag = Config::g_config->LOG.m_console_Warning;
+		strcpy_s(prefix, NNN_CL_WARNING "[Warning] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::Debug:	// Bright Cyan（重要的东西！）
-		NNN::C::strcpy(prefix, NNN_CL_DEBUG "[Debug] " NNN_ANSI_RESET);
+	case es_MsgType::Debug:
+		flag = Config::g_config->LOG.m_console_Debug;
+		strcpy_s(prefix, NNN_CL_DEBUG "[Debug] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::Error:	// Bright Red（常规错误）
-		NNN::C::strcpy(prefix, NNN_CL_ERROR "[Error] " NNN_ANSI_RESET);
+	case es_MsgType::Error:			// （常规错误）
+		flag = Config::g_config->LOG.m_console_Error;
+		strcpy_s(prefix, NNN_CL_ERROR "[Error] " NNN_ANSI_RESET);
 		break;
 
-	case es_MsgType::FatalError:	// Bright Red（致命错误，如果可能的话请调用 abort();）
-		NNN::C::strcpy(prefix, NNN_CL_FATAL_ERROR "[Fatal Error] " NNN_ANSI_RESET);
+	case es_MsgType::FatalError:	// （致命错误，如果可能的话请调用 abort();）
+		strcpy_s(prefix, NNN_CL_FATAL_ERROR "[Fatal Error] " NNN_ANSI_RESET);
 		break;
 	}	// switch
 
-	//========== 打印日志 ==========(Start)
-	std::string log;
-	log.reserve(1024);
+	if(flag == 0)
+		return;	// 不打印 + 不写入文件
 
-	char txt[4096];
-	NNN::C::strcpy(txt, prefix);
+	bool	flag_show_console	= (flag & (UINT)Config::es_Log_Console::Show);
+	bool	flag_write_file		= (flag & (UINT)Config::es_Log_Console::Write);
+
+	const size_t k_STACK_SIZE = 4096;
+	struct NNN::Buffer::s_StackBuffer<char, k_STACK_SIZE> log(2048);
+	size_t log_len = 0;
+
+	char txt[k_STACK_SIZE];
+	strcpy_s(txt, prefix);
 
 	size_t len = strlen(txt);
-	NNN::C::vsnprintf(txt + len, _countof(txt) - len, _countof(txt) - len - 1, format, ap);
+	vsnprintf_s(txt + len, _countof(txt) - len, _countof(txt) - len - 1, format, ap);
 
-	printf("%s", txt);
+	// 打印日志
+	if(flag_show_console)
+		printf("%s", txt);
 
-	char plain_txt[4096];
-	NNN::Console::remove_ansi_code(txt, plain_txt);
-	log += plain_txt;
-	//========== 打印日志 ==========(End)
-
-	//========== 写入文件 ==========(Start)
-	// 时间前缀
-	char time_prefix[100] = {};
-
-	if((Config::g_config->LOG.m_write_file_silent_flag & (UINT)flag) == 0)
+	// 写入文件
+	if(flag_write_file)
 	{
+		char plain_txt[k_STACK_SIZE];
+		NNN::Console::remove_ansi_code(txt, plain_txt);
+
+		len = strlen(plain_txt);
+		log.reserve(log_len + len);
+		CopyMemory(log.m_p + log_len, plain_txt, len);
+		log_len += len;
+
+		log.m_p[log_len] = '\0';
+
+		// 时间前缀
+		char time_prefix[100];
+		time_prefix[0] = '\0';
+
 		if(Config::g_config->LOG.m_timestamp_format[0] != '\0')
 		{
 			tm tm_ = NNN::Time::get_current_tm();
-			strftime(	time_prefix,
-						_countof(time_prefix),
-						Config::g_config->LOG.m_timestamp_format,
-						&tm_ );
-			NNN::C::strcat(time_prefix, " ");
+			strftime(time_prefix, _countof(time_prefix), Config::g_config->LOG.m_timestamp_format, &tm_);
+			strcat_s(time_prefix, " ");
 		}
 
-		NNN::Thread::c_Lock l(WRITE_FILE_BUFFER.m_cs);
-
+		WRITE_FILE_BUFFER.m_cs.Lock();
 		*WRITE_FILE_BUFFER.m_buffer += time_prefix;
-		*WRITE_FILE_BUFFER.m_buffer += log;
+		*WRITE_FILE_BUFFER.m_buffer += log.m_p;
+		WRITE_FILE_BUFFER.m_cs.UnLock();
 	}
-	//========== 写入文件 ==========(End)
 }
 
 

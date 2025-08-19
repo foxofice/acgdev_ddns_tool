@@ -16,6 +16,14 @@ namespace DDNS_Server
 namespace Config
 {
 
+enum struct es_Log_Console
+{
+	Show	= 1 << 0,	// 控制台显示
+	Write	= 1 << 1,	// 写入到文件
+
+	ALL		= Show | Write,
+};
+
 struct s_Config
 {
 	// 构造函数/析构函数
@@ -80,11 +88,17 @@ struct s_Config
 		// 日志文件名（YYYYMMDD）
 		char	m_filename[MAX_PATH];
 
-		// 不输出的控制台信息（同时不写入文件）
-		UINT	m_console_silent_flag		= 0;
-
-		// 不写入文件的消息
-		UINT	m_write_file_silent_flag	= 0;
+		// 控制台信息（留空表示没有任何操作）
+		//		+1	= 控制台显示
+		//		+2	= 写入到文件
+		UINT	m_console_Status			= (UINT)es_Log_Console::ALL;
+		UINT	m_console_SQL				= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Info				= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Notice			= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Warning			= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Debug				= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Error				= (UINT)es_Log_Console::ALL;
+		UINT	m_console_Fatal_Error		= (UINT)es_Log_Console::ALL;
 
 		// 写入日志文件的周期（ms），0 = 立即写入
 		UINT	m_write_file_interval		= 1000;

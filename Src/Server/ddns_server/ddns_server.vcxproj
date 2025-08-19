@@ -86,7 +86,6 @@
     <ClCompile Include="Log\Log.cpp" />
     <ClCompile Include="Packet\packet_parse.cpp" />
     <ClCompile Include="Packet\packet_send.cpp" />
-    <ClCompile Include="Session_KeyIV\Session_KeyIV.cpp" />
     <ClCompile Include="Socket\Socket.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -99,7 +98,6 @@
     <ClInclude Include="Log\Log.h" />
     <ClInclude Include="Packet\packet.h" />
     <ClInclude Include="Packet\packet_header.h" />
-    <ClInclude Include="Session_KeyIV\Session_KeyIV.h" />
     <ClInclude Include="Socket\Socket-inc.h" />
     <ClInclude Include="Socket\Socket.h" />
   </ItemGroup>

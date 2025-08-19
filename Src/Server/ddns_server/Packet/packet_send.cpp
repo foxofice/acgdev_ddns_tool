@@ -7,7 +7,7 @@
 
 #include "../Socket/Socket.h"
 #include "../Config/Config.h"
-#include "../Session_KeyIV/Session_KeyIV.h"
+#include "../ddns_server.h"
 #include "packet_header.h"
 #include "packet.h"
 
@@ -88,9 +88,10 @@ void send_KeyIV(struct NNN::Socket::s_SessionData *sd)
 	struct s_AES_KeyIV *key_iv = (struct s_AES_KeyIV*)sd->M_SD_DATA__KEY_IV.load();
 
 	if(key_iv == nullptr)
-		key_iv = Session_KeyIV::add_KeyIV(sd->m_session_id);
-
-	sd->M_SD_DATA__KEY_IV = (UINT64)key_iv;
+	{
+		key_iv = Create_KeyIV();
+		sd->M_SD_DATA__KEY_IV = (UINT64)key_iv;
+	}
 
 	CopyMemory(send_KeyIV,							key_iv->m_Key,	sizeof(key_iv->m_Key));
 	CopyMemory(send_KeyIV + sizeof(key_iv->m_Key),	key_iv->m_IV,	sizeof(key_iv->m_IV));

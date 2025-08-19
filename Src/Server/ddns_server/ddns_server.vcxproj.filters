@@ -20,9 +20,6 @@
     <ClCompile Include="Socket\Socket.cpp">
       <Filter>Socket</Filter>
     </ClCompile>
-    <ClCompile Include="Session_KeyIV\Session_KeyIV.cpp">
-      <Filter>Session_KeyIV</Filter>
-    </ClCompile>
     <ClCompile Include="imports.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,9 +37,6 @@
     </Filter>
     <Filter Include="Socket">
       <UniqueIdentifier>{13f32c8e-89da-4884-8a69-6ddf06b1e3ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Session_KeyIV">
-      <UniqueIdentifier>{ca707479-a456-4172-bbb2-b529be2e7a47}</UniqueIdentifier>
     </Filter>
     <Filter Include="Files">
       <UniqueIdentifier>{764af521-40a3-414b-92f4-6d34d59daef4}</UniqueIdentifier>
@@ -79,9 +73,6 @@
     </ClInclude>
     <ClInclude Include="Socket\Socket-inc.h">
       <Filter>Socket</Filter>
-    </ClInclude>
-    <ClInclude Include="Session_KeyIV\Session_KeyIV.h">
-      <Filter>Session_KeyIV</Filter>
     </ClInclude>
     <ClInclude Include="ddns_server.h" />
   </ItemGroup>
