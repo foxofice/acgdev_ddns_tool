@@ -9,6 +9,10 @@
 #ifndef _NNN___COMMON___COMMON_MACRO_H_
 #define _NNN___COMMON___COMMON_MACRO_H_
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif	// WIN32_LEAN_AND_MEAN
+
 // 平台定义
 #define NNN_PLATFORM_WIN32		1
 #define NNN_PLATFORM_ANDROID	2
@@ -77,42 +81,8 @@
 #define _STRINGIZE(x) _STRINGIZEX(x)
 #endif	// _STRINGIZE
 
-//========== 导入/导出 ==========(Start)
-// NNN_IMPORT
-#if defined(WIN32) || defined(_WIN32)
-	#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
-		#define NNN_IMPORT __declspec(dllimport)
-	#else	// NNN_PLATFORM_WP8
-		#define NNN_IMPORT
-	#endif	// NNN_PLATFORM_WIN32
-#else
-	// gcc
-	#define NNN_IMPORT	__attribute__ ((visibility("default")))
-#endif	// WIN32 || _WIN32
-
-// NNN_EXPORT
-#if defined(WIN32) || defined(_WIN32)
-	#define NNN_EXPORT __declspec(dllexport)
-#else
-	// gcc
-	#define NNN_EXPORT	__attribute__ ((visibility("default")))
-#endif	// WIN32 || _WIN32
-
-// NNN_DLLLOCAL
-#if defined(WIN32) || defined(_WIN32)
-	#define NNN_DLLLOCAL
-#else
-	#define NNN_DLLLOCAL	__attribute__ ((visibility("hidden")))
-#endif	// WIN32 || _WIN32
-
-#ifndef NNN_API
-	#ifdef NNN_EXPORTS
-		#define NNN_API NNN_EXPORT
-	#else
-		#define NNN_API NNN_IMPORT
-	#endif	// NNN_EXPORTS
-#endif	// !NNN_API
-//========== 导入/导出 ==========(End)
+// 导入/导出
+#include "NNN_API.h"
 
 //（平台目录 & 配置目录）
 #if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
@@ -524,27 +494,8 @@
 		}
 //========== 打印/写入错误日志 ==========(End)
 
-// 重定义 new
-#ifdef __cplusplus
-	#if defined(DEBUG) || defined(_DEBUG)
-		#if defined(WIN32) || defined(_WIN32)
-			#define new new(_CLIENT_BLOCK, __FILE__, __LINE__)
-
-			#define _CRTDBG_MAP_ALLOC
-			#include <crtdbg.h>
-		#endif	// WIN32 || _WIN32
-	#else
-		// 修正 Linux 的 STL 的 new 重载版本跟这里的 new 重载冲突
-		#if (NNN_PLATFORM == NNN_PLATFORM_LINUX)
-			#include <bits/stl_construct.h>
-			#include <bits/stl_tree.h>
-			#include <shared_mutex>
-		#endif	// NNN_PLATFORM_LINUX
-
-		#include <new>
-		#define new new(std::nothrow)
-	#endif	// DEBUG || _DEBUG
-#endif	// __cplusplus
+// 内存泄漏检测
+#include "../nnnLeakDetect/nnnLeakDetect.h"
 
 #ifdef __cplusplus
 #if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)

@@ -10,8 +10,7 @@
 #define _NNN___C___C_H_
 
 #include <type_traits>
-
-#include "common.h"
+#include <string.h>
 
 namespace NNN
 {
@@ -28,7 +27,7 @@ inline void strcpy(char *dst, const char *src)
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline void wcscpy(WCHAR *dst, const WCHAR *src)
+inline void wcscpy(wchar_t *dst, const wchar_t *src)
 {
 #if defined(WIN32) || defined(_WIN32)
 	wcscpy_s(dst, wcslen(src) + 1, src);
@@ -48,7 +47,7 @@ inline void STRCPY(T *dst, const T *src)
 	{
 		strcpy(dst, src);
 	}
-	else if constexpr (std::is_same_v<T, WCHAR>)
+	else if constexpr (std::is_same_v<T, wchar_t>)
 	{
 		wcscpy(dst, src);
 	}
@@ -65,7 +64,7 @@ inline void strcat(char *dst, const char *src)
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline void wcscat(WCHAR *dst, const WCHAR *src)
+inline void wcscat(wchar_t *dst, const wchar_t *src)
 {
 #if defined(WIN32) || defined(_WIN32)
 	wcscat_s(dst, wcslen(dst) + wcslen(src) + 1, src);
@@ -85,7 +84,7 @@ inline void STRCAT(T *dst, const T *src)
 	{
 		strcat(dst, src);
 	}
-	else if constexpr (std::is_same_v<T, WCHAR>)
+	else if constexpr (std::is_same_v<T, wchar_t>)
 	{
 		wcscat(dst, src);
 	}
@@ -103,7 +102,7 @@ inline size_t STRLEN(T const *str)
 	if constexpr (std::is_same_v<T, char>)
 		return ::strlen(str);
 
-	else if constexpr (std::is_same_v<T, WCHAR>)
+	else if constexpr (std::is_same_v<T, wchar_t>)
 		return wcslen(str);
 }
 #pragma endregion
@@ -120,7 +119,7 @@ inline int sprintf(char *_Buffer, size_t _BufferCount, const char *_Format, T_Ar
 }
 //--------------------------------------------------
 template <typename... T_Args>
-inline int swprintf(WCHAR *_Buffer, size_t _BufferCount, const WCHAR *_Format, T_Args... args)
+inline int swprintf(wchar_t *_Buffer, size_t _BufferCount, const wchar_t *_Format, T_Args... args)
 {
 #if defined(WIN32) || defined(_WIN32)
 	return ::swprintf_s(_Buffer, _BufferCount, _Format, args...);
@@ -142,7 +141,7 @@ inline int SPRINTF(T *_Buffer, size_t _BufferCount, const T *_Format, T_Args... 
 	if constexpr (std::is_same_v<T, char>)
 		return sprintf(_Buffer, _BufferCount, _Format, args...);
 
-	if constexpr (std::is_same_v<T, WCHAR>)
+	if constexpr (std::is_same_v<T, wchar_t>)
 		return swprintf(_Buffer, _BufferCount, _Format, args...);
 }
 #pragma endregion
@@ -173,7 +172,7 @@ inline int stricmp(const char *_String1, const char *_String2)
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline int wcsicmp(const WCHAR *_String1, const WCHAR *_String2)
+inline int wcsicmp(const wchar_t *_String1, const wchar_t *_String2)
 {
 #if defined(WIN32) || defined(_WIN32)
 	return _wcsicmp(_String1, _String2);
@@ -188,7 +187,7 @@ inline int STRICMP(const T *_String1, const T *_String2)
 	if constexpr (std::is_same_v<T, char>)
 		return stricmp(_String1, _String2);
 
-	if constexpr (std::is_same_v<T, WCHAR>)
+	if constexpr (std::is_same_v<T, wchar_t>)
 		return wcsicmp(_String1, _String2);
 }
 #pragma endregion
@@ -199,16 +198,16 @@ inline int vsnprintf(char *buffer, size_t sizeOfBuffer, size_t count, const char
 #if defined(WIN32) || defined(_WIN32)
 	return vsnprintf_s(buffer, sizeOfBuffer, count, format, argptr);
 #else
-	return vsnprintf(buffer, count, format, argptr);
+	return vsnprintf(buffer, sizeOfBuffer, count, format, argptr);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
-inline int vsnwprintf(WCHAR *buffer, size_t sizeOfBuffer, size_t count, const WCHAR *format, va_list argptr)
+inline int vsnwprintf(wchar_t *buffer, size_t sizeOfBuffer, size_t count, const wchar_t *format, va_list argptr)
 {
 #if defined(WIN32) || defined(_WIN32)
 	return _vsnwprintf_s(buffer, sizeOfBuffer, count, format, argptr);
 #else
-	return vsnwprintf(buffer, count, format, argptr);
+	return vsnwprintf(buffer, sizeOfBuffer, count, format, argptr);
 #endif	// WIN32 || _WIN32
 }
 //--------------------------------------------------
@@ -226,7 +225,7 @@ inline int VSNPRINTF(T *buffer, size_t sizeOfBuffer, size_t count, const T *form
 	if constexpr (std::is_same_v<T, char>)
 		return vsnprintf(buffer, sizeOfBuffer, count, format, argptr);
 
-	if constexpr (std::is_same_v<T, WCHAR>)
+	if constexpr (std::is_same_v<T, wchar_t>)
 		return vsnwprintf(buffer, sizeOfBuffer, count, format, argptr);
 }
 #pragma endregion
@@ -243,7 +242,7 @@ inline const T *STRRCHR(const T *str, T c)
 	if constexpr (std::is_same_v<T, char>)
 		return ::strrchr(str, (int)c);
 
-	else if constexpr (std::is_same_v<T, WCHAR>)
+	else if constexpr (std::is_same_v<T, wchar_t>)
 		return wcsrchr(str, c);
 }
 #pragma endregion

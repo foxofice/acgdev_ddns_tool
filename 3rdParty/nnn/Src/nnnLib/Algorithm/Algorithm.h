@@ -264,9 +264,11 @@ void	remove_ranges(	__inout T					*array_,
 	// 构造新 ranges
 	struct Math::s_Ranges new_ranges;
 
-	struct s_Range64 all_range;
-	all_range.m_min = 0;
-	all_range.m_max = array_size - 1;
+	struct s_Range64 all_range
+	{
+		.m_min = 0,
+		.m_max = array_size - 1,
+	};
 
 	new_ranges.add_range(all_range);
 

@@ -26,11 +26,6 @@ namespace Misc
 HRESULT			DoInit();
 HRESULT			DoFinal();
 
-#if defined(WIN32) || defined(_WIN32)
-// 内存泄漏检测
-NNN_API void	MemoryLeakCheck();
-#endif	// WIN32 || _WIN32
-
 // 获取 CPU 核心数
 NNN_API int		get_processors_count();
 

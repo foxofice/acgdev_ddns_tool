@@ -49,7 +49,7 @@ public:
 	DISALLOW_COPY_AND_ASSIGN(c_Server);
 
 	// 构造函数/析构函数
-	NNN_API							c_Server();
+	NNN_API							c_Server(size_t reserve_size = 4096);
 	NNN_API							~c_Server();
 
 	// 设置保活参数（Win 似乎无法使用系统的心跳包，需要 SetUseTcpKeepalive(false)）
@@ -167,8 +167,21 @@ public:
 	}
 
 	// 获取 session 列表
-	NNN_API void					get_sessions_list(__out NNN_HASH_MAP<UINT64, struct s_SessionData*> &list);
-	NNN_API void					get_sessions_list(__out struct Buffer::s_StackBuffer<struct s_SessionData*, 4096> &list, __out size_t &count);
+	template <size_t stack_size = 4096>
+	NNN_API inline void				get_sessions_list(__out struct Buffer::s_StackBuffer<struct s_SessionData*, stack_size> &list, __out size_t &count)
+	{
+		count = 0;
+
+		m_cs_sessions.Lock();
+
+		list.reserve(sizeof(void*) * m_sessions.size());
+
+		for(auto &kvp : m_sessions)
+			list.m_p[count++] = kvp.second;
+
+		m_cs_sessions.UnLock();
+	}
+	NNN_API void					get_sessions_list(__out std::vector<struct s_SessionData*> &list);
 
 protected:
 	// 工作者线程（IOCP/EPOLL 使用）
@@ -185,6 +198,9 @@ protected:
 	// 创建/释放 s_SessionData*（线程安全）
 	struct s_SessionData*	Create_session_data();
 	void					Release_session_data(struct s_SessionData *sd);
+
+	// 获取需要 keep_alive 的 session 列表
+	void					get_keepalive_sessions_list(__out std::vector<struct s_SessionData*> &list);
 
 #if NNN_SOCKET_SUPPORT_IOCP
 	// 初始化函数指针

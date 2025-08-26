@@ -27,6 +27,7 @@
 #include "Math/s_Ranges.h"
 #include "Misc/Misc.h"
 #include "Misc/CoreDump/CoreDump.h"
+#include "Misc/ATEXIT.h"
 #include "Net/Net.h"
 #include "Process/Process.h"
 #include "STL/STL.h"

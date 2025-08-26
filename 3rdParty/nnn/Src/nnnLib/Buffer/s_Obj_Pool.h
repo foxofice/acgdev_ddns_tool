@@ -13,6 +13,7 @@
 
 #include "../Time/Time_.h"
 #include "../Thread/s_FastAtomicLock.h"
+#include "s_StackBuffer.h"
 
 namespace NNN
 {
@@ -66,8 +67,8 @@ struct s_Obj_Pool
 	// 删除所有对象
 	void	delete_all_objs()
 	{
-		std::vector<T*> delete_list;
-		delete_list.reserve(m_pool.size());
+		struct Buffer::s_StackBuffer<T*, 4096>	delete_list(m_pool.size());
+		size_t									delete_count	= 0;
 
 		m_lock.Lock();
 
@@ -76,14 +77,15 @@ struct s_Obj_Pool
 			T *obj = m_pool.front().first;
 			m_pool.pop();
 
-			delete_list.push_back(std::move(obj));
+			delete_list.m_p[delete_count++] = obj;
 		}	// while
 
 		m_lock.UnLock();
 
-		for(T *obj : delete_list)
+		for(size_t i=0; i<delete_count; ++i)
 		{
-			SAFE_DELETE(obj);
+			T *obj = delete_list.m_p[i];
+			delete obj;
 		}	// for
 	}
 

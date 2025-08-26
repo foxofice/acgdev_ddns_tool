@@ -20,9 +20,9 @@ template <typename T, size_t stack_size>
 struct s_StackBuffer
 {
 	// 构造函数
-	inline s_StackBuffer(size_t init_buffer_len = 0)
+	inline			s_StackBuffer(size_t init_buffer_len = 0)
 	{
-		if(init_buffer_len <= _countof(m_short_buffer))
+		if(init_buffer_len <= stack_size)
 			m_p = m_short_buffer;
 		else
 		{
@@ -32,11 +32,11 @@ struct s_StackBuffer
 	}
 
 	// 保留最小存储长度
-	inline void	reserve(size_t len)
+	inline void		reserve(size_t len)
 	{
 		if(m_p == m_short_buffer)
 		{
-			if(len > _countof(m_short_buffer))
+			if(len > stack_size)
 			{
 				m_long_buffer.resize(len);
 				m_p = &m_long_buffer[0];
@@ -51,14 +51,20 @@ struct s_StackBuffer
 		}
 	}
 
+	// 获取缓冲区大小
+	inline size_t	get_buffer_len()
+	{
+		if(m_p == m_short_buffer)
+			return stack_size;
+		else
+			return m_long_buffer.size();
+	}
+
 	T				*m_p;
 
 protected:
 	T				m_short_buffer[stack_size];
 	std::vector<T>	m_long_buffer;
-
-private:
-	DISALLOW_COPY_AND_ASSIGN(s_StackBuffer);
 };
 
 }	// namespace Buffer

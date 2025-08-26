@@ -28,12 +28,12 @@ struct s_Ranges
 	NNN_API virtual void		Reset();
 
 	// 添加一个数据范围
-	NNN_API inline virtual void	add_range(struct s_Range64 &range)	{ add_range(std::move(range)); }
-	NNN_API virtual void		add_range(struct s_Range64 &&range);
+	NNN_API inline virtual void	add_range(const struct s_Range64 &range)	{ add_range(std::move(range)); }
+	NNN_API virtual void		add_range(const struct s_Range64 &&range);
 
 	// 移除一个数据范围
-	NNN_API inline virtual void	remove_range(struct s_Range64 &range)	{ remove_range(std::move(range)); }
-	NNN_API virtual void		remove_range(struct s_Range64 &&range);
+	NNN_API inline virtual void	remove_range(const struct s_Range64 &range)	{ remove_range(std::move(range)); }
+	NNN_API virtual void		remove_range(const struct s_Range64 &&range);
 
 	// 查找指定数值是否在范围列表中
 	NNN_API virtual bool		find(UINT64 value);

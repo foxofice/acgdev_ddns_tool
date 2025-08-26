@@ -10,7 +10,6 @@
 #define _NNNLIB___BUFFER___BUFFER_H_
 
 #include "s_RingBuffer.h"
-#include "s_FixRingBuffer.h"
 #include "s_BitBuffer.h"
 #include "s_Obj_Pool.h"
 #include "s_BinaryReader.h"
