@@ -59,8 +59,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>NNN_EXPORTS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4679</DisableSpecificWarnings>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -70,9 +70,9 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>NNN_EXPORTS;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4679</DisableSpecificWarnings>
       <ControlFlowGuard>false</ControlFlowGuard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies />

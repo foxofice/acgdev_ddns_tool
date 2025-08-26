@@ -197,10 +197,7 @@ HRESULT Stop()
 	Log::ShowStatus("Server is closing...\n");
 
 	// 关闭服务器
-	if(g_server->GetState() == NNN::Socket::c_Server::es_ServerState::Running)
-	{
-		V( g_server->CloseServer() );
-	}
+	V( g_server->CloseServer() );
 
 	g_running_state = es_State::Stopped;
 	Log::ShowStatus("Server is closed.\n");

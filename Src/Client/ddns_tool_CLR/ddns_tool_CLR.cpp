@@ -3,6 +3,7 @@
 // https://www.AcgDev.com/
 //--------------------------------------------------------------------------------------
 
+//#define NNN_USE_CRT_DEBUG
 #include "../../../3rdParty/nnn/Src/nnnSocketClient/nnnSocketClient.h"
 
 #include "../../Server/CLR.h"
@@ -12,6 +13,16 @@
 namespace ddns_tool_CLR
 {
 
+void OnConnected_CLR(const char *ip, USHORT port)
+{
+	CLR::Event_OnConnected(gcnew String(ip), port);
+}
+void OnDisconnecting_CLR()
+{
+	CLR::Event_OnDisconnecting();
+}
+
+#pragma managed(push, off)
 class NNN::Socket::c_Client	*g_client		= nullptr;
 
 // 登录服务端的 user/pwd
@@ -31,8 +42,7 @@ static void CALLBACK OnConnected(class NNN::Socket::c_Client *client)
 	struct NNN::Socket::s_SessionData *sd = client->GetSessionData();
 
 	char ip_buffer[46];
-
-	CLR::Event_OnConnected(gcnew String(sd->GetClientIP(ip_buffer)), sd->m_port);
+	OnConnected_CLR(sd->GetClientIP(ip_buffer), sd->m_port);
 }
 
 
@@ -43,7 +53,7 @@ static void CALLBACK OnConnected(class NNN::Socket::c_Client *client)
  *==============================================================*/
 static void CALLBACK OnDisconnecting(class NNN::Socket::c_Client* /*client*/)
 {
-	CLR::Event_OnDisconnecting();
+	OnDisconnecting_CLR();
 }
 
 
@@ -62,18 +72,14 @@ static void CALLBACK OnReceived(class NNN::Socket::c_Client* /*client*/)
  * DoInit()
  * DoFinal()
  *==============================================================*/
-bool CLR::DoInit()
+bool DoInit()
 {
-	HRESULT hr;
+	NNN::Leak_Detect::MemoryLeakCheck();
+	NNN::Misc::CoreDump::enable_core_dump(struct NNN::Misc::CoreDump::s_CoreDump_settings(L"ddns_tool.dmp"));
 
-	// 内存泄漏检测
-	NNN::Misc::MemoryLeakCheck();
-
-	hr = NNN::DoInit_nnnLib();
+	HRESULT hr = NNN::DoInit_nnnLib();
 	if(FAILED(hr))
 		return false;
-
-	NNN::Misc::CoreDump::enable_core_dump(struct NNN::Misc::CoreDump::s_CoreDump_settings(L"ddns_tool.dmp"));
 
 	hr = NNN::Socket::DoInit();
 	if(FAILED(hr))
@@ -99,7 +105,7 @@ bool CLR::DoInit()
 	return true;
 }
 //--------------------------------------------------
-void CLR::DoFinal()
+void DoFinal()
 {
 	SAFE_DELETE(g_client);
 	SAFE_DELETE(g_login_user);
@@ -108,6 +114,23 @@ void CLR::DoFinal()
 	// 清理
 	NNN::Socket::DoFinal();
 	NNN::DoFinal_nnnLib();
+}
+#pragma managed(pop)
+
+
+/*==============================================================
+ * 初始化/清理
+ * DoInit()
+ * DoFinal()
+ *==============================================================*/
+bool CLR::DoInit()
+{
+	return ddns_tool_CLR::DoInit();
+}
+//--------------------------------------------------
+void CLR::DoFinal()
+{
+	ddns_tool_CLR::DoFinal();
 }
 
 

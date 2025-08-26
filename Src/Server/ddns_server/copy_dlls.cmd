@@ -11,6 +11,7 @@ set DST_DIR=%2
 %EXE%	%SRC_DIR%\libcrypto.dll			%DST_DIR%\libcrypto.dll
 %EXE%	%SRC_DIR%\libssl.dll			%DST_DIR%\libssl.dll
 %EXE%	%SRC_DIR%\lz4.dll				%DST_DIR%\lz4.dll
+%EXE%	%SRC_DIR%\nnnLeakDetect.dll		%DST_DIR%\nnnLeakDetect.dll
 %EXE%	%SRC_DIR%\nnnLib.dll			%DST_DIR%\nnnLib.dll
 %EXE%	%SRC_DIR%\nnnSocket.dll			%DST_DIR%\nnnSocket.dll
 %EXE%	%SRC_DIR%\nnnSocketServer.dll	%DST_DIR%\nnnSocketServer.dll

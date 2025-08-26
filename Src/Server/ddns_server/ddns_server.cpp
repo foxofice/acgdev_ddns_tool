@@ -3,6 +3,7 @@
 // https://www.AcgDev.com/
 //--------------------------------------------------------------------------------------
 
+//#define NNN_USE_CRT_DEBUG
 #include "../../../3rdParty/nnn/Src/nnnSocketServer/nnnSocketServer.h"
 
 #include "../Common/Common.h"
@@ -13,13 +14,19 @@
 #include "Packet/packet.h"
 #include "ddns_server.h"
 
+static void cleanup();
+
 namespace DDNS_Server
 {
 
-std::atomic<es_State>								g_running_state	= es_State::Stopped;	// 服务器运行状态
+std::atomic<es_State>								g_running_state		= es_State::Stopped;	// 服务器运行状态
 
 // 对象池
 struct NNN::Buffer::s_Obj_Pool<struct s_AES_KeyIV>	g_KeyIV_pool;
+
+static std::atomic<bool>							g_s_exec_clean_up	= false;	// 已经执行了 clean_up
+static std::atomic<bool>							g_s_exit_loop_done	= false;	// 退出循环完成
+static std::atomic<bool>							g_s_clean_up_done	= false;	// clean_up 完成
 
 /*==============================================================
  * 显示 LOGO
@@ -132,7 +139,7 @@ void run_server()
 		if(!is_busy)
 			NNN::Thread::Sleep(1);
 		//========== 执行周期性工作 ==========(End)
-	}
+	}	// while
 
 	// 关闭服务器
 	V( Socket::Stop() );
@@ -169,9 +176,24 @@ void Release_KeyIV(struct s_AES_KeyIV *KeyIV)
  *==============================================================*/
 void cleanup()
 {
+	bool val = false;
+	if(!DDNS_Server::g_s_exec_clean_up.compare_exchange_strong(val, true))
+		return;	// 保证只执行一次
+
+	DDNS_Server::g_running_state = DDNS_Server::es_State::Exiting;
+
+	DDNS_Server::g_s_exit_loop_done.wait(false, std::memory_order_acquire);	// false 则等待
+
 	// 清理
 	DDNS_Server::DoFinal();
 	NNN::DoFinal_nnnLib();
+
+	DDNS_Server::g_s_clean_up_done.store(true, std::memory_order_release);
+	DDNS_Server::g_s_clean_up_done.notify_one();
+
+	const char log[] = "clean_up done\n";
+	printf(log);
+	OutputDebugStringA(log);
 }
 
 
@@ -181,15 +203,11 @@ void cleanup()
  *==============================================================*/
 int main()
 {
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
-	// 内存泄漏检测
-	NNN::Misc::MemoryLeakCheck();
-#endif	// NNN_PLATFORM_WIN32
-
-	NNN::DoInit_nnnLib();
+	NNN::Leak_Detect::MemoryLeakCheck();
 	NNN::Misc::CoreDump::enable_core_dump(NNN::Misc::CoreDump::s_CoreDump_settings(L"ddns_server.dmp"));
+	NNN::DoInit_nnnLib();
 
-	atexit(cleanup);
+	NNN::Misc::atexit(cleanup);
 
 	// 初始化
 	if(FAILED(DDNS_Server::DoInit()))
@@ -197,6 +215,18 @@ int main()
 
 	// 运行 Server
 	DDNS_Server::run_server();
+
+	DDNS_Server::g_s_exit_loop_done.store(true, std::memory_order_release);
+	DDNS_Server::g_s_exit_loop_done.notify_one();
+
+	if(DDNS_Server::g_s_exec_clean_up)
+		DDNS_Server::g_s_clean_up_done.wait(false, std::memory_order_acquire);	// false 则等待
+	else
+		cleanup();
+
+	const char log[] = "exit loop done\n";
+	printf(log);
+	OutputDebugStringA(log);
 
 	return 0;
 }

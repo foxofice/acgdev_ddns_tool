@@ -10,7 +10,7 @@
     <ApplicationIcon>Pic\logo.ico</ApplicationIcon>
     <BaseOutputPath>..\..\..\bin\x64\</BaseOutputPath>
     <Title></Title>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
