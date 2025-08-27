@@ -14,7 +14,9 @@
 #include "Packet/packet.h"
 #include "ddns_server.h"
 
-static void cleanup();
+static std::atomic<bool>							g_s_exec_clean_up	= false;	// 已经执行了 clean_up
+static std::atomic<bool>							g_s_exit_loop_done	= false;	// 退出循环完成
+static std::atomic<bool>							g_s_clean_up_done	= false;	// clean_up 完成
 
 namespace DDNS_Server
 {
@@ -23,10 +25,6 @@ std::atomic<es_State>								g_running_state		= es_State::Stopped;	// 服务器运行
 
 // 对象池
 struct NNN::Buffer::s_Obj_Pool<struct s_AES_KeyIV>	g_KeyIV_pool;
-
-static std::atomic<bool>							g_s_exec_clean_up	= false;	// 已经执行了 clean_up
-static std::atomic<bool>							g_s_exit_loop_done	= false;	// 退出循环完成
-static std::atomic<bool>							g_s_clean_up_done	= false;	// clean_up 完成
 
 /*==============================================================
  * 显示 LOGO
@@ -177,19 +175,19 @@ void Release_KeyIV(struct s_AES_KeyIV *KeyIV)
 void cleanup()
 {
 	bool val = false;
-	if(!DDNS_Server::g_s_exec_clean_up.compare_exchange_strong(val, true))
+	if(!g_s_exec_clean_up.compare_exchange_strong(val, true))
 		return;	// 保证只执行一次
 
 	DDNS_Server::g_running_state = DDNS_Server::es_State::Exiting;
 
-	DDNS_Server::g_s_exit_loop_done.wait(false, std::memory_order_acquire);	// false 则等待
+	g_s_exit_loop_done.wait(false, std::memory_order_acquire);	// false 则等待
 
 	// 清理
 	DDNS_Server::DoFinal();
 	NNN::DoFinal_nnnLib();
 
-	DDNS_Server::g_s_clean_up_done.store(true, std::memory_order_release);
-	DDNS_Server::g_s_clean_up_done.notify_one();
+	g_s_clean_up_done.store(true, std::memory_order_release);
+	g_s_clean_up_done.notify_one();
 
 	const char log[] = "clean_up done\n";
 	printf(log);
@@ -216,11 +214,11 @@ int main()
 	// 运行 Server
 	DDNS_Server::run_server();
 
-	DDNS_Server::g_s_exit_loop_done.store(true, std::memory_order_release);
-	DDNS_Server::g_s_exit_loop_done.notify_one();
+	g_s_exit_loop_done.store(true, std::memory_order_release);
+	g_s_exit_loop_done.notify_one();
 
-	if(DDNS_Server::g_s_exec_clean_up)
-		DDNS_Server::g_s_clean_up_done.wait(false, std::memory_order_acquire);	// false 则等待
+	if(g_s_exec_clean_up)
+		g_s_clean_up_done.wait(false, std::memory_order_acquire);	// false 则等待
 	else
 		cleanup();
 
