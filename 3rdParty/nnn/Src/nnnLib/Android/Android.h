@@ -11,7 +11,7 @@
 
 #include "../../common/common.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
+#ifdef NNN_ANDROID
 
 #include <jni.h>
 #include <android/log.h>
@@ -42,6 +42,6 @@ inline AAssetManager*	GetAssetManager()					{ return g_mgr; }
 }	// namespace Android
 }	// namespace NNN
 
-#endif	// NNN_PLATFORM_ANDROID
+#endif	// NNN_ANDROID
 
 #endif	// _NNNLIB___ANDROID___ANDROID_H_

@@ -12,9 +12,9 @@
 #include "common-macro.h"
 #include "common-inl.h"
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 #include <Windows.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #include "WinStyle.h"
 #include "WinStyle/WinError.h"
@@ -22,10 +22,6 @@
 #include "WinStyle-expand.h"
 #include "s_Unknown.h"
 
-#include "wp8_inc.h"
 #include "C.h"
-
-#undef min	// use __min instead
-#undef max	// use __max instead
 
 #endif	/* _NNN___COMMON___COMMON_H_ */

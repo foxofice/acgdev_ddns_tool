@@ -11,16 +11,13 @@
 
 #include <string>
 
-#include "../../common/common-macro.h"
-
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#include <WinSock2.h>
 	#include <ws2ipdef.h>
 	#include <WS2tcpip.h>
-	#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
-		#include <MSWSock.h>
-		#include <ioapiset.h>
-	#endif	// NNN_PLATFORM_WIN32
+
+	#include <MSWSock.h>
+	#include <ioapiset.h>
 #else
 	#include <errno.h>
 	#include <sys/socket.h>
@@ -37,11 +34,11 @@
 	//	#include <sys/sockio.h>	// SIOCGIFCONF on Solaris, maybe others?
 	//#endif
 	//#include <asm/ioctls.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
+#ifdef NNN_ANDROID
 #include <sys/select.h>
-#endif	// NNN_PLATFORM_ANDROID
+#endif	// NNN_ANDROID
 
 #include "../../common/common.h"
 

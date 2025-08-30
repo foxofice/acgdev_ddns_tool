@@ -16,10 +16,10 @@ namespace NNN
 namespace Process
 {
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 // 设置进程亲缘性（用 | 叠加每颗核心。0 = 全部，-1 = 最后一颗核心）
 NNN_API BOOL	set_process_affinity_mask(int process_affinity_mask = -1);
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 
 // 获取进程 ID（返回 -1 时，表示进程不存在）
 // （Win 不区分大小写，Linux 区分大小写）

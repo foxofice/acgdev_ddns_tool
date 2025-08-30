@@ -11,9 +11,9 @@
 
 #include "../../common/common-macro.h"
 
-#if !defined(WIN32) && !defined(_WIN32)
+#ifndef _WIN32
 #include <pthread.h>
-#endif	// !WIN32 && !_WIN32
+#endif	// !_WIN32
 
 #include "../../common/common.h"
 

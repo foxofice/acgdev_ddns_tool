@@ -14,10 +14,10 @@
 
 #include "../../common/common-macro.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
+#ifdef NNN_ANDROID
 #include <jni.h>
 #include <android/log.h>
-#endif	// NNN_PLATFORM_ANDROID
+#endif	// NNN_ANDROID
 
 #include "../STL/STL.h"
 #include "Text-inc.h"

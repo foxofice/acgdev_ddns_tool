@@ -11,7 +11,7 @@
 
 #include "../../common/common.h"
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 
 #include <string>
 
@@ -175,6 +175,6 @@ extern struct s_CPU_flags	g_CPU_flags;
 }	// namespace Misc
 }	// namespace NNN
 
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 
 #endif	// _NNNLIB___MISC___S_CPU_FLAGS_H_

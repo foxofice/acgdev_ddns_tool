@@ -11,9 +11,9 @@
 
 #include "../../common/common.h"
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 #include <Dbghelp.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #include "s_CPU_Flags.h"
 
@@ -32,7 +32,7 @@ NNN_API int		get_processors_count();
 // 获取硬件线程数
 NNN_API int		get_hardware_concurrency();
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_LINUX)
+#if defined(NNN_WINDOWS) || defined(NNN_LINUX)
 // 获取当前的 CPU 占用率
 NNN_API float	get_cpu_usage();
 
@@ -41,14 +41,12 @@ NNN_API UINT64	get_physical_memory();
 
 // 获取当前的剩余 RAM（物理内存）大小（字节）
 NNN_API UINT64	get_avail_physical_memory();
-#endif	// NNN_PLATFORM_WIN32 || NNN_PLATFORM_LINUX
+#endif	// NNN_WINDOWS || NNN_LINUX
 
-#if	(NNN_PLATFORM == NNN_PLATFORM_WIN32)	||	\
-	(NNN_PLATFORM == NNN_PLATFORM_WP8)		||	\
-	(NNN_PLATFORM == NNN_PLATFORM_LINUX)
+#if	defined(NNN_WINDOWS) ||	defined(NNN_LINUX)
 // 获取 cpuid
 NNN_API void	cpuid(unsigned int CPUInfo[4], unsigned int InfoType);
-#endif	// NNN_PLATFORM
+#endif	// NNN_WINDOWS || NNN_LINUX
 
 // 获取 CPU 指令周期数
 NNN_API UINT64	rdtsc();

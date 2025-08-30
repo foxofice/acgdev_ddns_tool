@@ -35,8 +35,8 @@
 #include "Web/Web.h"
 
 #include "Thread/Thread.h"
-#include "Thread/s_AtomicLock.h"
-#include "Thread/s_FastAtomicLock.h"
+#include "Thread/s_Atomic_SpinLock.h"
+#include "Thread/c_Atomic_Lock.h"
 #include "Thread/s_CriticalSection.h"
 #include "Thread/c_Simple_RWLock.h"
 #include "Thread/c_Lock.h"

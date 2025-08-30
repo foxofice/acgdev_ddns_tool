@@ -9,12 +9,7 @@
 #ifndef _NNNSOCKET___SOCKET_H_
 #define _NNNSOCKET___SOCKET_H_
 
-#include <vector>
-
 #include "nnnSocket-inc.h"
-
-#include "../../common/common.h"
-
 #include "nnnSocket-macro.h"
 #include "nnnSocket-gcc.h"
 
@@ -28,9 +23,9 @@ NNN_API HRESULT		DoInit();
 NNN_API HRESULT		DoFinal();
 
 // 枚举所有协议（成功的话，dwCount 将返回协议数）
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 NNN_API HRESULT		EnumProtocols(__out WSAPROTOCOL_INFO **wsapi, __out DWORD *dwCount);
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 // 建立套接字
 NNN_API HRESULT		Socket(	__out SOCKET	&s,
@@ -157,14 +152,14 @@ NNN_API int			get_system_recv_buffer_size(SOCKET s);
 	如果没有收到回应，则 <intv> 秒钟后重发保活包；
 	连续 <cnt> 次没收到保活包，视为连接失效（对于 Win 系统，2000/XP/2003 默认发 5 次，Vista 后默认发 10 次）
 */
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID) || (NNN_PLATFORM == NNN_PLATFORM_LINUX)
+#if defined(NNN_ANDROID) || defined(NNN_LINUX)
 NNN_API HRESULT		SetKeepAlive(	SOCKET				s,
 									bool				keep_alive		= true,
 									int					idle			= 10,
 									int					intv			= 2,
 									int					cnt				= 3,
 									void/*OVERLAPPED*/	*pOverlapped	= nullptr );
-#endif	// NNN_PLATFORM_ANDROID || NNN_PLATFORM_LINUX
+#endif	// NNN_ANDROID || NNN_LINUX
 
 // gethostbyaddr
 // getservbyname
@@ -285,10 +280,10 @@ NNN_API inline const char*	GetErrorTxt(DWORD dwError, __out char error_msg_tmp[6
 	case WSAESHUTDOWN:			return "WSAESHUTDOWN";
 	case WSAEWOULDBLOCK:		return "WSAEWOULDBLOCK";	// 经常发生的错误？
 	case WSANOTINITIALISED:		return "WSANOTINITIALISED";
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	case WSA_IO_PENDING:		return "WSA_IO_PENDING";	// 经常发生的错误
 	case WSA_OPERATION_ABORTED:	return "WSA_OPERATION_ABORTED";
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 	case WSAEACCES:				return "WSAEACCES";
 	case WSAEADDRNOTAVAIL:		return "WSAEADDRNOTAVAIL";

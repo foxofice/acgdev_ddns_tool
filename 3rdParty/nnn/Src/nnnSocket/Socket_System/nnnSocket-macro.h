@@ -13,30 +13,28 @@
 
 #include "../../common/common-macro.h"
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#ifndef ETHER_ADDR_LEN
 	#define ETHER_ADDR_LEN 6
 	#endif	// ETHER_ADDR_LEN
 #else
 	#include <net/ethernet.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 // 支持的 I/O 模型
 #define NNN_SOCKET_SUPPORT_SELECT	1
 #define NNN_SOCKET_SUPPORT_IOCP		0
 #define NNN_SOCKET_SUPPORT_EPOLL	0
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 #undef NNN_SOCKET_SUPPORT_IOCP
 #define NNN_SOCKET_SUPPORT_IOCP		1
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 
-#if (NNN_PLATFORM == NNN_PLATFORM_LINUX)	||	\
-	(NNN_PLATFORM == NNN_PLATFORM_MAC)		||	\
-	(NNN_PLATFORM == NNN_PLATFORM_ANDROID)
+#if defined(NNN_LINUX) || defined(NNN_MAC) || defined(NNN_ANDROID)
 #undef NNN_SOCKET_SUPPORT_EPOLL
 #define NNN_SOCKET_SUPPORT_EPOLL	1
-#endif	// NNN_PLATFORM_LINUX || NNN_PLATFORM_MAC || NNN_PLATFORM_ANDROID
+#endif	// NNN_LINUX || NNN_MAC || NNN_ANDROID
 
 #define NNN_MAX_IP_COUNT				50
 

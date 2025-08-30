@@ -39,11 +39,11 @@ NNN_API void	get_fixed_path(const char *path, __out char fixed_path[MAX_PATH]);
 // 把路径转换为相对路径
 NNN_API void	get_relative_path(const WCHAR *full_path, const WCHAR *dir_path, __out WCHAR output_path[MAX_PATH]);
 NNN_API void	get_relative_path(const char *full_path, const char *dir_path, __out char output_path[MAX_PATH]);
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 NNN_API void	get_relative_path(const WCHAR *path, __out WCHAR output_path[MAX_PATH]);
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 // 设置/获取文件（或文件夹）的属性
 NNN_API HRESULT	set_path_attrib(const WCHAR *path, DWORD attrib);
 NNN_API HRESULT	get_path_attrib(const WCHAR *path, __out DWORD *attrib);
@@ -57,14 +57,14 @@ NNN_API HRESULT	get_path_time(	const WCHAR		*path,
 								__out FILETIME	*create_time,
 								__out FILETIME	*access_time,
 								__out FILETIME	*write_time );
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 // 创建目录
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#define MODE_LINUX_DEFAULT	0
 #else
 	#define MODE_LINUX_DEFAULT	S_IRWXU | S_IRWXG | S_IRWXO
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 NNN_API bool	create_directory(const WCHAR *dir, USHORT mode_linux = MODE_LINUX_DEFAULT);
 NNN_API bool	create_directory(const char *dir, USHORT mode_linux = MODE_LINUX_DEFAULT);
 #undef MODE_LINUX_DEFAULT

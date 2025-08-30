@@ -15,6 +15,8 @@
 
 #include "../Math/s_Ranges.h"
 
+#include "unique_set.h"
+
 namespace NNN
 {
 namespace Algorithm
@@ -124,55 +126,7 @@ HRESULT		MoveDownItem(std::vector<T> &v, int index, __inout UINT &count, __out i
 	return S_OK;
 }
 
-// 生成「添加列表」（new_sort_unique_array 存在，但 old_sort_unique_array 不存在）
-template <typename T>
-void	gen_Add_List(	const T			*new_sort_unique_array,
-						size_t			new_sort_unique_array_size,
-						const T			*old_sort_unique_array,
-						size_t			old_sort_unique_array_size,
-						__out T			*add_list,
-						__out size_t	&add_list_count )
-{
-	add_list_count = 0;
 
-	for(size_t i=0, m=0; i<new_sort_unique_array_size; ++i)
-	{
-		T val = new_sort_unique_array[i];
-
-		if(	(m + 1 > old_sort_unique_array_size)	||
-			val != old_sort_unique_array[m] )
-		{
-			add_list[add_list_count++] = val;
-		}
-		else
-			++m;
-	}	// for
-}
-
-// 生成「删除列表」（old_sort_unique_array 存在，但 new_sort_unique_array 不存在）
-template <typename T>
-void	gen_Del_List(	const T			*new_sort_unique_array,
-						size_t			new_sort_unique_array_size,
-						const T			*old_sort_unique_array,
-						size_t			old_sort_unique_array_size,
-						__out T			*del_list,
-						__out size_t	&del_list_count )
-{
-	del_list_count = 0;
-
-	for(size_t i=0, m=0; i<old_sort_unique_array_size; ++i)
-	{
-		T val = old_sort_unique_array[i];
-
-		if(	(m + 1 > new_sort_unique_array_size)	||
-			val != new_sort_unique_array[m] )
-		{
-			del_list[del_list_count++] = val;
-		}
-		else
-			++m;
-	}	// for
-}
 
 // 从一个数组中移除一些数值
 template <typename T>
@@ -296,43 +250,6 @@ void	remove_ranges(	__inout T					*array_,
 }
 
 }	// namespace Vector
-
-namespace Map
-{
-
-// 生成「添加列表」（new_list 存在，但 old_list 不存在）
-template <typename T_new, typename T_old, typename T_key>
-void	gen_Add_List(const T_new &new_list, const T_old &old_list, __out std::vector<T_key> &add_list)
-{
-	add_list.clear();
-	add_list.reserve(new_list.size());
-
-	for(auto &kvp: new_list)
-	{
-		T_key key = (T_key)kvp.first;
-
-		if(old_list.find(key) == old_list.end())
-			add_list.push_back(std::move(key));
-	}	// for
-}
-
-// 生成「删除列表」（old_list 存在，但 new_list 不存在）
-template <typename T_new, typename T_old, typename T_key>
-void	gen_Del_List(const T_new &new_list, const T_old &old_list, __out std::vector<T_key> &del_list)
-{
-	del_list.clear();
-	del_list.reserve(old_list.size());
-
-	for(auto &kvp: old_list)
-	{
-		T_key key = (T_key)kvp.first;
-
-		if(new_list.find(key) == new_list.end())
-			del_list.push_back(std::move(key));
-	}	// for
-}
-
-}	// namespace Map
 
 }	// namespace Algorithm
 }	// namespace NNN

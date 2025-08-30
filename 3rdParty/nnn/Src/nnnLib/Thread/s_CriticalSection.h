@@ -11,9 +11,9 @@
 
 #include "../../common/common-macro.h"
 
-#if (NNN_PLATFORM != NNN_PLATFORM_WIN32) && (NNN_PLATFORM != NNN_PLATFORM_WP8)
+#ifndef NNN_WINDOWS
 #include <pthread.h>
-#endif	// !NNN_PLATFORM_WIN32 && !NNN_PLATFORM_WP8
+#endif	// !NNN_WINDOWS
 
 #include "../../common/common.h"
 
@@ -36,9 +36,9 @@ struct s_CriticalSection
 	NNN_API bool	TryLock();
 
 protected:
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#ifdef NNN_WINDOWS
 	CRITICAL_SECTION	m_cs;
-#elif(NNN_PLATFORM == NNN_PLATFORM_ANDROID) || (NNN_PLATFORM == NNN_PLATFORM_IOS)
+#elif defined(NNN_ANDROID) || defined(NNN_IOS)
 	pthread_mutex_t		m_mutex;
 #else
 	//bool					m_use_mutex				= false;
@@ -48,7 +48,7 @@ protected:
 	//UINT64				m_spinlock_thread_id	= 0;	// spinlock 锁定线程
 
 	pthread_mutex_t		m_mutex;
-#endif	// NNN_PLATFORM
+#endif	// NNN_WINDOWS
 };
 
 }	// namespace Thread

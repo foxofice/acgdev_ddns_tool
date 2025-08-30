@@ -12,10 +12,9 @@
 #include <stack>
 #include <map>
 
-#include "../../common/common.h"
-#if !defined(WIN32) && !defined(_WIN32)
+#ifndef _WIN32
 #include <pthread.h>
-#endif	// !WIN32 && !_WIN32
+#endif	// !_WIN32
 
 #include "../../nnnLib/nnnLib.h"
 #include "../../nnnSocket/Socket_System/s_SessionData.h"
@@ -172,14 +171,14 @@ public:
 	{
 		count = 0;
 
-		m_cs_sessions.Lock();
+		m_lock_sessions.Lock();
 
 		list.reserve(sizeof(void*) * m_sessions.size());
 
 		for(auto &kvp : m_sessions)
 			list.m_p[count++] = kvp.second;
 
-		m_cs_sessions.UnLock();
+		m_lock_sessions.UnLock();
 	}
 	NNN_API void					get_sessions_list(__out std::vector<struct s_SessionData*> &list);
 
@@ -270,7 +269,7 @@ protected:
 	} KEEP_ALIVE;
 
 	NNN_HASH_MAP<UINT64, struct s_SessionData*>				m_sessions;			// session_id -> 会话连接
-	struct Thread::s_FastAtomicLock							m_cs_sessions;		// 锁定 m_sessions
+	class Thread::c_Atomic_Lock								m_lock_sessions;	// 锁定 m_sessions
 	struct NNN::Buffer::s_Obj_Pool<struct s_SessionData>	m_sessions_pool;	// （不使用的）session 对象池
 
 	// 工作者线程（IOCP/EPOLL 使用）

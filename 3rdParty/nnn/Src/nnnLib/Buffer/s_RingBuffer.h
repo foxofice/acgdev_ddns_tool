@@ -11,8 +11,7 @@
 
 #include <atomic>
 
-#include "../Thread/s_FastAtomicLock.h"
-#include "../Thread/s_CriticalSection.h"
+#include "../Thread/c_Atomic_Lock.h"
 
 namespace NNN
 {
@@ -100,15 +99,15 @@ protected:
 
 	struct
 	{
-		size_t								m_buffer_size	= 0;		// 写入缓冲区大小
-		BYTE								*m_buffer		= nullptr;	// 写入缓冲区
+		size_t						m_buffer_size	= 0;		// 写入缓冲区大小
+		BYTE						*m_buffer		= nullptr;	// 写入缓冲区
 
-		struct Thread::s_FastAtomicLock		m_lock;						// 锁定成员变量访问
-		struct Thread::s_CriticalSection	m_lock_reading;				// 锁定现有数据（IO操作）
-		struct Thread::s_CriticalSection	m_lock_writing;				// 锁定空白数据（IO操作）
+		class Thread::c_Atomic_Lock	m_lock;						// 锁定成员变量访问
+		class Thread::c_Atomic_Lock	m_lock_reading;				// 锁定现有数据（IO操作）
+		class Thread::c_Atomic_Lock	m_lock_writing;				// 锁定空白数据（IO操作）
 
-		size_t								m_data_offset	= 0;		// 有效数据的位置
-		size_t								m_data_len		= 0;		// 有效数据的长度
+		size_t						m_data_offset	= 0;		// 有效数据的位置
+		size_t						m_data_len		= 0;		// 有效数据的长度
 	} DATA;
 };
 

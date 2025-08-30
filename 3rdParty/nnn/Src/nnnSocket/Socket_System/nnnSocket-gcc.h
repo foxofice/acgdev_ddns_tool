@@ -9,11 +9,9 @@
 #ifndef _NNNSOCKET___NNNSOCKET_GCC_H_
 #define _NNNSOCKET___NNNSOCKET_GCC_H_
 
-#include "../../common/common-macro.h"
-#include "nnnSocket-inc.h"
-
-#if !defined(WIN32) && !defined(_WIN32)
+#ifndef _WIN32
 #include "../../common/common.h"
+#include "nnnSocket-inc.h"
 
 typedef int	SOCKET;
 
@@ -126,6 +124,6 @@ typedef int	SOCKET;
 inline DWORD WSAGetLastError()	{ return (DWORD)errno; }
 */
 
-#endif	// !WIN32 && !_WIN32
+#endif	// !_WIN32
 
 #endif	// _NNNSOCKET___NNNSOCKET_GCC_H_

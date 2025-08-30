@@ -11,9 +11,9 @@
 
 #include "../../../common/common.h"
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 #include <Dbghelp.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 namespace NNN
 {
@@ -26,22 +26,18 @@ struct s_CoreDump_settings
 {
 	// 构造函数
 	NNN_API			s_CoreDump_settings() {}
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	NNN_API			s_CoreDump_settings(const WCHAR filename[MAX_PATH], bool filenmae_add_datetime = true);
-#endif	// WIN32 || _WIN32
 
-#if defined(WIN32) || defined(_WIN32)
 	// 获取 minidmp 文件名
 	NNN_API void	get_filename(__out WCHAR filename[MAX_PATH]);
-#endif	// WIN32 || _WIN32
 
-#if defined(WIN32) || defined(_WIN32)
 	bool			m_filenmae_add_datetime	= true;						// minidmp 文件名是否自动加上日期时间
 	WCHAR			m_filename[MAX_PATH]	= L"core_dump.dmp";			// core dump 的文件名
 	MINIDUMP_TYPE	m_minidump_type			= MiniDumpWithFullMemory;	// MINIDUMP_TYPE 的组合
 #else
 	size_t			m_core_dump_max_size	= SIZE_MAX;			// core dump 的最大大小（字节）
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 };
 
 }	// namespace CoreDump

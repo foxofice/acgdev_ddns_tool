@@ -11,10 +11,6 @@
 
 #include <string>
 
-#include "../../../common/common.h"
-
-#if (NNN_PLATFORM != NNN_PLATFORM_WP8)
-
 #include "../../Thread/s_CriticalSection.h"
 
 namespace NNN
@@ -77,19 +73,17 @@ protected:
 	es_FileMappingType					m_type					= es_FileMappingType::Unknown;
 	WCHAR								m_filename[MAX_PATH];
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 	HANDLE								m_fileHandle			= nullptr;
 	HANDLE								m_fileMapping			= nullptr;
 #else
 	int									m_fd					= -1;
 	UINT64								m_map_size				= 0;
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 };
 
 }	// namespace File
 }	// namespace IO
 }	// namespace NNN
-
-#endif	// NNN_PLATFORM
 
 #endif	// _NNNLIB___IO___FILE___C_FILEMAPPING_H_

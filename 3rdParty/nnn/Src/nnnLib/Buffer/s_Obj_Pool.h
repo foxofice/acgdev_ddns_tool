@@ -12,7 +12,7 @@
 #include <queue>
 
 #include "../Time/Time_.h"
-#include "../Thread/s_FastAtomicLock.h"
+#include "../Thread/c_Atomic_Lock.h"
 #include "s_StackBuffer.h"
 
 namespace NNN
@@ -109,7 +109,7 @@ protected:
 	UINT64								m_time_out	= 0;
 
 	std::queue<std::pair<T*, UINT64>>	m_pool;	// 空闲对象(T*, can_use_tick)
-	struct Thread::s_FastAtomicLock		m_lock;
+	class Thread::c_Atomic_Lock			m_lock;
 };
 
 }	// namespace Buffer

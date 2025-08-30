@@ -13,7 +13,7 @@
 #include <map>
 
 #include "../../common/common.h"
-#include "s_FastAtomicLock.h"
+#include "c_Atomic_Lock.h"
 #include "s_Thread.h"
 
 namespace NNN
@@ -63,7 +63,7 @@ protected:
 
 protected:
 	std::set<int>						m_tasks;	// Î´Íê³ÉµÄ task
-	struct s_FastAtomicLock				m_cs_tasks;
+	class c_Atomic_Lock					m_cs_tasks;
 
 	struct s_CreateTask_Params			m_create_params;
 

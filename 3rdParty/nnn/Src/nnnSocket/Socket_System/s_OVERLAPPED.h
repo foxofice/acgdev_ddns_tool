@@ -11,7 +11,7 @@
 
 #include "../../common/common.h"
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 
 namespace NNN
 {
@@ -42,6 +42,6 @@ struct s_OVERLAPPED
 }	// namespace Socket
 }	// namespace NNN
 
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #endif	// _NNNSOCKET___SOCKET_SYSTEM___S_OVERLAPPED_H_

@@ -29,7 +29,7 @@
 
 #ifdef NNN_ENABLE_MEMORY_LEAK_DETECT
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 #ifdef NNN_USE_CRT_DEBUG
 	#define new new(_CLIENT_BLOCK, __FILE__, __LINE__)
 
@@ -40,7 +40,7 @@
 		#pragma comment(lib, "nnnLeakDetect.lib")
 	#endif	// NNN_LEAK_DETECT_LIB_SELF
 #endif	// NNN_USE_CRT_DEBUG
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #endif	// NNN_ENABLE_MEMORY_LEAK_DETECT
 
@@ -49,13 +49,13 @@ namespace NNN
 namespace Leak_Detect
 {
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 // 设置内存泄漏检测参数（skip_self_Frames = true 时，表示跳过 nnnLeakDetect 内部以防止伪泄漏）
 NNN_API	void	Set_Leak_Detect(bool skip_self_Frames);
 #else
 // 栈采集
 NNN_API void	capture_stacks(bool v);
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 // 开启/关闭内存泄漏检测
 NNN_API void	enable();
@@ -79,13 +79,13 @@ struct s_MemoryLeakCheck_Param
 // 开启内存泄漏检测
 inline void	MemoryLeakCheck(const struct s_MemoryLeakCheck_Param *param = nullptr)
 {
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	(param);
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #ifdef NNN_ENABLE_MEMORY_LEAK_DETECT
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#ifdef NNN_USE_CRT_DEBUG
 		int flags = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 
@@ -102,7 +102,7 @@ inline void	MemoryLeakCheck(const struct s_MemoryLeakCheck_Param *param = nullpt
 #else
 	enable();
 	capture_stacks((param != nullptr) ? param->m_capture_stacks : true);	// 栈采集
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #endif	// NNN_ENABLE_MEMORY_LEAK_DETECT
 }

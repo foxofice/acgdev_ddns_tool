@@ -16,10 +16,10 @@ namespace NNN
 namespace Window
 {
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 // 闪烁程序的标题栏
 NNN_API BOOL	FlashWindow(HWND hWnd, BOOL bInvert = TRUE);
-#endif	// NNN_PLATFORM
+#endif	// _WIN32
 
 }	// namespace Window
 }	// namespace NNN

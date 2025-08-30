@@ -13,58 +13,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif	// WIN32_LEAN_AND_MEAN
 
-// 平台定义
-#define NNN_PLATFORM_WIN32		1
-#define NNN_PLATFORM_ANDROID	2
-#define NNN_PLATFORM_IOS		3
-#define NNN_PLATFORM_WP8		4
-#define NNN_PLATFORM_LINUX		5
-#define NNN_PLATFORM_MAC		6
-
-// 自动推断系统
-#ifndef NNN_PLATFORM
-	#if defined(WIN32) || defined(_WIN32)
-		#include <winapifamily.h>
-		#if (WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP)
-			#define NNN_PLATFORM	NNN_PLATFORM_WIN32
-		#elif (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
-			#define NNN_PLATFORM	NNN_PLATFORM_WP8
-		#endif	// WINAPI_FAMILY
-	#elif defined(ANDROID) || defined(__ANDROID__)
-		#define NNN_PLATFORM	NNN_PLATFORM_ANDROID
-	#elif defined(__APPLE__) && (defined(__IPHONE__) || defined(__IPAD__) || defined(__IOS__))
-		#define NNN_PLATFORM	NNN_PLATFORM_IOS
-	#elif defined(__GNU__) && defined(__unix__) && !defined(__APPLE__)
-		#define NNN_PLATFORM	NNN_PLATFORM_LINUX
-	#elif defined(__APPLE__)
-		#define NNN_PLATFORM	NNN_PLATFORM_MAC
-	#endif
-#endif	// NNN_PLATFORM
-
-#if !defined(WIN32) && !defined(_WIN32)
-	#ifndef __GCC__
-	#define __GCC__
-	#endif
-#endif	// !WIN32 && !_WIN32
-
-// 自动加入相关宏定义
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
-	#ifndef ANDROID
-	#define ANDROID
-	#endif
-
-	#ifndef __ANDROID__
-	#define __ANDROID__
-	#endif
-#elif (NNN_PLATFORM == NNN_PLATFORM_IOS)
-	#ifndef __IOS__
-	#define __IOS__
-	#endif
-#endif	// NNN_PLATFORM
-
-#if (NNN_PLATFORM == NNN_PLATFORM_IOS)
-#include <TargetConditionals.h>
-#endif	// NNN_PLATFORM_IOS
+#include "NNN_API.h"	// 导入/导出
+#include "platform.h"	// 平台相关
 
 /* error reporting helpers */
 #ifndef __STR2WSTR
@@ -81,144 +31,83 @@
 #define _STRINGIZE(x) _STRINGIZEX(x)
 #endif	// _STRINGIZE
 
-// 导入/导出
-#include "NNN_API.h"
-
-//（平台目录 & 配置目录）
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
-	#if defined(WIN64) || defined(_WIN64)
-		#define PLATFORM_DIR "x64"
-	#elif defined(ARM)
-		#define PLATFORM_DIR "ARM"
-	#else
-		#define PLATFORM_DIR "Win32"
-	#endif	// WIN64 || _WIN64
-#elif (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
-	#if defined(DEBUG) || defined(_DEBUG)
-		#define CONFIGURATION_DIR "Debug_android"
-	#else
-		#define CONFIGURATION_DIR "Release_android"
-	#endif
-
-	#ifdef X86
-		#define PLATFORM_DIR "x86"
-	#else
-		#define PLATFORM_DIR "ARM"
-	#endif	// X86
-#elif (NNN_PLATFORM == NNN_PLATFORM_IOS)
-	#define PLATFORM_DIR "iOS"
-#elif (NNN_PLATFORM == NNN_PLATFORM_LINUX)
-	#define PLATFORM_DIR "Linux"
-#elif (NNN_PLATFORM == NNN_PLATFORM_MAC)
-	#define PLATFORM_DIR "Mac"
-#endif	// NNN_PLATFORM
-
-#if (NNN_PLATFORM == NNN_PLATFORM_WP8)
-	#if defined(DEBUG) || defined(_DEBUG)
-		#define CONFIGURATION_DIR "Debug_wp8"
-	#else
-		#define CONFIGURATION_DIR "Release_wp8"
-	#endif
-#elif (NNN_PLATFORM == NNN_PLATFORM_IOS)
-	#if TARGET_IPHONE_SIMULATOR
-		#define CONFIGURATION_DIR "Debug/-iphonesimulator"
-	#else
-		#define CONFIGURATION_DIR "Debug/-iphoneos"
-	#endif	// TARGET_IPHONE_SIMULATOR
-#elif (NNN_PLATFORM != NNN_PLATFORM_ANDROID)	// Android 在上面单独设置
-	#if defined(DEBUG) || defined(_DEBUG)
-		#define CONFIGURATION_DIR "Debug"
-	#else
-		#define CONFIGURATION_DIR "Release"
-	#endif
-#endif	// NNN_PLATFORM
-
-#define PLATFORM_DIRW		_STR2WSTR(PLATFORM_DIR)
-#define CONFIGURATION_DIRW	_STR2WSTR(CONFIGURATION_DIR)
-
 #if _MSC_VER >= 1700
 	#define _ALLOW_KEYWORD_MACROS
 #endif	// _MSC_VER
 
-#if defined(WIN32) || defined(_WIN32)
-#ifndef __cplusplus
-#define inline __inline
-#endif	// !__cplusplus
-#endif	// WIN32 || _WIN32
+#ifdef _WIN32
+	#ifndef __cplusplus
+		#define inline __inline
+	#endif	// !__cplusplus
+#endif	// _WIN32
 
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32)
+#ifdef _WIN32
 #ifndef _WIN32_WINNT
 	#define _WIN32_WINNT 0x0601	// http://msdn.microsoft.com/zh-cn/library/6sehtctf.ASPX
 #endif	// _WIN32_WINNT
-#endif	// NNN_PLATFORM_WIN32
+#endif	// _WIN32
 
 // gcc 所需要的一些宏定义
-#ifdef __GCC__
+#ifndef _WIN32
+	#define __int64	long long
+	#define __int32	int
+	#define __int16	short
+	#define __int8	char
 
-#define __int64	long long
-#define __int32	int
-#define __int16	short
-#define __int8	char
+	#ifndef __declspec
+	#define __declspec(x)
+	#endif
 
-#ifndef __declspec
-#define __declspec(x)
-#endif
+	#ifndef _In_
+	#define _In_
+	#endif
 
-#ifndef _In_
-#define _In_
-#endif
+	#ifndef _Out_
+	#define _Out_
+	#endif
 
-#ifndef _Out_
-#define _Out_
-#endif
+	#ifndef _Out_opt_
+	#define _Out_opt_
+	#endif
 
-#ifndef _Out_opt_
-#define _Out_opt_
-#endif
+	#ifndef _Success_
+	#define _Success_(x)
+	#endif
 
-#ifndef _Success_
-#define _Success_(x)
-#endif
+	#ifndef __static_assert
+	#define __static_assert(constant_expression, string_literal)
+	#endif
 
-#ifndef __static_assert
-#define __static_assert(constant_expression, string_literal)
-#endif
+	#ifndef _In_reads_
+	#define _In_reads_(x)
+	#endif
 
-#endif	// __GCC__
+	#ifndef _Out_writes_
+	#define _Out_writes_(x)
+	#endif
 
-#if defined(__GCC__) || _MSC_VER < 1700
+	#ifndef _Out_writes_bytes_
+	#define _Out_writes_bytes_(x)
+	#endif
 
-#ifndef _In_reads_
-#define _In_reads_(x)
-#endif
+	#ifndef _In_reads_bytes_
+	#define _In_reads_bytes_(x)
+	#endif
 
-#ifndef _Out_writes_
-#define _Out_writes_(x)
-#endif
+	#ifndef _Use_decl_annotations_
+	#define _Use_decl_annotations_
+	#endif
 
-#ifndef _Out_writes_bytes_
-#define _Out_writes_bytes_(x)
-#endif
-
-#ifndef _In_reads_bytes_
-#define _In_reads_bytes_(x)
-#endif
-
-#ifndef _Use_decl_annotations_
-#define _Use_decl_annotations_
-#endif
-
-#ifndef _Analysis_assume_
-#define _Analysis_assume_(x)
-#endif
-
-#endif	// __GCC__ || _MSC_VER < 1700
+	#ifndef _Analysis_assume_
+	#define _Analysis_assume_(x)
+	#endif
+#endif	// !_WIN32
 
 #define NOMINMAX	//取消 min/max 宏
 
-#if defined(WIN32) || defined(_WIN32)
-#include <assert.h>
-#endif	// WIN32 || _WIN32
+#ifdef _WIN32
+	#include <assert.h>
+#endif	// _WIN32
 
 // 普通宏定义
 #ifndef SAFE_DELETE
@@ -257,11 +146,15 @@
 #undef max	// use __max instead
 
 #if !defined(MARKUP_SIZEOFWCHAR)
-	#if !defined(WIN32) && !defined(_WIN32) && (__SIZEOF_WCHAR_T__ == 4 || __WCHAR_MAX__ > 0x10000)
-		#define MARKUP_SIZEOFWCHAR 4
-	#else
+	#ifdef _WIN32
 		#define MARKUP_SIZEOFWCHAR 2
-	#endif
+	#else
+		#if __SIZEOF_WCHAR_T__ == 4 || __WCHAR_MAX__ > 0x10000
+			#define MARKUP_SIZEOFWCHAR 4
+		#else
+			#define MARKUP_SIZEOFWCHAR 2
+		#endif
+	#endif	// _WIN32
 #endif
 
 #include <algorithm>
@@ -280,9 +173,10 @@
 //#endif
 
 // Make sure va_copy exists
-#if (NNN_PLATFORM != NNN_PLATFORM_ANDROID)
+#ifndef NNN_ANDROID
 #include <stdarg.h> // va_list, va_copy(?)
-#endif	// !NNN_PLATFORM_ANDROID
+#endif	// !NNN_ANDROID
+
 #ifndef va_copy
 	#ifdef __va_copy
 		#define va_copy __va_copy
@@ -393,37 +287,24 @@
 	template <typename Key>
 	using NNN_HASH_SET = typename HashSetSelector<Key>::Type;
 #else
-#if defined(WIN32) || defined(_WIN32)
-	//#include <hash_map>
-	//#include <hash_set>
-
-	#define NNN_HASH_MAP	std::unordered_map	// 在 vs2015 中，unordered_map 比 hash_map 快 7~14%
-	#define NNN_HASH_SET	std::unordered_set
-#else
-	//#include <ext/hash_map>
-	//#include <ext/hash_set>
-
-	//#define NNN_HASH_MAP	__gnu_cxx::hash_map	// 在 gcc（版本???）中，hash_map 比 unordered_map 快 183%~213%（200% 左右）
-	//#define NNN_HASH_SET	__gnu_cxx::hash_set
 	#define NNN_HASH_MAP	std::unordered_map
 	#define NNN_HASH_SET	std::unordered_set
-#endif	// WIN32 || _WIN32
 #endif	// _HAS_CXX20
 #endif	// __cplusplus
 
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
-#ifndef S_IREAD
-#define S_IREAD		S_IRUSR
-#endif	// S_IREAD
+#ifdef NNN_ANDROID
+	#ifndef S_IREAD
+	#define S_IREAD		S_IRUSR
+	#endif	// S_IREAD
 
-#ifndef S_IWRITE
-#define S_IWRITE	S_IWUSR
-#endif	// S_IWRITE
+	#ifndef S_IWRITE
+	#define S_IWRITE	S_IWUSR
+	#endif	// S_IWRITE
 
-#ifndef S_IEXEC
-#define S_IEXEC		S_IXUSR
-#endif	// S_IEXEC
-#endif	// NNN_PLATFORM_ANDROID
+	#ifndef S_IEXEC
+	#define S_IEXEC		S_IXUSR
+	#endif	// S_IEXEC
+#endif	// NNN_ANDROID
 
 // 禁止使用拷贝构造函数和 operator= 赋值操作的宏
 #define DISALLOW_COPY_AND_ASSIGN(TypeName) \
@@ -440,31 +321,31 @@
 #define SETP_GETP_MEMBER(type, member)	SETP_MEMBER(type, member)			GETP_MEMBER(type, member)
 
 // 字节对齐
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#define NNN_ALIGN(n)	__declspec(align(n))
 #else
 	#define NNN_ALIGN(n)	__attribute__((aligned(n)))
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 //========== 打印/写入错误日志 ==========(Start)
-#if (NNN_PLATFORM == NNN_PLATFORM_WIN32) || (NNN_PLATFORM == NNN_PLATFORM_WP8)
+#ifdef NNN_WINDOWS
 	#define	NNN_PRINT_LOG(txt)				OutputDebugStringA(txt)
 	#define	NNN_WRITE_LOG(filename, txt)	NNN::Log::AppendLog(filename, txt)
-#elif (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
+#elif defined(NNN_ANDROID)
 	#define	NNN_PRINT_LOG(txt)				NNN_ANDROID_LOG_DEBUG(txt)
 	#define	NNN_WRITE_LOG(filename, txt)
-#elif (NNN_PLATFORM == NNN_PLATFORM_IOS)
+#elif defined(NNN_IOS)
 	#define	NNN_PRINT_LOG(txt)				printf("%s", txt)
 	#define	NNN_WRITE_LOG(filename, txt)
-#elif (NNN_PLATFORM == NNN_PLATFORM_LINUX) || (NNN_PLATFORM == NNN_PLATFORM_MAC)
+#elif defined(NNN_LINUX) || defined(NNN_MAC)
 	#define	NNN_PRINT_LOG(txt)				printf("%s", txt)
 	#define	NNN_WRITE_LOG(filename, txt)	NNN::Log::AppendLog(filename, txt)
 #else
 	#define	NNN_PRINT_LOG(txt)
 	#define	NNN_WRITE_LOG(filename, txt)
-#endif	// NNN_PLATFORM
+#endif
 
-#if defined(WIN32) || defined(_WIN32)
+#ifdef _WIN32
 	#define _SSCANF		sscanf_s
 	#define _SWSCANF	swscanf_s
 
@@ -474,7 +355,7 @@
 #else
 	#define _SSCANF		sscanf
 	#define _SWSCANF	swscanf
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
 
 #define	NNN_LOG_ERROR_FUNC(filename, format, ...)	\
 		{	\
@@ -498,14 +379,15 @@
 #include "../nnnLeakDetect/nnnLeakDetect.h"
 
 #ifdef __cplusplus
-#if (NNN_PLATFORM == NNN_PLATFORM_ANDROID)
-	#include <thread>
-#endif	// NNN_PLATFORM_ANDROID
 
-#if defined(WIN32) || defined(_WIN32)
-#include <WinSock2.h>
+#ifdef NNN_ANDROID
+#include <thread>
+#endif	// NNN_ANDROID
+
+#ifdef _WIN32
 #include <Windows.h>
-#endif	// WIN32 || _WIN32
+#endif	// _WIN32
+
 #endif	// __cplusplus
 
 #define NNN_PARAMS(...)	__VA_ARGS__
