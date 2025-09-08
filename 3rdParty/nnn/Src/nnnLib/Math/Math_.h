@@ -94,6 +94,21 @@ static inline UINT64 fast_rand64()
 	return fast_xs64();
 }
 
+// 存储大小 -> 字符串
+/*
+	<decimal_place>	- 保留多少位小数
+	<unit>			- 单位，''为自动推断，B/K/M/G/T/P/E（不区分大小写）
+	<remove_zero>	- 是否去掉末尾的 '0' 显示
+
+	比如：	size_str(buffer, 1024) 返回 "1 KB"
+			size_str(buffer, 1048576) 返回 "1 MB"
+*/
+NNN_API const char*	size_str(	__out char	buffer[64],
+								UINT64		size,
+								int			decimal_place	= 3,
+								const char	unit			= '\0',
+								bool		remove_zero		= true );
+
 }	// namespace Math
 }	// namespace NNN
 

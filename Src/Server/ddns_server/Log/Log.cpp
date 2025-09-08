@@ -16,8 +16,8 @@ namespace Log
 // 写入文件的缓存
 struct
 {
-	std::string								*m_buffer	= nullptr;
-	struct NNN::Thread::s_CriticalSection	m_cs;
+	std::string							*m_buffer	= nullptr;
+	class NNN::Thread::c_Atomic_Lock	m_lock;
 } WRITE_FILE_BUFFER;
 
 /*==============================================================
@@ -64,7 +64,7 @@ void DoWork()
 				tm_.tm_year + 1900, tm_.tm_mon + 1, tm_.tm_mday );
 
 	{
-		NNN::Thread::c_Lock l(WRITE_FILE_BUFFER.m_cs);
+		NNN::Thread::c_Lock l(WRITE_FILE_BUFFER.m_lock);
 
 		if(!WRITE_FILE_BUFFER.m_buffer->empty())
 		{
@@ -182,10 +182,10 @@ static void _vShowMessage(es_MsgType type, const char *format, va_list ap)
 			strcat_s(time_prefix, " ");
 		}
 
-		WRITE_FILE_BUFFER.m_cs.Lock();
+		WRITE_FILE_BUFFER.m_lock.Lock();
 		*WRITE_FILE_BUFFER.m_buffer += time_prefix;
 		*WRITE_FILE_BUFFER.m_buffer += log.m_p;
-		WRITE_FILE_BUFFER.m_cs.UnLock();
+		WRITE_FILE_BUFFER.m_lock.UnLock();
 	}
 }
 

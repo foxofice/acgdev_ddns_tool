@@ -23,8 +23,8 @@ class NNN::Socket::c_Server	*g_server	= nullptr;
 // 正在登录的 Session
 struct
 {
-	NNN_HASH_SET<UINT64>					*m_sessions	= nullptr;	// session_id[]
-	struct NNN::Thread::s_CriticalSection	m_cs;
+	NNN_HASH_SET<UINT64>				*m_sessions	= nullptr;	// session_id[]
+	class NNN::Thread::c_Atomic_Lock	m_lock;
 } LOGINING_SESSIONS;
 //==================== 客户端验证 ====================(End)
 
@@ -47,7 +47,7 @@ static void CALLBACK OnAccept(struct NNN::Socket::s_SessionData *sd)
 
 	// 加入到「客户端列表」
 	{
-		NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_cs);
+		NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_lock);
 		LOGINING_SESSIONS.m_sessions->insert(sd->m_session_id);
 	}
 
@@ -72,7 +72,7 @@ static void CALLBACK OnDisconnecting(struct NNN::Socket::s_SessionData *sd)
 
 	// 从「客户端列表」删除
 	{
-		NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_cs);
+		NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_lock);
 		LOGINING_SESSIONS.m_sessions->erase(sd->m_session_id);
 	}
 
@@ -218,7 +218,7 @@ void DoWork()
 	std::vector<UINT64> kick_list;
 	kick_list.reserve(LOGINING_SESSIONS.m_sessions->size());
 
-	NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_cs);
+	NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_lock);
 
 	for(UINT64 session_id : *LOGINING_SESSIONS.m_sessions)
 	{
@@ -247,7 +247,7 @@ void DoWork()
  *==============================================================*/
 void remove_logining_sessions(UINT64 session_id)
 {
-	NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_cs);
+	NNN::Thread::c_Lock l(LOGINING_SESSIONS.m_lock);
 
 	LOGINING_SESSIONS.m_sessions->erase(session_id);
 }

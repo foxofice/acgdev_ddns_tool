@@ -171,29 +171,33 @@ NNN_API HRESULT		SetKeepAlive(	SOCKET				s,
 // WSAEnumNetworkEvents
 
 // 名字解析（pNodeName = "" 时，表示本机）
-NNN_API HRESULT		host2ip(const char		*pNodeName,
-							__out UINT8		&ipv4_count,
-							__out in_addr	ipv4_list[NNN_MAX_IP_COUNT],
-							__out UINT8		&ipv6_count,
-							__out in6_addr	ipv6_list[NNN_MAX_IP_COUNT]);
+NNN_API HRESULT			host2ip(const char		*pNodeName,
+								__out UINT8		&ipv4_count,
+								__out in_addr	ipv4_list[NNN_MAX_IP_COUNT],
+								__out UINT8		&ipv6_count,
+								__out in6_addr	ipv6_list[NNN_MAX_IP_COUNT]);
 
 // IP 地址 -> 字符串
-NNN_API char*		ip2str(in_addr addr, __out char buffer[16]);
-NNN_API char*		ip2str(in6_addr addr, __out char buffer[46]);
+NNN_API char*			ip2str(in_addr addr, __out char buffer[16]);
+NNN_API char*			ip2str(in6_addr addr, __out char buffer[46]);
 
 // 取得本地 MAC 地址
-NNN_API HRESULT		get_mac_address(__out BYTE MAC[ETHER_ADDR_LEN]);
+NNN_API HRESULT			get_mac_address(__out BYTE MAC[ETHER_ADDR_LEN]);
+
+// 把 MAC 地址转换成字符串格式（xx-xx-xx-xx-xx-xx）
+NNN_API const char*		mac_2_str(const BYTE MAC[ETHER_ADDR_LEN], __out char str_mac[18]);
+NNN_API const WCHAR*	mac_2_str(const BYTE MAC[ETHER_ADDR_LEN], __out WCHAR str_mac[18]);
 
 // 取得本地 IP 列表
-NNN_API HRESULT		get_local_ip_list(	__out UINT8				&ip_count,
-										__out struct s_Local_IP	ip_list[NNN_MAX_IP_COUNT] );
+NNN_API HRESULT			get_local_ip_list(	__out UINT8				&ip_count,
+											__out struct s_Local_IP	ip_list[NNN_MAX_IP_COUNT] );
 
 // 判断一个 IP 是否局域网 IP
-NNN_API bool		is_lan_address(const char *ip);
+NNN_API bool			is_lan_address(const char *ip);
 
 // 判断一个 IP 是否为 IPv4/IPv6
-NNN_API bool		is_IPv4(const char *ip);
-NNN_API bool		is_IPv6(const char *ip);
+NNN_API bool			is_IPv4(const char *ip);
+NNN_API bool			is_IPv6(const char *ip);
 
 //======================================================================
 

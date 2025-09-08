@@ -1871,7 +1871,7 @@
 			Margin = new Padding(3, 2, 3, 2);
 			Name = "frm_MainForm";
 			StartPosition = FormStartPosition.CenterScreen;
-			Text = "AcgDev DDNS Tool v0.12";
+			Text = "AcgDev DDNS Tool v0.13";
 			FormClosing += frm_MainForm_FormClosing;
 			Load += frm_MainForm_Load;
 			groupBox_Domains.ResumeLayout(false);

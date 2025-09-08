@@ -39,6 +39,9 @@ struct s_SessionData
 	// 初始化连接时间
 	NNN_API void			InitConnectTime();
 
+	// 初始化状态统计
+	NNN_API void			Init_Statistical_Status(size_t max_threads_count);
+
 	// 重设 m_session_id
 	NNN_API void			set_session_id();
 
@@ -76,8 +79,8 @@ struct s_SessionData
 	NNN_API inline void		UpdateLastActiveTime()	{ m_last_active_time = time(nullptr); }
 
 	// 更新发送/接收的速度、总大小
-	NNN_API inline void		UpdateSendStatus(UINT add_size)	{ return m_status.UpdateSendStatus(add_size); }
-	NNN_API inline void		UpdateRecvStatus(UINT add_size)	{ return m_status.UpdateRecvStatus(add_size); }
+	NNN_API inline void		UpdateSendStatus(UINT add_size, size_t thread_idx)	{ return m_status.UpdateSendStatus(add_size, thread_idx); }
+	NNN_API inline void		UpdateRecvStatus(UINT add_size, size_t thread_idx)	{ return m_status.UpdateRecvStatus(add_size, thread_idx); }
 
 	// 获取当前发送/接收速度、总大小
 	NNN_API inline UINT		GetSendSpeed()		{ return m_status.GetSendSpeed(); }

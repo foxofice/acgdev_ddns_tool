@@ -33,7 +33,7 @@ NNN_API int		get_processors_count();
 NNN_API int		get_hardware_concurrency();
 
 #if defined(NNN_WINDOWS) || defined(NNN_LINUX)
-// 获取当前的 CPU 占用率
+// 获取当前的 CPU 占用率（0.0 ~ 100.0）
 NNN_API float	get_cpu_usage();
 
 // 获取 RAM（物理内存）总大小（字节）
@@ -41,14 +41,12 @@ NNN_API UINT64	get_physical_memory();
 
 // 获取当前的剩余 RAM（物理内存）大小（字节）
 NNN_API UINT64	get_avail_physical_memory();
-#endif	// NNN_WINDOWS || NNN_LINUX
 
-#if	defined(NNN_WINDOWS) ||	defined(NNN_LINUX)
 // 获取 cpuid
 NNN_API void	cpuid(unsigned int CPUInfo[4], unsigned int InfoType);
 #endif	// NNN_WINDOWS || NNN_LINUX
 
-// 获取 CPU 指令周期数
+// 获取 CPU 指令周期数（ARMv7 需要先启用用户态访问 PMU，否则会触发异常）
 NNN_API UINT64	rdtsc();
 
 }	// namespace Misc

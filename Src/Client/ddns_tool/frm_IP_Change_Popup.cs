@@ -39,12 +39,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Main_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 0, 66, 66 }; 
-
-			for(int i = 1; i < widths.Length; ++i)
-				listView_Main.Columns[i].Width = widths[i];
-
-			columnHeader_Domain.Width = listView_Main.Width - 21 - widths.Sum();
+			FORMS.auto_size_ListView_fill(listView_Main, [0, 66, 66]);
 		}
 
 		/*==============================================================

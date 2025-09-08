@@ -980,12 +980,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Domains_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 0, 198, 60, 102, 273, 90 };
-
-			for(int i = 1; i < widths.Length; ++i)
-				listView_Domains.Columns[i].Width = widths[i];
-
-			columnHeader_Domains_Domain.Width = listView_Domains.Width - 21 - widths.Sum();
+			FORMS.auto_size_ListView_fill(listView_Domains, [0, 198, 60, 102, 273, 90]);
 		}
 
 		/*==============================================================
@@ -1257,12 +1252,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Logs_Resize(object sender, EventArgs e)
 		{
-			int[] widths = { 122, 0 };
-
-			for(int i = 0; i < widths.Length - 1; ++i)
-				listView_Logs.Columns[i].Width = widths[i];
-
-			columnHeader_Logs_Log.Width = listView_Logs.Width - 21 - widths.Sum();
+			FORMS.auto_size_ListView_fill(listView_Logs, [122, 0]);
 		}
 
 		/*==============================================================
@@ -1617,7 +1607,7 @@ namespace ddns_tool
 		 *==============================================================*/
 		private void listView_Security_Resize(object sender, EventArgs e)
 		{
-			columnHeader_Security.Width = listView_Security.Width - 21;
+			FORMS.auto_size_ListView_fill(listView_Security, [0]);
 		}
 
 		/*==============================================================
