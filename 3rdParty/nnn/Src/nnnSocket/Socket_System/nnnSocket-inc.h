@@ -52,6 +52,8 @@ namespace Socket
 // [前置声明] IP 地址 -> 字符串
 extern NNN_API char*	ip2str(in_addr addr, __out char buffer[16]);
 extern NNN_API char*	ip2str(in6_addr addr, __out char buffer[46]);
+extern NNN_API WCHAR*	ip2str(in_addr addr, __out WCHAR buffer[16]);
+extern NNN_API WCHAR*	ip2str(in6_addr addr, __out WCHAR buffer[46]);
 
 struct s_ip_addr
 {
@@ -66,9 +68,21 @@ struct s_ip_addr
 		{
 		case AF_INET:	return ip2str(m_addr_ipv4, buffer);
 		case AF_INET6:	return ip2str(m_addr_ipv6, buffer);
-		}
+		}	// switch
 
 		buffer[0] = '\0';
+		return buffer;
+	}
+
+	NNN_API inline WCHAR* to_host_string(__out WCHAR buffer[46]) const
+	{
+		switch(m_af)
+		{
+		case AF_INET:	return ip2str(m_addr_ipv4, buffer);
+		case AF_INET6:	return ip2str(m_addr_ipv6, buffer);
+		}	// switch
+
+		buffer[0] = L'\0';
 		return buffer;
 	}
 };

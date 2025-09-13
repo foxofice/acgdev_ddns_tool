@@ -180,6 +180,8 @@ NNN_API HRESULT			host2ip(const char		*pNodeName,
 // IP 地址 -> 字符串
 NNN_API char*			ip2str(in_addr addr, __out char buffer[16]);
 NNN_API char*			ip2str(in6_addr addr, __out char buffer[46]);
+NNN_API WCHAR*			ip2str(in_addr addr, __out WCHAR buffer[16]);
+NNN_API WCHAR*			ip2str(in6_addr addr, __out WCHAR buffer[46]);
 
 // 取得本地 MAC 地址
 NNN_API HRESULT			get_mac_address(__out BYTE MAC[ETHER_ADDR_LEN]);

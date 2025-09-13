@@ -52,7 +52,7 @@ void	send_Update_Domains(const std::vector<struct s_Domain>		&domains,
 // 解析数据包
 void	parse_packet();
 
-#define	PARSE_FUNC(name, ...)	NNN_API es_Parse_Result name(struct NNN::Socket::s_SessionData *sd, ##__VA_ARGS__)
+#define	PARSE_FUNC(name, ...)	es_Parse_Result name(struct NNN::Socket::s_SessionData *sd, ##__VA_ARGS__)
 
 // Server 发送心跳包
 // Link: ../../../../Server/ddns_server/Packet/packet.h : send_KeepAlive(

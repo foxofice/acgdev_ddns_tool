@@ -15,6 +15,7 @@
 	【针对执行档】包含此头文件 nnnLeakDetect.h + 调用 MemoryLeakCheck() 开启内存泄漏检测
 	【对于 Win 平台】如果要恢复到 CRT 调试，则先定义 NNN_USE_CRT_DEBUG
 	【关于 Release】默认关闭。要开启的话，在包含头文件之前先定义 NNN_ENABLE_MEMORY_LEAK_DETECT
+	【关于 c++/clr】如果发现无法抓取内存泄漏的话，可以在 imports.cpp 里引入其他 lib 之前先引入 nnnLeakDetect.lib
 
 	注意：
 		Win 的 CRT 可以抓到 new/delete、malloc/free

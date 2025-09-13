@@ -103,12 +103,16 @@ static inline UINT64 fast_rand64()
 	比如：	size_str(buffer, 1024) 返回 "1 KB"
 			size_str(buffer, 1048576) 返回 "1 MB"
 */
-NNN_API const char*	size_str(	__out char	buffer[64],
-								UINT64		size,
-								int			decimal_place	= 3,
-								const char	unit			= '\0',
-								bool		remove_zero		= true );
-
+NNN_API const char*		size_str(	__out char	buffer[64],
+									UINT64		size,
+									int			decimal_place	= 3,
+									const char	unit			= '\0',
+									bool		remove_zero		= true );
+NNN_API const WCHAR*	size_str(	__out WCHAR	buffer[64],
+									UINT64		size,
+									int			decimal_place	= 3,
+									const WCHAR	unit			= '\0',
+									bool		remove_zero		= true );
 }	// namespace Math
 }	// namespace NNN
 

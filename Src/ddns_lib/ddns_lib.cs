@@ -20,20 +20,20 @@ namespace ddns_lib
 	// 安全配置
 	public class c_Security_Profile
 	{
-		public string		m_Name						= "";	// 配置的名称
+		public string	m_Name						= "";	// 配置的名称
 
-		public string		m_Godaddy__Key				= "";
-		public bool			m_Godaddy__Key_Visible		= false;
-		public string		m_Godaddy__Secret			= "";
-		public bool			m_Godaddy__Secret_Visible	= false;
+		public string	m_Godaddy__Key				= "";
+		public bool		m_Godaddy__Key_Visible		= false;
+		public string	m_Godaddy__Secret			= "";
+		public bool		m_Godaddy__Secret_Visible	= false;
 
-		public string		m_dynv6__token				= "";
-		public bool			m_dynv6__token_Visible		= false;
+		public string	m_dynv6__token				= "";
+		public bool		m_dynv6__token_Visible		= false;
 
-		public string		m_dynu__API_Key				= "";
-		public bool			m_dynu__API_Key_Visible		= false;
+		public string	m_dynu__API_Key				= "";
+		public bool		m_dynu__API_Key_Visible		= false;
 
-		public bool			m_Save_To_Config			= true;
+		public bool		m_Save_To_Config			= true;
 	};
 
 	public enum e_DomainType

@@ -5,6 +5,7 @@
 // Desc : 导入文件
 //--------------------------------------------------------------------------------------
 
+#pragma comment(lib, "nnnLeakDetect.lib")
 #pragma comment(lib, "nnnLib.lib")
 #pragma comment(lib, "nnnSocket.lib")
 #pragma comment(lib, "nnnSocketClient.lib")
